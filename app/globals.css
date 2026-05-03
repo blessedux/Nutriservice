@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* ── Wireframe grey palette ───────────────────────────────────── */
+  /* "Primary" action / accent — used for borders, focus, active    */
+  --color-ns-green:        #374151;   /* dark slate                */
+  --color-ns-green-light:  #4b5563;   /* medium-dark slate         */
+  --color-ns-green-dark:   #1f2937;   /* near-black slate          */
+
+  /* Highlight / eyebrow / numbers — replaces brand emerald         */
+  --color-ns-emerald:      #6b7280;   /* medium grey               */
+
+  /* Dark section backgrounds (hero, reframe, tech)                 */
+  --color-ns-dark:         #1f2937;   /* dark grey                 */
+
+  /* Light section backgrounds                                      */
+  --color-ns-surface:      #f3f4f6;   /* grey-100                  */
+  --color-ns-surface-alt:  #e5e7eb;   /* grey-200                  */
+
+  /* Borders                                                        */
+  --color-ns-border:       #e5e7eb;   /* grey-200                  */
+
+  /* Typography                                                     */
+  --color-ns-text:         #111827;   /* grey-900                  */
+  --color-ns-muted:        #6b7280;   /* grey-500                  */
+  --color-ns-subtle:       #9ca3af;   /* grey-400                  */
+
+  /* BlueprintLoader (DNA helix) — matches shadcn-style token     */
+  --color-foreground:      var(--color-ns-text);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: var(--color-ns-text);
+  background: #f9fafb;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* BlueprintLoader keyframes (from v0 / blueprint-loader reference) */
+@keyframes grow {
+  to {
+    transform: rotateX(360deg);
+  }
+}
+
+@keyframes shrink {
+  100% {
+    transform: translateX(-50%) rotateX(-360deg);
+  }
+}
+
+/* PreloaderLab phrase: in from below, out upward */
+@keyframes preloader-phrase-enter {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes preloader-phrase-exit {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}

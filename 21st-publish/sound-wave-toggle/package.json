@@ -1,0 +1,9 @@
+{
+  "name": "sound-wave-toggle-21st",
+  "private": true,
+  "description": "21st Studio bundle: only React + Tailwind; paste into src/components/ui/component.tsx or map per Studio layout.",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18"
+  }
+}
