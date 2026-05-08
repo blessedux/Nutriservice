@@ -21,10 +21,15 @@ type ScrollFramePlayerProps = {
    */
   trackVh?: number;
   /**
-   * Scroll maps to every Nth frame on disk (1 = all frames, 2 ≈ half the URL swaps).
-   * Larger values reduce decode/layout work; preload still loads every file.
+   * Scroll maps to every Nth frame on disk (1 = all frames).
+   * Ignored when `blendAdjacentFrames` is true (homepage uses blend by default).
    */
   frameStride?: number;
+  /**
+   * Cross-dissolve between the two nearest frames from scroll progress (temporal blend).
+   * Hides black flashes from discrete `src` swaps; not real optical flow but reads smoother.
+   */
+  blendAdjacentFrames?: boolean;
   /**
    * Debug overlay grid (8x8).
    */
@@ -121,13 +126,76 @@ function smoothstep(edge0: number, edge1: number, x: number) {
   return t * t * (3 - 2 * t);
 }
 
+const FRAME_IMG_CLASS =
+  "absolute inset-0 h-full w-full object-cover [transform:translateZ(0)] motion-safe:transition-[opacity] motion-safe:duration-[90ms] motion-safe:ease-linear";
+
+/**
+ * Keeps prior bitmap visible until `decode()` / load finishes for the next URL — avoids empty flashes.
+ */
+function DecodedFrameImg({
+  framesDir,
+  absoluteFrameNumber,
+  opacity,
+  alt = "",
+  ariaHidden,
+  fetchPriority = "auto",
+  extraImgStyle,
+  extraClassName = "",
+}: {
+  framesDir: string;
+  absoluteFrameNumber: number;
+  opacity: number;
+  alt?: string;
+  ariaHidden?: boolean;
+  fetchPriority?: "high" | "low" | "auto";
+  extraImgStyle?: React.CSSProperties;
+  extraClassName?: string;
+}) {
+  const targetSrc = scrollFrameUrl(framesDir, absoluteFrameNumber);
+  const [drawSrc, setDrawSrc] = React.useState(targetSrc);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    const img = new Image();
+    img.src = targetSrc;
+    const finish = () => {
+      if (!cancelled) setDrawSrc(targetSrc);
+    };
+    if (typeof img.decode === "function") {
+      void img.decode().then(finish).catch(finish);
+    } else {
+      img.onload = finish;
+      img.onerror = finish;
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [targetSrc]);
+
+  return (
+    <img
+      src={drawSrc}
+      alt={ariaHidden ? "" : alt}
+      aria-hidden={ariaHidden}
+      draggable={false}
+      decoding="async"
+      fetchPriority={fetchPriority}
+      className={`${FRAME_IMG_CLASS} ${extraClassName}`}
+      style={{
+        opacity,
+        ...extraImgStyle,
+      }}
+    />
+  );
+}
+
 export default function ScrollFramePlayer({
   framesDir,
   frameCount,
   firstFrameNumber,
   trackVh = 4,
-  /** Default 2: good balance of smoothness vs decode churn on long sequences */
-  frameStride = 2,
+  frameStride = 1,
+  blendAdjacentFrames = true,
   debugGrid = false,
   debugGridCols = 8,
   debugGridRows = 8,
@@ -139,13 +207,20 @@ export default function ScrollFramePlayer({
 
   const [progress, setProgress] = React.useState(0);
   const [frameIndex, setFrameIndex] = React.useState(0);
-  const [scrollY, setScrollY] = React.useState(0);
   const [debugScrubEnabled, setDebugScrubEnabled] = React.useState(false);
   const [debugScrubIndex, setDebugScrubIndex] = React.useState(0);
 
   const activeIndex = debugScrubEnabled ? debugScrubIndex : frameIndex;
   const activeFrameNumber = firstFrameNumber + activeIndex;
-  const activeSrc = scrollFrameUrl(framesDir, activeFrameNumber);
+
+  const useScrollBlend = blendAdjacentFrames && !debugScrubEnabled;
+  const u = progress * Math.max(0, frameCount - 1);
+  const blendI0 = Math.min(frameCount - 1, Math.floor(u + 1e-9));
+  const blendI1 = Math.min(frameCount - 1, blendI0 + 1);
+  const blendW = clamp01(u - blendI0);
+  const blendAbs0 = firstFrameNumber + blendI0;
+  const blendAbs1 = firstFrameNumber + blendI1;
+  const blendSingleFrame = blendI0 >= blendI1;
 
   /** Radial edge blur: sharp center, blurred perimeter; ramps up with scroll progress. */
   const edgeBlurPx = lerp(0, 42, Math.pow(progress, 1.12));
@@ -222,7 +297,6 @@ export default function ScrollFramePlayer({
     const update = () => {
       const el = trackRef.current;
       const y = window.scrollY || 0;
-      setScrollY(y);
 
       if (!el) {
         setProgress(0);
@@ -237,10 +311,12 @@ export default function ScrollFramePlayer({
       const maxScroll = Math.max(1, height - viewport);
       const p = clamp01((y - top) / maxScroll);
       setProgress((prev) =>
-        Math.abs(prev - p) < 0.0015 ? prev : p,
+        Math.abs(prev - p) < 0.0008 ? prev : p,
       );
 
-      const idx = scrollIndexFromProgress(p);
+      const idx = blendAdjacentFrames
+        ? Math.round(p * Math.max(0, frameCount - 1))
+        : scrollIndexFromProgress(p);
       setFrameIndex((prev) => (prev === idx ? prev : idx));
     };
 
@@ -258,7 +334,7 @@ export default function ScrollFramePlayer({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [frameCount, scrollIndexFromProgress]);
+  }, [blendAdjacentFrames, frameCount, scrollIndexFromProgress]);
 
   React.useEffect(() => {
     preloadScrollFrames({
@@ -278,37 +354,137 @@ export default function ScrollFramePlayer({
       >
         <div className="sticky top-16 h-[calc(100dvh-4rem)] flex items-center justify-center bg-neutral-950 overflow-hidden">
           <div className="relative h-full w-full overflow-hidden">
-            <img
-              src={activeSrc}
-              alt={`frame ${activeIndex}`}
-              className="absolute inset-0 h-full w-full object-cover [transform:translateZ(0)]"
-              draggable={false}
-              decoding="async"
-              fetchPriority="high"
-            />
-            {/* Same frame, blurred; radial mask keeps center sharp so titles stay readable */}
-            {edgeBlurPx > 0.35 ? (
-              <img
-                src={activeSrc}
-                alt=""
-                aria-hidden
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none [transform:translateZ(0)]"
-                draggable={false}
-                decoding="async"
-                fetchPriority="low"
-                style={{
-                  filter: `blur(${edgeBlurPx}px)`,
-                  transform: "scale(1.06)",
-                  WebkitMaskImage: edgeBlurMask,
-                  maskImage: edgeBlurMask,
-                  WebkitMaskSize: "100% 100%",
-                  maskSize: "100% 100%",
-                  WebkitMaskRepeat: "no-repeat",
-                  maskRepeat: "no-repeat",
-                  WebkitMaskPosition: "center",
-                  maskPosition: "center",
-                }}
+            {useScrollBlend ? (
+              blendSingleFrame ? (
+                <DecodedFrameImg
+                  framesDir={framesDir}
+                  absoluteFrameNumber={blendAbs0}
+                  opacity={1}
+                  alt={`frame ${blendI0}`}
+                  fetchPriority="high"
+                  extraClassName="pointer-events-none select-none"
+                />
+              ) : (
+                <>
+                  <DecodedFrameImg
+                    framesDir={framesDir}
+                    absoluteFrameNumber={blendAbs0}
+                    opacity={1 - blendW}
+                    alt={`frame ${blendI0}`}
+                    fetchPriority="high"
+                    extraClassName="pointer-events-none select-none"
+                  />
+                  <DecodedFrameImg
+                    framesDir={framesDir}
+                    absoluteFrameNumber={blendAbs1}
+                    opacity={blendW}
+                    ariaHidden
+                    fetchPriority="high"
+                    extraClassName="pointer-events-none select-none"
+                  />
+                </>
+              )
+            ) : (
+              <DecodedFrameImg
+                framesDir={framesDir}
+                absoluteFrameNumber={activeFrameNumber}
+                opacity={1}
+                alt={`frame ${activeIndex}`}
+                fetchPriority="high"
+                extraClassName="pointer-events-none select-none"
               />
+            )}
+
+            {/* Same frame(s), blurred; radial mask keeps center sharp so titles stay readable */}
+            {edgeBlurPx > 0.35 ? (
+              useScrollBlend ? (
+                blendSingleFrame ? (
+                  <DecodedFrameImg
+                    framesDir={framesDir}
+                    absoluteFrameNumber={blendAbs0}
+                    opacity={1}
+                    ariaHidden
+                    fetchPriority="low"
+                    extraClassName="pointer-events-none select-none"
+                    extraImgStyle={{
+                      filter: `blur(${edgeBlurPx}px)`,
+                      transform: "translateZ(0) scale(1.06)",
+                      WebkitMaskImage: edgeBlurMask,
+                      maskImage: edgeBlurMask,
+                      WebkitMaskSize: "100% 100%",
+                      maskSize: "100% 100%",
+                      WebkitMaskRepeat: "no-repeat",
+                      maskRepeat: "no-repeat",
+                      WebkitMaskPosition: "center",
+                      maskPosition: "center",
+                    }}
+                  />
+                ) : (
+                  <>
+                    <DecodedFrameImg
+                      framesDir={framesDir}
+                      absoluteFrameNumber={blendAbs0}
+                      opacity={1 - blendW}
+                      ariaHidden
+                      fetchPriority="low"
+                      extraClassName="pointer-events-none select-none"
+                      extraImgStyle={{
+                        filter: `blur(${edgeBlurPx}px)`,
+                        transform: "translateZ(0) scale(1.06)",
+                        WebkitMaskImage: edgeBlurMask,
+                        maskImage: edgeBlurMask,
+                        WebkitMaskSize: "100% 100%",
+                        maskSize: "100% 100%",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                      }}
+                    />
+                    <DecodedFrameImg
+                      framesDir={framesDir}
+                      absoluteFrameNumber={blendAbs1}
+                      opacity={blendW}
+                      ariaHidden
+                      fetchPriority="low"
+                      extraClassName="pointer-events-none select-none"
+                      extraImgStyle={{
+                        filter: `blur(${edgeBlurPx}px)`,
+                        transform: "translateZ(0) scale(1.06)",
+                        WebkitMaskImage: edgeBlurMask,
+                        maskImage: edgeBlurMask,
+                        WebkitMaskSize: "100% 100%",
+                        maskSize: "100% 100%",
+                        WebkitMaskRepeat: "no-repeat",
+                        maskRepeat: "no-repeat",
+                        WebkitMaskPosition: "center",
+                        maskPosition: "center",
+                      }}
+                    />
+                  </>
+                )
+              ) : (
+                <DecodedFrameImg
+                  framesDir={framesDir}
+                  absoluteFrameNumber={activeFrameNumber}
+                  opacity={1}
+                  ariaHidden
+                  fetchPriority="low"
+                  extraClassName="pointer-events-none select-none"
+                  extraImgStyle={{
+                    filter: `blur(${edgeBlurPx}px)`,
+                    transform: "scale(1.06)",
+                    WebkitMaskImage: edgeBlurMask,
+                    maskImage: edgeBlurMask,
+                    WebkitMaskSize: "100% 100%",
+                    maskSize: "100% 100%",
+                    WebkitMaskRepeat: "no-repeat",
+                    maskRepeat: "no-repeat",
+                    WebkitMaskPosition: "center",
+                    maskPosition: "center",
+                  }}
+                />
+              )
             ) : null}
 
             {/* Progress darkening overlay: ramps up for legibility */}

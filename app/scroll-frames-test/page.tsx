@@ -36,6 +36,7 @@ export default function ScrollFramesTestPage() {
         frameCount={121}
         firstFrameNumber={1}
         frameStride={1}
+        blendAdjacentFrames={false}
         trackVh={5}
         debugGrid
         debugGridCols={12}
