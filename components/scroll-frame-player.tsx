@@ -21,6 +21,11 @@ type ScrollFramePlayerProps = {
    */
   trackVh?: number;
   /**
+   * Scroll maps to every Nth frame on disk (1 = all frames, 2 ≈ half the URL swaps).
+   * Larger values reduce decode/layout work; preload still loads every file.
+   */
+  frameStride?: number;
+  /**
    * Debug overlay grid (8x8).
    */
   debugGrid?: boolean;
@@ -121,6 +126,8 @@ export default function ScrollFramePlayer({
   frameCount,
   firstFrameNumber,
   trackVh = 4,
+  /** Default 2: good balance of smoothness vs decode churn on long sequences */
+  frameStride = 2,
   debugGrid = false,
   debugGridCols = 8,
   debugGridRows = 8,
@@ -166,6 +173,23 @@ export default function ScrollFramePlayer({
       return clamp01(Math.min(fadeIn, fadeOut));
     },
     [],
+  );
+
+  const stride = Math.min(
+    Math.max(1, Math.floor(frameStride)),
+    Math.max(1, frameCount - 1),
+  );
+  const scrollStepMax = React.useMemo(
+    () => Math.max(0, Math.floor((frameCount - 1) / stride)),
+    [frameCount, stride],
+  );
+
+  const scrollIndexFromProgress = React.useCallback(
+    (p: number) => {
+      const step = Math.round(clamp01(p) * scrollStepMax);
+      return Math.min(frameCount - 1, step * stride);
+    },
+    [frameCount, scrollStepMax, stride],
   );
 
   const gridPos = React.useCallback(
@@ -216,7 +240,7 @@ export default function ScrollFramePlayer({
         Math.abs(prev - p) < 0.0015 ? prev : p,
       );
 
-      const idx = Math.round(p * (frameCount - 1));
+      const idx = scrollIndexFromProgress(p);
       setFrameIndex((prev) => (prev === idx ? prev : idx));
     };
 
@@ -234,7 +258,7 @@ export default function ScrollFramePlayer({
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
     };
-  }, [frameCount]);
+  }, [frameCount, scrollIndexFromProgress]);
 
   React.useEffect(() => {
     preloadScrollFrames({
@@ -257,8 +281,10 @@ export default function ScrollFramePlayer({
             <img
               src={activeSrc}
               alt={`frame ${activeIndex}`}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover [transform:translateZ(0)]"
               draggable={false}
+              decoding="async"
+              fetchPriority="high"
             />
             {/* Same frame, blurred; radial mask keeps center sharp so titles stay readable */}
             {edgeBlurPx > 0.35 ? (
@@ -266,8 +292,10 @@ export default function ScrollFramePlayer({
                 src={activeSrc}
                 alt=""
                 aria-hidden
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none"
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none [transform:translateZ(0)]"
                 draggable={false}
+                decoding="async"
+                fetchPriority="low"
                 style={{
                   filter: `blur(${edgeBlurPx}px)`,
                   transform: "scale(1.06)",

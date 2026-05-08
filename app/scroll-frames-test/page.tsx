@@ -35,6 +35,7 @@ export default function ScrollFramesTestPage() {
         framesDir="/frames_pellet-explosion_webp"
         frameCount={121}
         firstFrameNumber={1}
+        frameStride={1}
         trackVh={5}
         debugGrid
         debugGridCols={12}
