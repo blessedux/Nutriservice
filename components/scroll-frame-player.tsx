@@ -92,6 +92,11 @@ type ScrollFramePlayerProps = {
     vectorScale?: number;
     vectorRotateDeg?: number;
   }>;
+  /**
+   * Optional "cover" section that slides up over the final sticky viewport
+   * (used for the Notes transition).
+   */
+  cover?: React.ReactNode;
 };
 
 function clamp01(n: number) {
@@ -127,6 +132,7 @@ export default function ScrollFramePlayer({
   debugGridRows = 8,
   titles = [],
   annotations = [],
+  cover,
 }: ScrollFramePlayerProps) {
   const trackRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -140,6 +146,15 @@ export default function ScrollFramePlayer({
   const activeIndex = debugScrubEnabled ? debugScrubIndex : frameIndex;
   const activeFrameNumber = firstFrameNumber + activeIndex;
   const activeSrc = defaultSrc(framesDir, activeFrameNumber);
+
+  /** Radial edge blur: sharp center, blurred perimeter; ramps up with scroll progress. */
+  const edgeBlurPx = lerp(0, 42, Math.pow(progress, 1.12));
+  const edgeBlurInnerPct = lerp(58, 34, progress);
+  const edgeBlurOuterPct = Math.min(
+    100,
+    edgeBlurInnerPct + lerp(26, 44, progress),
+  );
+  const edgeBlurMask = `radial-gradient(ellipse 92% 88% at 50% 47%, transparent ${edgeBlurInnerPct}%, black ${edgeBlurOuterPct}%)`;
 
   const titleOpacity = React.useCallback(
     (t: { start: number; end?: number }, p: number) => {
@@ -286,66 +301,36 @@ export default function ScrollFramePlayer({
         className="relative"
         style={{ height: `${Math.max(1, trackVh) * 100}vh` }}
       >
-        <div className="sticky top-16 h-[calc(100dvh-4rem)] flex items-center justify-center bg-white">
-          <div className="relative w-full h-full flex items-center justify-center">
-            {/* Glass reflections */}
-            <div className="pointer-events-none absolute inset-0" aria-hidden>
-              <div
-                className="absolute inset-y-0 left-0 w-[18%]"
-                style={{
-                  opacity: 0.22,
-                  filter: "blur(0.2px)",
-                  WebkitMaskImage:
-                    "linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0))",
-                  maskImage:
-                    "linear-gradient(to right, rgba(0,0,0,1), rgba(0,0,0,0))",
-                }}
-              >
-                <img
-                  src={activeSrc}
-                  alt=""
-                  aria-hidden
-                  className="h-full w-auto max-w-none object-contain"
-                  style={{
-                    transform: "scaleX(-1)",
-                    transformOrigin: "center",
-                  }}
-                  draggable={false}
-                />
-              </div>
-              <div
-                className="absolute inset-y-0 right-0 w-[18%]"
-                style={{
-                  opacity: 0.22,
-                  filter: "blur(0.2px)",
-                  WebkitMaskImage:
-                    "linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0))",
-                  maskImage:
-                    "linear-gradient(to left, rgba(0,0,0,1), rgba(0,0,0,0))",
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <img
-                  src={activeSrc}
-                  alt=""
-                  aria-hidden
-                  className="h-full w-auto max-w-none object-contain"
-                  style={{
-                    transform: "scaleX(-1)",
-                    transformOrigin: "center",
-                  }}
-                  draggable={false}
-                />
-              </div>
-            </div>
-
+        <div className="sticky top-16 h-[calc(100dvh-4rem)] flex items-center justify-center bg-neutral-950 overflow-hidden">
+          <div className="relative h-full w-full overflow-hidden">
             <img
               src={activeSrc}
               alt={`frame ${activeIndex}`}
-              className="h-full w-auto max-w-full object-contain"
+              className="absolute inset-0 h-full w-full object-cover"
               draggable={false}
             />
+            {/* Same frame, blurred; radial mask keeps center sharp so titles stay readable */}
+            {edgeBlurPx > 0.35 ? (
+              <img
+                src={activeSrc}
+                alt=""
+                aria-hidden
+                className="pointer-events-none absolute inset-0 h-full w-full object-cover select-none"
+                draggable={false}
+                style={{
+                  filter: `blur(${edgeBlurPx}px)`,
+                  transform: "scale(1.06)",
+                  WebkitMaskImage: edgeBlurMask,
+                  maskImage: edgeBlurMask,
+                  WebkitMaskSize: "100% 100%",
+                  maskSize: "100% 100%",
+                  WebkitMaskRepeat: "no-repeat",
+                  maskRepeat: "no-repeat",
+                  WebkitMaskPosition: "center",
+                  maskPosition: "center",
+                }}
+              />
+            ) : null}
 
             {/* Progress darkening overlay: ramps up for legibility */}
             <div
@@ -560,6 +545,12 @@ export default function ScrollFramePlayer({
           </div>
         </div>
       </div>
+
+      {cover ? (
+        <section className="relative z-20 -mt-[calc(100dvh-4rem)] min-h-[100dvh] bg-white/80 backdrop-blur-md px-6 py-16 border-t border-neutral-200">
+          {cover}
+        </section>
+      ) : null}
     </div>
   );
 }

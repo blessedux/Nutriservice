@@ -1,0 +1,10 @@
+{
+  "name": "fractal-glass-distortion-21st",
+  "private": true,
+  "description": "21st Studio bundle: React + Tailwind + Three.js fractal glass scene distortion.",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "three": ">=0.136.0"
+  }
+}

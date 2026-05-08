@@ -25,8 +25,13 @@ type PreloaderStageProps = {
 
 /**
  * Shared fullscreen shell: white backdrop, centered isotipo watermark, PreloaderLab.
- * Used by `SitePreloader` and `/preloader-test` so the test view matches production.
+ * Used by `SiteExperience` y `/preloader-test` para que la prueba coincida con producción.
  */
+function requestAmbientSoundStart() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new CustomEvent("hyperia:start-sound"));
+}
+
 export function PreloaderStage({
   counterDurationMs = PRELOADER_COUNTER_MS,
   className,
@@ -40,6 +45,10 @@ export function PreloaderStage({
       )}
       style={FOREGROUND_STYLE}
       {...rest}
+      onPointerDownCapture={(e) => {
+        requestAmbientSoundStart();
+        rest.onPointerDownCapture?.(e);
+      }}
     >
       <div
         className="pointer-events-none absolute inset-0 z-0 opacity-[0.22]"

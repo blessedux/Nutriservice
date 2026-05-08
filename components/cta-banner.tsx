@@ -19,7 +19,7 @@ export default function CTABanner({
   secondaryHref = "/contacto",
 }: CTABannerProps) {
   return (
-    <section className="bg-ns-green py-20 px-6">
+    <section id="contacto" className="scroll-mt-24 bg-ns-green px-6 py-20">
       <div className="max-w-3xl mx-auto text-center">
         <h2 className="text-3xl font-bold text-white mb-4">{heading}</h2>
         <p className="text-lg text-white/75 mb-10 leading-relaxed">{subtext}</p>

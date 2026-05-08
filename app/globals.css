@@ -43,6 +43,51 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* View Transitions — crossfade entre páginas (solo navegadores compatibles) */
+@supports (view-transition-name: none) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 320ms;
+    animation-timing-function: cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  ::view-transition-old(root) {
+    animation-name: ns-vt-fade-out;
+  }
+
+  ::view-transition-new(root) {
+    animation-name: ns-vt-fade-in;
+  }
+}
+
+@keyframes ns-vt-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes ns-vt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @supports (view-transition-name: none) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+      animation-duration: 1ms !important;
+      animation-name: none !important;
+    }
+  }
+}
+
 /* BlueprintLoader keyframes (from v0 / blueprint-loader reference) */
 @keyframes grow {
   to {
@@ -76,5 +121,66 @@ body {
   to {
     transform: translateY(-100%);
     opacity: 0;
+  }
+}
+
+/* Hero_SA — eyebrow slides in L→R; headline / sublines slide up */
+@keyframes hero-head-line-up {
+  from {
+    transform: translateY(108%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes hero-tag-from-left {
+  from {
+    transform: translateX(-1.35rem);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.hero-line-mask {
+  overflow: hidden;
+}
+
+.hero-line-inner {
+  display: block;
+}
+
+/* Gated by `data-hero-animate` from SiteExperience — runs after intro overlay drops away */
+[data-hero-animate="false"] .hero-line-inner {
+  animation: none;
+  opacity: 0;
+  transform: translateY(108%);
+}
+
+[data-hero-animate="false"] .hero-tag-lr {
+  animation: none;
+  opacity: 0;
+  transform: translateX(-1.35rem);
+}
+
+[data-hero-animate="true"] .hero-line-inner {
+  animation: hero-head-line-up 0.78s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+[data-hero-animate="true"] .hero-tag-lr {
+  animation: hero-tag-from-left 0.72s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-hero-animate="true"] .hero-line-inner,
+  [data-hero-animate="true"] .hero-tag-lr {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

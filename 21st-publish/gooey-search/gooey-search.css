@@ -1,0 +1,159 @@
+/* Ported from https://github.com/oguzhantufenk/gooey-search — scoped under .gooey-search-root */
+
+.gooey-search-root {
+  width: 100%;
+  position: relative;
+  isolation: isolate;
+}
+
+.gooey-search-root.gooey-search-root--no-goo .gooey-search-inner {
+  filter: none !important;
+}
+
+.gooey-search-root.gooey-search-root--no-goo .gooey-search-results .gooey-search-result {
+  padding: 7.5px 10px;
+}
+
+.gooey-search-root.gooey-search-root--no-goo .gooey-search-btn .gooey-search-text {
+  pointer-events: none;
+  text-align: center;
+  position: relative;
+  left: 0;
+}
+
+.gooey-search-root.gooey-search-root--no-goo .gooey-search-icon-slot {
+  width: 36px;
+  height: 36px;
+}
+
+.gooey-search-layout {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.gooey-search-inner {
+  cursor: pointer;
+  max-width: max-content;
+  position: relative;
+}
+
+.gooey-search-results {
+  position: relative;
+  z-index: -1;
+}
+
+.gooey-search-result {
+  background-color: #000000;
+  border-radius: 40px;
+  padding: 12.5px 20px;
+  width: 100%;
+  color: #ddd;
+  position: absolute;
+  left: -30px;
+  font-size: 14px;
+}
+
+.gooey-search-result-title {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.gooey-search-result-title span {
+  position: relative;
+  top: -0.35px;
+}
+
+.gooey-search-result-title svg {
+  position: relative;
+  top: 2px;
+  width: 18px;
+  height: 18px;
+}
+
+.gooey-search-btn {
+  color: rgba(221, 221, 221, 0.6862745098039216);
+  cursor: pointer;
+  letter-spacing: -0.5px;
+  background-color: #000000;
+  outline: none;
+  border: none;
+  border-radius: 9999px;
+  padding: 10px 20px;
+}
+
+.gooey-search-btn:focus-visible {
+  outline: 2px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.gooey-search-text {
+  pointer-events: none;
+  text-align: center;
+  position: relative;
+  left: 4px;
+}
+
+.gooey-search-input {
+  width: 100%;
+  background-color: transparent;
+  outline: none;
+  border: none;
+  color: #dddddd;
+}
+
+.gooey-search-input::placeholder {
+  color: rgba(221, 221, 221, 0.45);
+}
+
+.gooey-search-icon-slot {
+  position: absolute;
+  background-color: #000000;
+  width: 46px;
+  height: 46px;
+  right: -5px;
+  top: -1px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 9999px;
+}
+
+@media (max-width: 767px) {
+  .gooey-search-icon-slot {
+    scale: 1.1;
+    top: 2px;
+  }
+}
+
+.gooey-search-icon-slot svg {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 767px) {
+  .gooey-search-icon-slot svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.gooey-search-icon-slot svg path {
+  fill: #dddddd;
+}
+
+.gooey-search-icon-slot svg.gooey-loading-icon {
+  width: 20px;
+  height: 20px;
+  animation: gooey-rotate 0.5s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes gooey-rotate {
+  100% {
+    transform: rotate(180deg);
+  }
+}

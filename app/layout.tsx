@@ -4,7 +4,7 @@ import "./globals.css";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import SoundWidget from "@/components/sound-widget";
-import { SitePreloader } from "@/components/site-preloader";
+import { SiteExperience } from "@/components/site-experience";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,11 +34,12 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
-      <body className="min-h-full flex flex-col">
-        <SitePreloader />
-        <Nav />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className="flex min-h-full flex-col">
+        <SiteExperience className="flex-1">
+          <Nav />
+          <main className="flex-1 pt-24">{children}</main>
+          <Footer />
+        </SiteExperience>
         <SoundWidget />
       </body>
     </html>

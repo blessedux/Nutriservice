@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import ScrollFramePlayer from "@/components/scroll-frame-player";
+import MacroGardCover from "@/components/macrogard-cover";
 
 export const metadata: Metadata = {
   title: "Scroll Frames Test",
@@ -113,32 +114,20 @@ export default function ScrollFramesTestPage() {
             },
           },
           {
-            start: 0.7,
-            text: "Formulaciones certificadas y probadas en nuestro laboratorio",
+            start: 0.6,
+            text: "Formulaciones certificadas y probadas en nuestro laboratorio.",
             style: {
               fontFamily: '"Test Söhne Schmal", ui-sans-serif, system-ui',
               fontSize: "60px",          
+              marginBottom: "48px",
               mixBlendMode: "difference",
             },
           },
         ]}
+        cover={
+          <MacroGardCover />
+        }
       />
-
-      {/* Parallax cover: slides up over the final sticky viewport */}
-      <section className="relative z-20 -mt-[calc(100dvh-4rem)] min-h-[100dvh] bg-white/80 backdrop-blur-md px-6 py-16 border-t border-neutral-200">
-        <div className="mx-auto w-full max-w-5xl text-sm text-neutral-700 pt-24">
-          <p className="font-semibold text-neutral-900">Notes</p>
-          <ul className="mt-3 list-disc pl-5 space-y-1">
-            <li>
-              The sticky viewer starts below the site nav (using{" "}
-              <span className="font-mono">top-16</span>).
-            </li>
-            <li>
-              The debug slider enables manual scrubbing without scrolling.
-            </li>
-          </ul>
-        </div>
-      </section>
     </div>
   );
 }

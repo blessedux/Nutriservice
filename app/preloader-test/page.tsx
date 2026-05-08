@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Misma UI que `SitePreloader`: fixed inset-0, isotipo, z-index, PreloaderLab. */
+/** Misma UI que el overlay inicial en `SiteExperience`: fixed inset-0, isotipo, PreloaderLab. */
 export default function PreloaderTestPage() {
   return (
     <PreloaderStage

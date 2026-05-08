@@ -1,0 +1,11 @@
+{
+  "name": "gooey-search-21st",
+  "private": true,
+  "description": "21st Studio bundle: gooey search interaction (Framer Motion + SVG filter). Based on oguzhantufenk/gooey-search.",
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "framer-motion": ">=11",
+    "clsx": ">=2"
+  }
+}
