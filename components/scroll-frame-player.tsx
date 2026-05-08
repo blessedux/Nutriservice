@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { preloadScrollFrames, scrollFrameUrl } from "@/lib/scroll-frame-preload";
+
 type ScrollFramePlayerProps = {
   framesDir: string;
   /**
@@ -114,14 +116,6 @@ function smoothstep(edge0: number, edge1: number, x: number) {
   return t * t * (3 - 2 * t);
 }
 
-function pad4(n: number) {
-  return String(n).padStart(4, "0");
-}
-
-function defaultSrc(framesDir: string, frameNumber: number) {
-  return `${framesDir}/frame_${pad4(frameNumber)}.webp`;
-}
-
 export default function ScrollFramePlayer({
   framesDir,
   frameCount,
@@ -141,11 +135,10 @@ export default function ScrollFramePlayer({
   const [scrollY, setScrollY] = React.useState(0);
   const [debugScrubEnabled, setDebugScrubEnabled] = React.useState(false);
   const [debugScrubIndex, setDebugScrubIndex] = React.useState(0);
-  const [loadedCount, setLoadedCount] = React.useState(0);
 
   const activeIndex = debugScrubEnabled ? debugScrubIndex : frameIndex;
   const activeFrameNumber = firstFrameNumber + activeIndex;
-  const activeSrc = defaultSrc(framesDir, activeFrameNumber);
+  const activeSrc = scrollFrameUrl(framesDir, activeFrameNumber);
 
   /** Radial edge blur: sharp center, blurred perimeter; ramps up with scroll progress. */
   const edgeBlurPx = lerp(0, 42, Math.pow(progress, 1.12));
@@ -219,10 +212,12 @@ export default function ScrollFramePlayer({
       const viewport = window.innerHeight || 1;
       const maxScroll = Math.max(1, height - viewport);
       const p = clamp01((y - top) / maxScroll);
-      setProgress(p);
+      setProgress((prev) =>
+        Math.abs(prev - p) < 0.0015 ? prev : p,
+      );
 
       const idx = Math.round(p * (frameCount - 1));
-      setFrameIndex(idx);
+      setFrameIndex((prev) => (prev === idx ? prev : idx));
     };
 
     const onScroll = () => {
@@ -242,56 +237,12 @@ export default function ScrollFramePlayer({
   }, [frameCount]);
 
   React.useEffect(() => {
-    let cancelled = false;
-
-    const preloadAll = async () => {
-      const urls = Array.from({ length: frameCount }, (_, idx) =>
-        defaultSrc(framesDir, firstFrameNumber + idx),
-      );
-
-      let loaded = 0;
-      const bump = () => {
-        loaded += 1;
-        if (!cancelled) setLoadedCount(loaded);
-      };
-
-      await Promise.all(
-        urls.map(
-          (src) =>
-            new Promise<void>((resolve) => {
-              const img = new Image();
-              img.onload = () => {
-                bump();
-                resolve();
-              };
-              img.onerror = () => {
-                bump();
-                resolve();
-              };
-              img.src = src;
-            }),
-        ),
-      );
-    };
-
-    const start =
-      typeof (window as any).requestIdleCallback === "function"
-        ? (window as any).requestIdleCallback
-        : (fn: () => void) => window.setTimeout(fn, 1);
-
-    const cancel =
-      typeof (window as any).cancelIdleCallback === "function"
-        ? (window as any).cancelIdleCallback
-        : (id: number) => window.clearTimeout(id);
-
-    const idleId = start(() => {
-      preloadAll();
-    });
-
-    return () => {
-      cancelled = true;
-      cancel(idleId);
-    };
+    preloadScrollFrames({
+      framesDir,
+      frameCount,
+      firstFrameNumber,
+      concurrency: 12,
+    }).catch(() => {});
   }, [framesDir, frameCount, firstFrameNumber]);
 
   return (

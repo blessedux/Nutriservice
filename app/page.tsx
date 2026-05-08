@@ -9,6 +9,7 @@ import ProblemSection, {
   ProblemTrustStatsBar,
 } from "@/components/problem-section";
 import { ScrollLegend } from "@/components/scroll-legend";
+import { HOMEPAGE_PELLET_FRAMES } from "@/lib/scroll-frame-preload";
 
 export const metadata: Metadata = {
   title: "Nutriservice — Nutrición animal de alta precisión",
@@ -225,9 +226,7 @@ export default function HomePage() {
       {/* ─── 3. CIENCIA EN ACCIÓN (scroll frames) ───────────────── */}
       <section id="calculadora" className="scroll-mt-24 bg-white">
         <ScrollFramePlayer
-          framesDir="/frames_pellet-explosion_webp"
-          frameCount={121}
-          firstFrameNumber={1}
+          {...HOMEPAGE_PELLET_FRAMES}
           trackVh={5}
           debugGrid={false}
           debugGridCols={12}

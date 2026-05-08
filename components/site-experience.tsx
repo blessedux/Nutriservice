@@ -4,6 +4,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PreloaderStage, PRELOADER_COUNTER_MS } from "@/components/preloader-stage";
 import { HeroRevealProvider } from "@/components/site-reveal-context";
+import {
+  HOMEPAGE_PELLET_FRAMES,
+  preloadScrollFrames,
+} from "@/lib/scroll-frame-preload";
 import { cn } from "@/lib/utils";
 
 /** Al menos la subida del contador — igual que el antiguo SitePreloader */
@@ -51,6 +55,11 @@ export function SiteExperience({
       setShowContent(true);
       return;
     }
+
+    /** Warm homepage scroll-frame WebPs during the white preloader (~3s). */
+    preloadScrollFrames({ ...HOMEPAGE_PELLET_FRAMES, concurrency: 14 }).catch(
+      () => {},
+    );
 
     const started = performance.now();
     let timeoutId: number | undefined;
