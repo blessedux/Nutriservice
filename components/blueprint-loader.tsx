@@ -16,7 +16,7 @@ export function BlueprintLoader({
   return (
     <div
       className={cn(
-        "relative h-12 [transform-style:preserve-3d]",
+        "relative h-12 opacity-80 [transform-style:preserve-3d]",
         className
       )}
       style={{ width: `${barCount * 12 + 10}px` }}
@@ -32,15 +32,15 @@ export function BlueprintLoader({
         return (
           <div
             key={index}
-            className="absolute top-0 h-full w-0.5 bg-foreground [transform-style:preserve-3d] animate-[grow_8s_linear_infinite]"
+            className="absolute top-0 h-full w-0.5 bg-white/80 [transform-style:preserve-3d] animate-[grow_8s_linear_infinite]"
             style={{
               left: `${leftPos}px`,
               animationDelay: `${delay}s`,
             }}
           >
-            {/* Top dot */}
+            {/* Top dot — blanco sobre fondo oscuro del preloader (evita tema global `foreground` = texto negro). */}
             <div
-              className="absolute left-1/2 rounded-full bg-foreground [transform-style:preserve-3d] animate-[shrink_8s_linear_infinite]"
+              className="absolute left-1/2 rounded-full bg-white [transform-style:preserve-3d] shadow-[0_0_12px_rgba(255,255,255,0.35)] animate-[shrink_8s_linear_infinite]"
               style={{
                 width: `${dotSize}px`,
                 height: `${dotSize}px`,
@@ -51,7 +51,7 @@ export function BlueprintLoader({
             />
             {/* Bottom dot */}
             <div
-              className="absolute left-1/2 rounded-full bg-foreground [transform-style:preserve-3d] animate-[shrink_8s_linear_infinite]"
+              className="absolute left-1/2 rounded-full bg-white [transform-style:preserve-3d] shadow-[0_0_12px_rgba(255,255,255,0.35)] animate-[shrink_8s_linear_infinite]"
               style={{
                 width: `${dotSize}px`,
                 height: `${dotSize}px`,

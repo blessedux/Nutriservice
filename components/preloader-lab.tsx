@@ -114,7 +114,7 @@ export function PreloaderLab({
       <div className="absolute left-1/2 top-1/2 w-full max-w-2xl min-w-0 -translate-x-1/2 -translate-y-1/2">
         <div className="flex w-full min-w-0 items-center gap-1 sm:gap-2">
           <div
-            className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-neutral-200"
+            className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/20"
             aria-hidden
           >
             <div
@@ -124,7 +124,7 @@ export function PreloaderLab({
           </div>
           <BlueprintLoader className="shrink-0 scale-100" />
           <div
-            className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-neutral-200"
+            className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-white/20"
             aria-hidden
           >
             <div
@@ -140,7 +140,7 @@ export function PreloaderLab({
           <p
             key={phraseIndex}
             className={cn(
-              "font-mono absolute inset-x-0 bottom-0 mx-auto w-full max-w-prose text-balance text-sm font-medium leading-snug tracking-wide text-neutral-600 sm:text-base",
+              "font-mono absolute inset-x-0 bottom-0 mx-auto w-full max-w-prose text-balance text-sm font-medium leading-snug tracking-wide text-cyan-50/90 sm:text-base",
               phase === "enter" &&
                 "animate-[preloader-phrase-enter_0.42s_ease-out_forwards]",
               phase === "stable" && "translate-y-0 opacity-100",
@@ -153,9 +153,9 @@ export function PreloaderLab({
           </p>
         </div>
 
-        <p className="font-mono text-[0.9375rem] font-medium tabular-nums tracking-wide text-neutral-900 sm:text-[1.125rem]">
+        <p className="font-mono text-[0.9375rem] font-medium tabular-nums tracking-wide text-white sm:text-[1.125rem]">
           {percent}
-          <span className="text-[0.75rem] text-neutral-600 sm:text-[0.9375rem]">
+          <span className="text-[0.75rem] text-white/60 sm:text-[0.9375rem]">
             %
           </span>
         </p>

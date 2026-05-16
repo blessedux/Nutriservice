@@ -7,8 +7,8 @@ import { cn } from "@/lib/utils";
 
 export type HeroCtaTone = "on-dark" | "on-light";
 
-/** Matches `hero-head-line-up` duration in `globals.css`. */
-const HERO_LINE_ANIM_MS = 780;
+/** Default: matches `hero-head-line-up` duration in `globals.css` (Hero SA). */
+const DEFAULT_HERO_INTRO_ANIM_MS = 780;
 
 type HeroCtaBarProps = {
   primaryHref?: string;
@@ -16,15 +16,22 @@ type HeroCtaBarProps = {
   secondaryHref?: string;
   secondaryLabel?: string;
   className?: string;
+  /** Right-aligned strip under hero vs compact stack under headline. */
+  variant?: "strip" | "inline";
   /** Matches hero background so borders and secondary CTA stay readable. */
   tone?: HeroCtaTone;
   /** When false, CTAs stay hidden (hero intro not finished). */
   heroRevealReady?: boolean;
   /**
    * Longest `animationDelay` on hero headline/sublines (ms), before line motion runs.
-   * Fade starts after that delay + line animation + buffer.
+   * Fade starts after that delay + `heroIntroAnimMs` + buffer.
    */
   heroLastLineDelayMs?: number;
+  /**
+   * Duration (ms) of the hero headline intro after `heroLastLineDelayMs`.
+   * Hero SA uses CSS line masks (~780ms). Framer-based heroes can pass `0`.
+   */
+  heroIntroAnimMs?: number;
 };
 
 function usePrefersReducedMotion(): boolean {
@@ -45,9 +52,11 @@ export default function HeroCtaBar({
   secondaryHref = "#sistema",
   secondaryLabel = "Ver el sistema ↓",
   className,
+  variant = "strip",
   tone = "on-dark",
   heroRevealReady = true,
   heroLastLineDelayMs = 440,
+  heroIntroAnimMs = DEFAULT_HERO_INTRO_ANIM_MS,
 }: HeroCtaBarProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [ctaVisible, setCtaVisible] = useState(false);
@@ -67,22 +76,28 @@ export default function HeroCtaBar({
       return;
     }
     const bufferMs = 72;
-    const delayMs = heroLastLineDelayMs + HERO_LINE_ANIM_MS + bufferMs;
+    const delayMs = heroLastLineDelayMs + heroIntroAnimMs + bufferMs;
     const id = window.setTimeout(() => setCtaVisible(true), delayMs);
     return () => window.clearTimeout(id);
-  }, [heroRevealReady, heroLastLineDelayMs, reducedMotion]);
+  }, [heroRevealReady, heroLastLineDelayMs, heroIntroAnimMs, reducedMotion]);
 
   return (
     <section
       className={cn(
-        "bg-transparent px-6 py-8 backdrop-blur-[2px] sm:py-10",
+        "bg-transparent backdrop-blur-[2px]",
+        variant === "strip"
+          ? "px-6 py-8 sm:py-10"
+          : "px-0 py-0",
         className,
       )}
       aria-label="Acciones principales"
     >
       <div
         className={cn(
-          "ml-auto mr-0 mb-6 flex max-w-4xl flex-col items-end justify-end gap-3 transition-[opacity,transform] duration-[520ms] ease-out sm:mb-8 sm:flex-row sm:items-center sm:gap-4",
+          "flex flex-col gap-3 transition-[opacity,transform] duration-[520ms] ease-out sm:flex-row sm:items-center sm:gap-4",
+          variant === "strip"
+            ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
+            : "ml-0 mr-auto mt-10 max-w-xl items-stretch justify-start sm:mt-9",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"
@@ -91,7 +106,10 @@ export default function HeroCtaBar({
       >
         <Link
           href={primaryHref}
-          className="inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light"
+          className={cn(
+            "inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light",
+            variant === "inline" && "w-full sm:w-auto",
+          )}
         >
           {primaryLabel}
         </Link>
@@ -100,6 +118,7 @@ export default function HeroCtaBar({
           className={cn(
             "inline-flex items-center justify-center rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
             secondaryBtn,
+            variant === "inline" && "w-full sm:w-auto",
           )}
         >
           {secondaryLabel}

@@ -35,12 +35,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col">
+        {/* Monta antes del contenido para sincronizar `hyperia:master-muted` con capas ambientales del hero */}
+        <SoundWidget />
         <SiteExperience className="flex-1">
           <Nav />
           <main className="flex-1 pt-24">{children}</main>
           <Footer />
         </SiteExperience>
-        <SoundWidget />
       </body>
     </html>
   );

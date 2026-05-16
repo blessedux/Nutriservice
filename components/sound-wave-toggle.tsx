@@ -9,6 +9,8 @@ import {
   type MutableRefObject,
 } from "react";
 
+import { setAmbientMasterMuted } from "@/lib/audio-master-state";
+
 const BASE_AMPLITUDE = 5;
 const CANVAS_LOGICAL_PX = 56;
 const DETAILS = 20;
@@ -97,6 +99,8 @@ function cx(...parts: Array<string | undefined | false>): string {
 export type SoundWaveToggleProps = {
   /** Public URL to looped audio (e.g. `/First_Blossom.mp3` in `public/`) */
   audioSrc: string;
+  /** Caps unmuted volume (`HTMLMediaElement.volume`, 0–1). Default 1 (0 dBFS). */
+  maxLinearGain?: number;
   className?: string;
   buttonClassName?: string;
   labelClassName?: string;
@@ -111,6 +115,7 @@ export type SoundWaveToggleProps = {
  */
 export function SoundWaveToggle({
   audioSrc,
+  maxLinearGain = 1,
   className,
   buttonClassName,
   labelClassName,
@@ -119,6 +124,10 @@ export function SoundWaveToggle({
 }: SoundWaveToggleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const maxLinearGainRef = useRef(maxLinearGain);
+  useEffect(() => {
+    maxLinearGainRef.current = clamp(maxLinearGain, 0, 1);
+  }, [maxLinearGain]);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const paramsRef = useRef<WaveParams>(defaultParams());
   const pointsRef = useRef<number[]>([]);
@@ -191,7 +200,7 @@ export function SoundWaveToggle({
           a,
           p,
           a.volume,
-          1,
+          maxLinearGainRef.current,
           p.amplitude,
           BASE_AMPLITUDE,
           easeInQuad,
@@ -225,6 +234,7 @@ export function SoundWaveToggle({
 
     const audio = new Audio(audioSrc);
     audio.loop = true;
+    audio.preload = "auto";
     audio.volume = 0;
     audioRef.current = audio;
 
@@ -246,7 +256,7 @@ export function SoundWaveToggle({
           a,
           p,
           0,
-          1,
+          maxLinearGainRef.current,
           0,
           BASE_AMPLITUDE,
           easeOutQuad,
@@ -361,6 +371,15 @@ export function SoundWaveToggle({
       audioSessionReadyRef.current = false;
     };
   }, [audioSrc, fadeRefs, setMuted]);
+
+  useEffect(() => {
+    setAmbientMasterMuted(isMuted);
+    window.dispatchEvent(
+      new CustomEvent<{ muted: boolean }>("hyperia:master-muted", {
+        detail: { muted: isMuted },
+      }),
+    );
+  }, [isMuted]);
 
   return (
     <div className={cx("inline-flex", className)}>

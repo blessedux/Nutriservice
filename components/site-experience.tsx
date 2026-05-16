@@ -15,6 +15,8 @@ const MIN_VISIBLE_MS = 2800;
 
 const FADE_MS = 500;
 
+type SiteOverlay = "on" | "fade" | "off";
+
 function usePrefersReducedMotion(): boolean {
   const [reduced, setReduced] = useState(false);
   useEffect(() => {
@@ -45,9 +47,15 @@ export function SiteExperience({
   const [hydrated, setHydrated] = useState(false);
   useEffect(() => setHydrated(true), []);
 
-  type Overlay = "on" | "fade" | "off";
-  const [overlay, setOverlay] = useState<Overlay>("on");
+  const [overlay, setOverlay] = useState<SiteOverlay>("on");
   const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    if (overlay === "on") return;
+    queueMicrotask(() => {
+      window.dispatchEvent(new CustomEvent("hyperia:start-sound"));
+    });
+  }, [overlay]);
 
   useEffect(() => {
     if (reducedMotion) {

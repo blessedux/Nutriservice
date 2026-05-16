@@ -1,105 +1,19 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import CTABanner from "@/components/cta-banner";
+import CertificationsSection from "@/components/certifications-section";
 import HeroSA from "@/components/Hero_SA";
-import ScrollFramePlayer from "@/components/scroll-frame-player";
-import MacroGardCover from "@/components/macrogard-cover";
+import HomeStatsSection from "@/components/home-stats-section";
+import ImpactSection from "@/components/impact-section";
+import MaquilaSection from "@/components/maquila-section";
 import IndustriesSection from "@/components/industries-section";
-import ProblemSection, {
-  ProblemTrustStatsBar,
-} from "@/components/problem-section";
 import { ScrollLegend } from "@/components/scroll-legend";
-import { HOMEPAGE_PELLET_FRAMES } from "@/lib/scroll-frame-preload";
 
 export const metadata: Metadata = {
   title: "Nutriservice — Nutrición animal de alta precisión",
   description:
     "Sistema de nutrición animal que integra diagnóstico, formulación, implementación y optimización continua para mejorar productividad y reducir riesgo en producción animal.",
 };
-
-const PROBLEM_HEADLINE = "El costo de la variabilidad productiva";
-
-const PROBLEM_INTRO_BULLETS = [
-  {
-    text: "Los impactos son lentos de observar y se acumulan lote a lote.",
-  },
-  {
-    text: "Cuando el costo aparece en libros, ya lleva meses construyéndose.",
-  },
-];
-
-const PROBLEMS = [
-  {
-    title: "Baja conversión alimenticia",
-    metric: "~70%",
-    metricCaption: "insumos / costo productivo",
-    trend: "FCR vs. curva",
-    trendTone: "amber" as const,
-    sparkPattern: [0.35, 0.72, 0.48, 0.91, 0.62, 0.84, 0.55],
-    detail:
-      "Cada punto de FCR por encima del óptimo es costo acumulado que pocas operaciones cuantifican con precisión.",
-  },
-  {
-    title: "Variabilidad en materias primas",
-    metric: "σ alto",
-    metricCaption: "lote ↔ lote",
-    trend: "σ sin reformulación",
-    trendTone: "rose" as const,
-    sparkPattern: [0.55, 0.38, 0.82, 0.44, 0.76, 0.52, 0.68],
-    detail:
-      "Un cambio de proveedor sin ajuste de formulación es variabilidad directa en resultados productivos.",
-  },
-  {
-    title: "Riesgo sanitario",
-    metric: "+Δ",
-    metricCaption: "morbilidad asociada",
-    trend: "Morb. / nutrición",
-    trendTone: "rose" as const,
-    sparkPattern: [0.42, 0.58, 0.5, 0.66, 0.54, 0.78, 0.71],
-    detail:
-      "La mala nutrición no solo reduce producción: compromete inmunidad, aumenta mortalidad y eleva gasto veterinario.",
-  },
-  {
-    title: "Presión por eficiencia",
-    metric: "<5pp",
-    metricCaption: "margen típico export",
-    trend: "Sensib. variación",
-    trendTone: "amber" as const,
-    sparkPattern: [0.68, 0.72, 0.65, 0.74, 0.7, 0.69, 0.73],
-    detail:
-      "Los mercados de exportación no perdonan variabilidad ni sobrecosto. El margen es cada vez más ajustado.",
-  },
-];
-
-const PROBLEM_REVEAL_PANEL = (
-  <article className="rounded-2xl border border-white/18 bg-white/[0.07] p-7 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.55)] backdrop-blur-md sm:p-8">
-    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-300/95">
-      Del reconocimiento al margen
-    </p>
-    <h3 className="mt-3 text-xl font-bold leading-snug tracking-tight text-white sm:text-2xl">
-      Convertimos el diagnóstico en formulación operativa
-    </h3>
-    <p className="mt-4 text-sm leading-relaxed text-white/78 sm:text-[15px]">
-      Nutriservice cierra el ciclo: materias primas caracterizadas, formulación
-      por contexto y seguimiento en campo para que la variabilidad deje de ser un
-      costo oculto y pase a ser algo que podés medir y corregir lote a lote.
-    </p>
-    <ul className="mt-6 flex flex-col gap-3 border-t border-white/10 pt-6 text-left text-sm text-white/72">
-      <li className="flex gap-2">
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
-        Laboratorio y NIR para decisiones con datos, no con supuestos.
-      </li>
-      <li className="flex gap-2">
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
-        Formulación ajustada a tu operación y a la disponibilidad real de insumos.
-      </li>
-      <li className="flex gap-2">
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.6)]" />
-        Optimización continua cuando cambian lotes, clima o mercados.
-      </li>
-    </ul>
-  </article>
-);
 
 const STEPS = [
   {
@@ -173,12 +87,14 @@ const RESULTS = [
 
 const HOME_SCROLL_LEGEND: { id: string; name: string }[] = [
   { id: "inicio", name: "Inicio" },
-  { id: "problema", name: "El problema" },
-  { id: "calculadora", name: "Ciencia en acción" },
+  { id: "certificaciones", name: "Certificaciones" },
+  { id: "estadisticas", name: "Trayectoria" },
+  { id: "industrias", name: "Industrias" },
+  { id: "maquila", name: "Maquila" },
+  { id: "impact", name: "Impact" },
   { id: "diferencia", name: "Enfoque" },
   { id: "sistema", name: "Sistema" },
   { id: "capacidades", name: "Capacidades" },
-  { id: "industrias", name: "Industrias" },
   { id: "tecnologia", name: "Tecnología" },
   { id: "resultados", name: "Resultados" },
   { id: "contacto", name: "Contacto" },
@@ -211,113 +127,16 @@ export default function HomePage() {
       {/* ─── 1. HERO ─────────────────────────────────────────────── */}
       <HeroSA />
 
-      {/* ─── 2. PROBLEMA (pin + KPI → reveal) ───────────────────── */}
-      <ProblemSection
-        eyebrow="El problema"
-        headline={PROBLEM_HEADLINE}
-        introBullets={PROBLEM_INTRO_BULLETS}
-        problems={PROBLEMS}
-        pinnedViewportVh={1}
-        pinnedTransitionScrollVh={0.42}
-        revealPanel={PROBLEM_REVEAL_PANEL}
-        bottomStats={<ProblemTrustStatsBar />}
-      />
+      {/* ─── 2. CERTIFICACIONES + STATS (blue band) ──────────────── */}
+      <CertificationsSection />
+      <HomeStatsSection />
 
-      {/* ─── 3. CIENCIA EN ACCIÓN (scroll frames) ───────────────── */}
-      <section id="calculadora" className="scroll-mt-24 bg-white">
-        <ScrollFramePlayer
-          {...HOMEPAGE_PELLET_FRAMES}
-          trackVh={5}
-          debugGrid={false}
-          debugGridCols={12}
-          debugGridRows={8}
-          annotations={[
-            {
-              start: 0.16,
-              row: 3,
-              col: 2,
-              text: "7 aminoacidos esenciales",
-              vectorSrc: "/frames_pellet-explosion_webp/vector1.svg",
-              vectorOffset: { xPct: 200 },
-              vectorAnchor: "center",
-              vectorTransform: "fixed",
-              vectorScale: 2,
-              vectorRotateDeg: 10,
-            },
-            {
-              start: 0.3,
-              row: 5,
-              col: 3,
-              text: "omega-3 and essentiala fatty acids",
-              vectorSrc: "/frames_pellet-explosion_webp/vector2.svg",
-              vectorRotateDeg: 200,
-              vectorOffset: { xPct: 190, yPct: -100 },
-            },
-            {
-              start: 0.45,
-              row: 2,
-              col: 11,
-              text: "antioxidants and prebiotics",
-              vectorSrc: "/frames_pellet-explosion_webp/vector3.svg",
-              vectorOffset: { xPct: -200, yPct: -100 },
-              vectorAnchor: "center",
-              vectorTransform: "fixed",
-              vectorScale: 2,
-              vectorRotateDeg: -20,
-            },
-            {
-              start: 0.6,
-              row: 6,
-              col: 10,
-              text: "Multivtaimins supplied in chelated form to improve bioavailability.",
-              vectorSrc: "/frames_pellet-explosion_webp/vector3.svg",
-              vectorOffset: { xPct: -120, yPct: 100 },
-              vectorAnchor: "center",
-              vectorTransform: "fixed",
-              vectorScale: 1.2,
-              vectorRotateDeg: 10,
-            },
-          ]}
-          titles={[
-            {
-              start: 0.1,
-              end: 0.25,
-              text: "Mucho mas que un pellet.",
-              placement: "top-left",
-              style: {
-                fontFamily: '"Test Söhne Schmal", ui-sans-serif, system-ui',
-                fontSize: "60px",
-                marginLeft: "60px",
-                mixBlendMode: "difference",
-              },
-            },
-            {
-              start: 0.35,
-              end: 0.5,
-              text: "Todos los nutrientes necesarios para lechones sanos y una producccion optima.",
-              placement: "bottom-right",
-              style: {
-                fontFamily: '"Test Söhne Schmal", ui-sans-serif, system-ui',
-                fontSize: "60px",
-                marginRight: "60px",
-                marginBottom: "48px",
-                mixBlendMode: "difference",
-              },
-            },
-            {
-              start: 0.6,
-              text: "Formulaciones certificadas y probadas en nuestro laboratorio.",
-              style: {
-                fontFamily: '"Test Söhne Schmal", ui-sans-serif, system-ui',
-                fontSize: "60px",
-                mixBlendMode: "difference",
-                marginBottom: "48px",
-              },
-            },
-          ]}
-          cover={<MacroGardCover />}
-        />
-      </section>
+      {/* ─── 3. INDUSTRIAS + MAQUILA ─────────────────────────────── */}
+      <IndustriesSection />
+      <MaquilaSection />
+
+      {/* ─── 4. IMPACT (scroll frames / pellet) ────────────────────── */}
+      <ImpactSection />
 
       {/* ─── 4. REFRAME ──────────────────────────────────────────── */}
       <section
@@ -423,10 +242,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 7. INDUSTRIAS (Figma: verticales) ───────────────────── */}
-      <IndustriesSection />
-
-      {/* ─── 8. TECNOLOGÍA ───────────────────────────────────────── */}
+      {/* ─── 7. TECNOLOGÍA ───────────────────────────────────────── */}
       <section
         id="tecnologia"
         className="scroll-mt-24 bg-ns-dark px-6 py-24 text-white"

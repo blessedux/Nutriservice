@@ -409,7 +409,7 @@ function DosageCalculator() {
     <GlassCard className="w-full max-w-full shrink-0 cursor-default select-none border-cyan-500/25 p-2.5 sm:p-3">
       <div className="rounded-md border border-cyan-500/15 bg-cyan-950/20 px-2 py-1.5">
         <p className="text-[11px] font-semibold leading-snug text-white sm:text-xs">
-          Calculadora · MacroGard
+          Impact · MacroGard
         </p>
         <p className="mt-0.5 text-[10px] leading-snug text-slate-400 sm:text-[11px]">
           Toneladas de alimento × dosis (kg MacroGard por ton) = kg a comprar.
