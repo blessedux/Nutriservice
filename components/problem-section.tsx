@@ -337,77 +337,10 @@ function ProblemBackgroundLayers() {
   );
 }
 
-function IconStatYears(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
-      <path
-        d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z"
-        stroke="currentColor"
-        strokeWidth={1.35}
-      />
-      <path
-        d="M12 7v6l3 2"
-        stroke="currentColor"
-        strokeWidth={1.35}
-        strokeLinecap="round"
-      />
-      <path
-        d="M8 3h8M9 3v2.5M15 3v2.5"
-        stroke="currentColor"
-        strokeWidth={1.2}
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconStatTons(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
-      <path
-        d="M4 19h16v2H4v-2ZM6 19V8l4-3h4l4 3v11"
-        stroke="currentColor"
-        strokeWidth={1.35}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 5V4a2 2 0 0 1 4 0v1"
-        stroke="currentColor"
-        strokeWidth={1.35}
-      />
-      <path
-        d="M9 12h6M9 15h6"
-        stroke="currentColor"
-        strokeWidth={1.2}
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
-
-function IconStatFormulas(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden {...props}>
-      <path
-        d="M5 7.5 12 4l7 3.5v5L12 16l-7-3.5v-5Z"
-        stroke="currentColor"
-        strokeWidth={1.35}
-        strokeLinejoin="round"
-      />
-      <path
-        d="M5 12.5 12 16l7-3.5"
-        stroke="currentColor"
-        strokeWidth={1.35}
-        strokeLinecap="round"
-      />
-      <path
-        d="M12 4v12"
-        stroke="currentColor"
-        strokeWidth={1.2}
-        strokeLinecap="round"
-      />
-    </svg>
-  );
+function fmtThousands(n: number) {
+  return Math.round(n)
+    .toString()
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 }
 
 function useStatsBarInView<T extends HTMLElement>(threshold = 0.2) {
@@ -419,7 +352,7 @@ function useStatsBarInView<T extends HTMLElement>(threshold = 0.2) {
     if (!el) return;
     const io = new IntersectionObserver(
       ([e]) => {
-        if (e?.isIntersecting) setInView(true);
+        setInView(e?.isIntersecting ?? false);
       },
       { threshold, rootMargin: "0px 0px -10% 0px" },
     );
@@ -440,8 +373,6 @@ function useCountUp(
   durationMs: number,
   startDelayMs: number,
   reducedMotion: boolean,
-  /** Increment to replay the count-up while `active` stays true (e.g. hover). */
-  replayKey = 0,
 ) {
   const [value, setValue] = React.useState(
     reducedMotion && active ? target : 0,
@@ -474,12 +405,16 @@ function useCountUp(
       window.clearTimeout(delayId);
       cancelAnimationFrame(raf);
     };
-  }, [target, active, durationMs, startDelayMs, reducedMotion, replayKey]);
+  }, [target, active, durationMs, startDelayMs, reducedMotion]);
 
   return value;
 }
 
-type TrustStatVariant = "years" | "tons" | "formulas";
+type TrustStatVariant =
+  | "years"
+  | "tonsPerYear"
+  | "productivity"
+  | "costPerKg";
 
 function ProblemTrustStatColumn({
   animateInView,
@@ -487,8 +422,7 @@ function ProblemTrustStatColumn({
   target,
   durationMs,
   startDelayMs,
-  icon: Icon,
-  label,
+  tag,
   variant,
   borderLeft,
 }: {
@@ -497,18 +431,11 @@ function ProblemTrustStatColumn({
   target: number;
   durationMs: number;
   startDelayMs: number;
-  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  label: string;
+  tag: readonly [string, string];
   variant: TrustStatVariant;
   borderLeft: boolean;
 }) {
-  const [replayKey, setReplayKey] = React.useState(0);
   const active = animateInView || reducedMotion;
-
-  const bumpReplay = React.useCallback(() => {
-    if (reducedMotion || !active) return;
-    setReplayKey((k) => k + 1);
-  }, [active, reducedMotion]);
 
   const n = useCountUp(
     target,
@@ -516,55 +443,36 @@ function ProblemTrustStatColumn({
     durationMs,
     startDelayMs,
     reducedMotion,
-    replayKey,
   );
 
   const numberClass =
-    "mt-5 min-h-[2.125rem] font-mono text-[28px] font-semibold leading-none tracking-tight text-white tabular-nums motion-safe:transition-[transform,color,text-shadow] motion-safe:duration-300 motion-safe:ease-out sm:min-h-[2.25rem] sm:text-[32px] lg:min-h-[2.375rem] lg:text-[2.125rem] group-hover/stat:scale-[1.06] group-hover/stat:text-cyan-50 group-hover/stat:[text-shadow:0_0_32px_rgba(34,211,238,0.42)]";
+    "min-h-[2.5rem] font-mono text-[36px] font-semibold leading-none tracking-tight text-white tabular-nums sm:min-h-[2.75rem] sm:text-[42px] lg:min-h-[3rem] lg:text-[2.75rem]";
 
-  const iconWrapClass =
-    "flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-white/16 bg-white/[0.06] text-cyan-200/95 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.12)] motion-safe:transition-[transform,color,box-shadow,border-color] motion-safe:duration-300 motion-safe:ease-out group-hover/stat:scale-105 group-hover/stat:border-cyan-400/35 group-hover/stat:text-cyan-100 group-hover/stat:shadow-[0_0_24px_rgba(34,211,238,0.22)]";
+  const tagClass =
+    "mt-3 max-w-[15rem] text-balance text-[11px] font-medium uppercase leading-snug tracking-[0.1em] text-white/55 sm:max-w-[17rem] sm:text-xs sm:leading-snug";
 
   let valueNode: React.ReactNode;
   if (variant === "years") {
-    valueNode = (
-      <span className="inline-flex items-baseline gap-0">
-        <span>{n}</span>
-        <span className="text-[0.85em] font-semibold text-white/85 motion-safe:transition-colors motion-safe:duration-300 group-hover/stat:text-cyan-100/95">
-          +
-        </span>
-      </span>
-    );
-  } else if (variant === "tons") {
-    valueNode = (
-      <span className="inline-flex items-baseline gap-1">
-        <span className="text-white/75 motion-safe:transition-colors motion-safe:duration-300 group-hover/stat:text-cyan-100/90">
-          +
-        </span>
-        <span>{n}</span>
-        <span className="text-[0.52em] font-semibold uppercase tracking-[0.06em] text-white/65 motion-safe:transition-colors motion-safe:duration-300 group-hover/stat:text-cyan-200/85">
-          mil t
-        </span>
-      </span>
-    );
+    valueNode = <span>+{n}</span>;
+  } else if (variant === "tonsPerYear") {
+    valueNode = <span>+{fmtThousands(n)}</span>;
+  } else if (variant === "productivity") {
+    valueNode = <span>{n}%</span>;
   } else {
-    valueNode = <span>{n}</span>;
+    valueNode = <span>{n}%</span>;
   }
 
   return (
     <div
       className={[
-        "group/stat flex min-w-0 flex-1 flex-col items-center text-center motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.02] sm:px-4 lg:px-10",
-        borderLeft ? "sm:border-l sm:border-white/12" : "",
+        "flex min-w-0 flex-1 flex-col items-center text-center sm:px-3 lg:px-6",
+        borderLeft ? "lg:border-l lg:border-white/12" : "",
       ].join(" ")}
-      onPointerEnter={bumpReplay}
     >
-      <div className={iconWrapClass} aria-hidden>
-        <Icon className="h-7 w-7" />
-      </div>
       <p className={numberClass}>{valueNode}</p>
-      <p className="mt-3 max-w-[min(18rem,88vw)] text-[11px] font-medium uppercase leading-snug tracking-[0.12em] text-white/55 motion-safe:transition-colors motion-safe:duration-300 group-hover/stat:text-white/72 sm:text-xs">
-        {label}
+      <p className={tagClass}>
+        <span className="block">{tag[0]}</span>
+        <span className="mt-1 block">{tag[1]}</span>
       </p>
     </div>
   );
@@ -573,55 +481,61 @@ function ProblemTrustStatColumn({
 export function ProblemTrustStatsBar() {
   const reducedMotion = usePrefersReducedMotion();
   const { ref, inView } = useStatsBarInView<HTMLDivElement>(0.18);
-  const animate = inView || reducedMotion;
 
   const columns = [
     {
       key: "years",
-      icon: IconStatYears,
       target: 30,
       durationMs: 1250,
       startDelayMs: 80,
-      label: "años de experiencia en nutrición animal",
       variant: "years" as const,
+      tag: ["años de experiencia", "en la industria"],
     },
     {
       key: "tons",
-      icon: IconStatTons,
-      target: 100,
-      durationMs: 1450,
+      target: 5000,
+      durationMs: 1600,
       startDelayMs: 200,
-      label: "toneladas comercializadas",
-      variant: "tons" as const,
+      variant: "tonsPerYear" as const,
+      tag: ["toneladas de premezclas", "formuladas al año"],
     },
     {
-      key: "formulas",
-      icon: IconStatFormulas,
-      target: 843,
-      durationMs: 1700,
+      key: "productivity",
+      target: 6,
+      durationMs: 1300,
       startDelayMs: 320,
-      label: "fórmulas diseñadas para cada solicitud de cliente",
-      variant: "formulas" as const,
+      variant: "productivity" as const,
+      tag: [
+        "kilos adicionales producidos",
+        "por tonelada de alimento",
+      ],
+    },
+    {
+      key: "cost",
+      target: 8,
+      durationMs: 1300,
+      startDelayMs: 440,
+      variant: "costPerKg" as const,
+      tag: ["reducción en el costo", "por kilo producido"],
     },
   ] as const;
 
   return (
     <div
       ref={ref}
-      className="mx-auto grid w-full grid-cols-1 gap-12 sm:grid-cols-3 sm:gap-0 lg:max-w-none"
+      className="mx-auto grid w-full grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-14 lg:grid-cols-4 lg:gap-0 lg:max-w-none"
       role="group"
       aria-label="Trayectoria Nutriservice"
     >
       {columns.map((col, i) => (
         <ProblemTrustStatColumn
           key={col.key}
-          animateInView={animate}
+          animateInView={inView}
           reducedMotion={reducedMotion}
           target={col.target}
           durationMs={col.durationMs}
           startDelayMs={col.startDelayMs}
-          icon={col.icon}
-          label={col.label}
+          tag={col.tag}
           variant={col.variant}
           borderLeft={i > 0}
         />

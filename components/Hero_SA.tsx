@@ -1019,7 +1019,7 @@ export default function HeroSA() {
     <section
       ref={sectionRef}
       id="inicio"
-      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white"
+      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white lg:min-h-screen"
     >
       <HeroSalmonAmbientAudio heroRootRef={sectionRef} />
       <motion.div
@@ -1061,15 +1061,7 @@ function HeroBackground() {
         <source src={AQUA_HERO_VIDEO_SRC} type="video/webm" />
       </video>
       <div
-        className="absolute inset-0 z-[1] bg-gradient-to-r from-slate-950/90 via-cyan-950/45 to-slate-950/25"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-0 z-[2] bg-[radial-gradient(circle_at_45%_25%,rgba(125,211,252,0.24),transparent_32%),linear-gradient(to_bottom,rgba(2,6,23,0.2),rgba(2,6,23,0.55))]"
-        aria-hidden
-      />
-      <div
-        className="absolute inset-y-0 left-0 z-[3] w-1/2 backdrop-blur-[2px]"
+        className="absolute inset-y-0 left-0 z-[1] w-1/2 backdrop-blur-[2px]"
         aria-hidden
       />
     </>
@@ -1089,7 +1081,7 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
 
         <h1 className="max-w-xl text-balance text-4xl font-light leading-[0.96] tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
           <HeroHeadLine delayMs={140}>Inteligencia Nutricional</HeroHeadLine>
-          <HeroHeadLine delayMs={240}>Industrial.</HeroHeadLine>
+          <HeroHeadLine delayMs={240}>Industrial</HeroHeadLine>
         </h1>
 
         <motion.div className="mt-6 max-w-lg text-base leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
@@ -1106,7 +1098,7 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
           tone="on-dark"
           heroRevealReady={heroRevealReady}
           heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-          secondaryHref="/#sistema"
+          secondaryHref="/#calculadora"
         />
       </div>
 

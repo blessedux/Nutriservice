@@ -1,6 +1,11 @@
 "use client";
 
-import { HomeBlueBand } from "@/components/home-blue-band";
+import {
+  HOME_BLUE_BG,
+  HomeBlueBand,
+  OCEAN_FLOOR_VIDEO_CLASSES,
+  OCEAN_FLOOR_VIDEO_SRC,
+} from "@/components/home-blue-band";
 import { ProblemTrustStatsBar } from "@/components/problem-section";
 
 export default function HomeStatsSection() {
@@ -9,9 +14,31 @@ export default function HomeStatsSection() {
       id="estadisticas"
       height="half"
       aria-label="Trayectoria Nutriservice"
-      className="justify-center px-6 py-10 sm:px-10 lg:px-12"
+      className="min-h-[58dvh] justify-start overflow-hidden bg-transparent px-6 pb-10 pt-8 sm:min-h-[62dvh] sm:px-10 sm:pb-12 sm:pt-10 lg:px-12"
     >
-      <div className="mx-auto w-full max-w-6xl">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-0 hidden bg-[#0a1628] motion-reduce:block"
+      />
+      <video
+        className={`pointer-events-none absolute inset-x-0 bottom-[14%] z-0 h-[118%] w-full motion-reduce:hidden ${OCEAN_FLOOR_VIDEO_CLASSES}`}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden
+      >
+        <source src={OCEAN_FLOOR_VIDEO_SRC} type="video/webm" />
+      </video>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background: `linear-gradient(to bottom, ${HOME_BLUE_BG} 0%, transparent 20%)`,
+        }}
+      />
+      <div className="relative z-10 mx-auto w-full max-w-6xl -translate-y-2 sm:-translate-y-3">
         <ProblemTrustStatsBar />
       </div>
     </HomeBlueBand>

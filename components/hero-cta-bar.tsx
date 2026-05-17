@@ -49,7 +49,7 @@ function usePrefersReducedMotion(): boolean {
 export default function HeroCtaBar({
   primaryHref = "/contacto",
   primaryLabel = "Agendar evaluación técnica",
-  secondaryHref = "#sistema",
+  secondaryHref = "#calculadora",
   secondaryLabel = "Ver el sistema ↓",
   className,
   variant = "strip",

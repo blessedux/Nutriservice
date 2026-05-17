@@ -1,19 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import SoundWidget from "@/components/sound-widget";
 import { SiteExperience } from "@/components/site-experience";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const ibmPlexSans = IBM_Plex_Sans({
+  variable: "--font-ibm-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const ibmPlexMono = IBM_Plex_Mono({
+  variable: "--font-ibm-mono",
   subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -32,10 +36,9 @@ export default function RootLayout({
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full`}
+      className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}
     >
-      <body className="flex min-h-full flex-col">
-        {/* Monta antes del contenido para sincronizar `hyperia:master-muted` con capas ambientales del hero */}
+      <body className="flex min-h-full flex-col overflow-x-hidden">
         <SoundWidget />
         <SiteExperience className="flex-1">
           <Nav />

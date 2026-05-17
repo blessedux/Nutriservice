@@ -1,34 +1,37 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* ── Fonts (IBM Plex Sans + IBM Plex Mono — spec) ─────────────── */
+  --font-sans: var(--font-ibm-sans);
+  --font-mono: var(--font-ibm-mono);
 
-  /* ── Wireframe grey palette ───────────────────────────────────── */
-  /* "Primary" action / accent — used for borders, focus, active    */
-  --color-ns-green:        #374151;   /* dark slate                */
-  --color-ns-green-light:  #4b5563;   /* medium-dark slate         */
-  --color-ns-green-dark:   #1f2937;   /* near-black slate          */
+  /* ── Brand palette ────────────────────────────────────────────── */
+  /* Spec: Grafito #111111 · Blanco #F5F5F5 · Steel #9EA3A8 · Azul Eléctrico #1E6BFF */
 
-  /* Highlight / eyebrow / numbers — replaces brand emerald         */
-  --color-ns-emerald:      #6b7280;   /* medium grey               */
+  /* Primary action / accent — Azul Eléctrico                       */
+  --color-ns-green:        #1E6BFF;   /* Azul Eléctrico            */
+  --color-ns-green-light:  #5080FF;   /* Azul Eléctrico hover      */
+  --color-ns-green-dark:   #1556D6;   /* Azul Eléctrico pressed    */
 
-  /* Dark section backgrounds (hero, reframe, tech)                 */
-  --color-ns-dark:         #1f2937;   /* dark grey                 */
+  /* Highlight / eyebrow / numbers — Azul Eléctrico                 */
+  --color-ns-emerald:      #1E6BFF;   /* Azul Eléctrico            */
+
+  /* Dark section backgrounds (reframe, tech, footer)               */
+  --color-ns-dark:         #111111;   /* Grafito                   */
 
   /* Light section backgrounds                                      */
-  --color-ns-surface:      #f3f4f6;   /* grey-100                  */
-  --color-ns-surface-alt:  #e5e7eb;   /* grey-200                  */
+  --color-ns-surface:      #F5F5F5;   /* Blanco                    */
+  --color-ns-surface-alt:  #EAEBEC;   /* Steel-tinted light        */
 
-  /* Borders                                                        */
-  --color-ns-border:       #e5e7eb;   /* grey-200                  */
+  /* Borders — Steel-derived                                        */
+  --color-ns-border:       #D4D6D9;   /* Light Steel               */
 
   /* Typography                                                     */
-  --color-ns-text:         #111827;   /* grey-900                  */
-  --color-ns-muted:        #6b7280;   /* grey-500                  */
-  --color-ns-subtle:       #9ca3af;   /* grey-400                  */
+  --color-ns-text:         #111111;   /* Grafito                   */
+  --color-ns-muted:        #9EA3A8;   /* Steel                     */
+  --color-ns-subtle:       #BFC2C6;   /* Steel light               */
 
-  /* BlueprintLoader (DNA helix) — matches shadcn-style token     */
+  /* BlueprintLoader (DNA helix) — matches shadcn-style token       */
   --color-foreground:      var(--color-ns-text);
 }
 
@@ -38,8 +41,8 @@ html {
 
 body {
   color: var(--color-ns-text);
-  background: #f9fafb;
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  background: #F5F5F5;   /* Blanco */
+  font-family: var(--font-ibm-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -184,3 +187,4 @@ body {
     transform: none !important;
   }
 }
+

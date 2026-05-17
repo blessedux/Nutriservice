@@ -38,7 +38,7 @@ export default function HeroC() {
           heroRevealReady={heroRevealReady}
           heroLastLineDelayMs={HERO_C_LAST_MOTION_DELAY_MS}
           heroIntroAnimMs={0}
-          secondaryHref="/#sistema"
+          secondaryHref="/#calculadora"
         />
       </div>
     </section>
