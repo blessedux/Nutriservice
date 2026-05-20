@@ -149,13 +149,13 @@ function IndustryCard({
 
       <div
         className={cn(
-          "relative mt-auto flex w-full flex-col justify-end p-6 md:p-8",
+          "relative mt-auto flex w-full flex-col justify-end px-6 pt-6 pb-2 md:px-8 md:pt-8 md:pb-2",
           isFront ? "z-[3]" : "z-10",
         )}
       >
         <div
           className={cn(
-            "flex flex-col gap-4 rounded-[32px] border border-white/20 bg-white/10 p-6 backdrop-blur-[6px] md:p-8",
+            "flex flex-col gap-4 rounded-[32px] border border-white/20 bg-white/10 px-6 pt-6 pb-4 backdrop-blur-[6px] md:px-8 md:pt-8 md:pb-4",
             isFront ? "opacity-100" : "opacity-90",
           )}
         >
@@ -191,7 +191,7 @@ function IndustryCard({
             ))}
           </div>
 
-          <div className="flex items-center justify-between pt-2 md:pt-4">
+          <div className="flex items-center justify-between pt-1">
             <span
               className={cn(
                 "text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-500",
@@ -293,7 +293,7 @@ function IndustriesCarousel() {
   return (
     <motion.div
       ref={containerRef}
-      className="relative mt-2 w-full max-w-[min(94vw,580px)] select-none outline-none sm:max-w-[min(82vw,600px)] md:max-w-[min(72vw,600px)] mx-auto lg:mx-0 lg:mr-auto lg:mt-0"
+      className="relative mt-4 w-full max-w-[min(94vw,580px)] select-none outline-none px-2 sm:max-w-[min(82vw,600px)] sm:px-4 md:max-w-[min(72vw,600px)] md:px-6 mx-auto lg:mx-0 lg:mr-auto lg:mt-0 lg:px-8"
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
@@ -366,7 +366,7 @@ function IndustriesCarousel() {
                 className={cn("absolute", isCenter ? "z-20" : "z-10")}
                 initial={false}
                 animate={{
-                  x: offset * 200,
+                  x: offset * 228,
                   z: -dist * 80,
                   scale: isCenter ? 1 : 0.86,
                   rotateY: offset * -12,
@@ -396,7 +396,7 @@ function IndustriesCarousel() {
       </div>
 
       {/* Info strip + navigation */}
-      <div className="relative z-10 mt-5 flex items-center justify-between px-1">
+      <div className="relative z-10 mt-7 flex items-center justify-between px-2 sm:px-4">
         <button
           type="button"
           onClick={handlePrev}
@@ -626,11 +626,11 @@ export default function IndustriesSection() {
   return (
     <div
       ref={wrapperRef}
-      className="relative z-20 -mt-px bg-[#030A1C] pb-[12rem] md:pb-[14rem] lg:pb-[16rem]"
+      className="relative z-40 -mt-px bg-[#030A1C] pb-0"
     >
       <motion.div
         style={{ y: reduceMotion ? 0 : y }}
-        className="relative -mb-[14rem] overflow-hidden md:-mb-[16rem] lg:-mb-[18rem]"
+        className="relative z-40 -mb-[14rem] overflow-visible md:-mb-[16rem] lg:-mb-[18rem]"
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
@@ -661,7 +661,7 @@ export default function IndustriesSection() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-start lg:justify-between lg:gap-8 xl:gap-12">
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-12 xl:gap-16">
             <IndustriesCarousel />
 
             <header className="mt-2 flex w-full max-w-md shrink-0 flex-col text-left lg:ml-auto lg:max-w-lg lg:mt-0 lg:text-right xl:max-w-xl">

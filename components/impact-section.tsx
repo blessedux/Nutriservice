@@ -2,8 +2,13 @@ import MacroGardCover from "@/components/macrogard-cover";
 import ScrollFramePlayer from "@/components/scroll-frame-player";
 import { HOMEPAGE_PELLET_FRAMES } from "@/lib/scroll-frame-preload";
 
+type ImpactSectionProps = {
+  /** MacroGard slide-up panel after the sequence (homepage-style). */
+  withCover?: boolean;
+};
+
 /** Pellet explosion scroll sequence — homepage Impact band. */
-export default function ImpactSection() {
+export default function ImpactSection({ withCover = true }: ImpactSectionProps) {
   return (
     <section id="impact" className="scroll-mt-24 bg-white">
       <ScrollFramePlayer
@@ -96,7 +101,7 @@ export default function ImpactSection() {
             },
           },
         ]}
-        cover={<MacroGardCover />}
+        cover={withCover ? <MacroGardCover /> : undefined}
       />
     </section>
   );

@@ -58,6 +58,13 @@ export function SiteExperience({
   }, [overlay]);
 
   useEffect(() => {
+    if (!showContent) return;
+    queueMicrotask(() => {
+      window.dispatchEvent(new CustomEvent("hyperia:hero-content-visible"));
+    });
+  }, [showContent]);
+
+  useEffect(() => {
     if (reducedMotion) {
       setOverlay("off");
       setShowContent(true);
@@ -68,6 +75,13 @@ export function SiteExperience({
     preloadScrollFrames({ ...HOMEPAGE_PELLET_FRAMES, concurrency: 14 }).catch(
       () => {},
     );
+
+    const heroVideoPreload = document.createElement("link");
+    heroVideoPreload.rel = "preload";
+    heroVideoPreload.as = "video";
+    heroVideoPreload.href = "/Salmon_sequence_optimized.mp4";
+    heroVideoPreload.type = "video/mp4";
+    document.head.appendChild(heroVideoPreload);
 
     const started = performance.now();
     let timeoutId: number | undefined;

@@ -1,6 +1,44 @@
 @import "tailwindcss";
 
+:root {
+  --background: #f5f5f5;
+  --foreground: #111111;
+  --card: #ffffff;
+  --card-foreground: #0a192f;
+  --primary: #1e3a8a;
+  --primary-foreground: #ffffff;
+  --secondary: #eaebec;
+  --secondary-foreground: #0a192f;
+  --muted: #eaebec;
+  --muted-foreground: rgba(10, 25, 47, 0.6);
+  --accent: #f5f5f5;
+  --accent-foreground: #0a192f;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: rgba(30, 58, 138, 0.08);
+  --input: #d4d6d9;
+  --ring: #1e3a8a;
+  --radius: 0.5rem;
+}
+
 @theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
   /* ── Fonts (IBM Plex Sans + IBM Plex Mono — spec) ─────────────── */
   --font-sans: var(--font-ibm-sans);
   --font-mono: var(--font-ibm-mono);
@@ -128,7 +166,7 @@ body {
   }
 }
 
-/* Hero_SA — eyebrow slides in L→R; headline / sublines slide up */
+/* Hero_SA — eyebrow slides in; accent bar sits left of label; headline / sublines slide up */
 @keyframes hero-head-line-up {
   from {
     transform: translateY(108%);
@@ -140,7 +178,7 @@ body {
   }
 }
 
-@keyframes hero-tag-from-left {
+@keyframes hero-tag-in {
   from {
     transform: translateX(-1.35rem);
     opacity: 0;
@@ -177,7 +215,7 @@ body {
 }
 
 [data-hero-animate="true"] .hero-tag-lr {
-  animation: hero-tag-from-left 0.72s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  animation: hero-tag-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {

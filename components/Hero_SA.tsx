@@ -8,7 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ChevronRight } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ReactNode, TouchEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeroCtaBar from "@/components/hero-cta-bar";
@@ -195,7 +195,10 @@ const AQUA_HERO_MOBILE_LOOP_SLIDES: readonly AquaHeroStatSlide[] = [
 
 const AQUA_HERO_MOBILE_LOOP_OFFSET = 1;
 const AQUA_HERO_MOBILE_CARD_GAP_PX = 10;
-const AQUA_HERO_MOBILE_CARD_SHELL_MIN_PX = 132;
+const AQUA_HERO_MOBILE_CARD_SHELL_MIN_PX = 148;
+const AQUA_HERO_MOBILE_TAP_SLOP_PX = 14;
+const HERO_VIDEO_PLAY_RETRY_MS = 400;
+const HERO_VIDEO_PLAY_MAX_ATTEMPTS = 14;
 
 /** Horizontal-only mask — softens side shadows without fading the card bottom. */
 const AQUA_HERO_STATS_SHADOW_SIDE_MASK =
@@ -334,12 +337,15 @@ function AquaHeroMobileCardPanel({
   reduceMotion,
   expanded,
   onTap,
+  enableTap = true,
 }: {
   display: AquaHeroCardDisplay;
   contentKey: string;
   reduceMotion: boolean;
   expanded: boolean;
   onTap: () => void;
+  /** When false, tap is handled by a parent overlay (carousel slides). */
+  enableTap?: boolean;
 }) {
   const [showSource, setShowSource] = useState(false);
   const typedParagraph = useTypewriter(
@@ -359,20 +365,30 @@ function AquaHeroMobileCardPanel({
       shadowClass="shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)]"
     >
       <motion.div
-        role="button"
-        tabIndex={0}
-        onClick={(e) => {
-          e.stopPropagation();
-          onTap();
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            onTap();
-          }
-        }}
+        role={enableTap ? "button" : undefined}
+        tabIndex={enableTap ? 0 : undefined}
+        onClick={
+          enableTap
+            ? (e) => {
+                e.stopPropagation();
+                onTap();
+              }
+            : undefined
+        }
+        onKeyDown={
+          enableTap
+            ? (e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onTap();
+                }
+              }
+            : undefined
+        }
         className={cn(
-          "flex h-full min-h-0 w-full cursor-pointer flex-col overflow-hidden border border-white/20 bg-white/[0.07] px-4 py-3 text-left backdrop-blur-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60",
+          "flex h-full min-h-0 w-full flex-col overflow-hidden border border-white/20 bg-white/[0.07] px-4 py-3.5 text-left backdrop-blur-xl",
+          enableTap &&
+            "cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60",
           AQUA_HERO_STATS_CARD_ROUNDED,
         )}
         aria-expanded={expanded}
@@ -446,11 +462,11 @@ function AquaHeroMobileCardPanel({
               {display.theme}
             </p>
 
-            <div className="relative mt-2.5 h-[2.65rem] overflow-hidden">
+            <div className="relative mt-2.5 min-h-[3rem] flex-1 overflow-hidden">
               <AquaHeroMobileStatsRow display={display} contentKey={contentKey} />
             </div>
 
-            <div className="flex shrink-0 items-center justify-center overflow-hidden py-1.5">
+            <div className="flex min-h-[3.25rem] shrink-0 items-center justify-center overflow-hidden py-2">
               <AnimatePresence mode="wait" initial={false}>
                 <motion.div
                   key={contentKey}
@@ -1013,7 +1029,9 @@ function AquaHeroSideCard({
   const mobileScrollSyncRef = useRef(false);
   const mobileScrollEndTimerRef = useRef<number | null>(null);
   const mobileTouchMovedRef = useRef(false);
+  const mobileTouchStartRef = useRef<{ x: number; y: number } | null>(null);
   const mobileLoopReadyRef = useRef(false);
+  const prevSlideIdxRef = useRef(0);
   const mobileCardZoneRef = useRef<HTMLDivElement>(null);
   const [mobileCardZoneHeight, setMobileCardZoneHeight] = useState(0);
   const [mobileCollapsedCardHeight, setMobileCollapsedCardHeight] = useState(0);
@@ -1086,6 +1104,21 @@ function AquaHeroSideCard({
     [scrollMobileToLoopIdx],
   );
 
+  const snapFromTrailingClone = useCallback(() => {
+    rotationProgressRef.current = 0;
+    setRotationProgress(0);
+    setSlideIdx(0);
+    scrollMobileToLoopIdx(AQUA_HERO_MOBILE_LOOP_OFFSET, "auto");
+  }, [scrollMobileToLoopIdx]);
+
+  const snapFromLeadingClone = useCallback(() => {
+    const lastRealIdx = AQUA_HERO_STAT_SLIDES.length - 1;
+    rotationProgressRef.current = 0;
+    setRotationProgress(0);
+    setSlideIdx(lastRealIdx);
+    scrollMobileToLoopIdx(AQUA_HERO_STAT_SLIDES.length, "auto");
+  }, [scrollMobileToLoopIdx]);
+
   const snapMobileCarousel = useCallback(() => {
     const container = mobileScrollRef.current;
     if (!container || mobileScrollSyncRef.current) return;
@@ -1135,21 +1168,54 @@ function AquaHeroSideCard({
     if (!container || mobileLoopReadyRef.current) return;
 
     mobileLoopReadyRef.current = true;
+    prevSlideIdxRef.current = 0;
     scrollMobileToRealIdx(0, "auto");
   }, [heroRevealReady, isMobile, scrollMobileToRealIdx]);
 
   useEffect(() => {
-    if (!isMobile) return;
+    if (!isMobile || !heroRevealReady || mobileExpanded) return;
     const container = mobileScrollRef.current;
-    if (!container) return;
+    if (!container || mobileScrollSyncRef.current) return;
+
+    const prevIdx = prevSlideIdxRef.current;
+    prevSlideIdxRef.current = slideIdx;
+
+    const lastLoopIdx = AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1;
+    const currentLoopIdx = getActiveMobileLoopIdx(container);
+    const targetLoopIdx = slideIdx + AQUA_HERO_MOBILE_LOOP_OFFSET;
+
+    if (currentLoopIdx >= lastLoopIdx && slideIdx === 0) {
+      scrollMobileToLoopIdx(AQUA_HERO_MOBILE_LOOP_OFFSET, "auto");
+      return;
+    }
+    if (currentLoopIdx <= 0 && slideIdx === AQUA_HERO_STAT_SLIDES.length - 1) {
+      scrollMobileToLoopIdx(AQUA_HERO_STAT_SLIDES.length, "auto");
+      return;
+    }
 
     const slides = getMobileCarouselSlides(container);
-    const target = slides[slideIdx + AQUA_HERO_MOBILE_LOOP_OFFSET];
+    const target = slides[targetLoopIdx];
     if (!target) return;
     if (Math.abs(container.scrollLeft - target.offsetLeft) < 4) return;
 
+    if (
+      prevIdx === AQUA_HERO_STAT_SLIDES.length - 1 &&
+      slideIdx === 0 &&
+      currentLoopIdx >= lastLoopIdx - 1
+    ) {
+      return;
+    }
+
     scrollMobileToRealIdx(slideIdx, reduceMotion ? "auto" : "smooth");
-  }, [slideIdx, isMobile, reduceMotion, scrollMobileToRealIdx]);
+  }, [
+    slideIdx,
+    isMobile,
+    heroRevealReady,
+    mobileExpanded,
+    reduceMotion,
+    scrollMobileToRealIdx,
+    scrollMobileToLoopIdx,
+  ]);
 
   useEffect(() => {
     if (!isMobile) return;
@@ -1196,6 +1262,24 @@ function AquaHeroSideCard({
             AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1,
             reduceMotion ? "auto" : "smooth",
           );
+          if (!reduceMotion) {
+            window.setTimeout(() => {
+              const container = mobileScrollRef.current;
+              if (!container || mobileScrollSyncRef.current) return;
+              if (
+                getActiveMobileLoopIdx(container) >=
+                AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1
+              ) {
+                snapFromTrailingClone();
+              }
+            }, 480);
+          } else {
+            snapFromTrailingClone();
+          }
+        } else if (isMobile) {
+          setSlideIdx((p) =>
+            Math.min(p + 1, AQUA_HERO_STAT_SLIDES.length - 1),
+          );
         } else {
           setSlideIdx((p) => (p + 1) % AQUA_HERO_STAT_SLIDES.length);
         }
@@ -1206,7 +1290,17 @@ function AquaHeroSideCard({
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [heroRevealReady, reduceMotion, hovered, isRotating, slideIdx, mobileExpanded, isMobile, scrollMobileToLoopIdx]);
+  }, [
+    heroRevealReady,
+    reduceMotion,
+    hovered,
+    isRotating,
+    slideIdx,
+    mobileExpanded,
+    isMobile,
+    scrollMobileToLoopIdx,
+    snapFromTrailingClone,
+  ]);
 
   const handleMobileScroll = useCallback(() => {
     const container = mobileScrollRef.current;
@@ -1228,18 +1322,12 @@ function AquaHeroSideCard({
     const lastLoopIdx = AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1;
 
     if (loopIdx <= 0) {
-      rotationProgressRef.current = 0;
-      setRotationProgress(0);
-      setSlideIdx(AQUA_HERO_STAT_SLIDES.length - 1);
-      scrollMobileToRealIdx(AQUA_HERO_STAT_SLIDES.length - 1, "auto");
+      snapFromLeadingClone();
       return;
     }
 
     if (loopIdx >= lastLoopIdx) {
-      rotationProgressRef.current = 0;
-      setRotationProgress(0);
-      setSlideIdx(0);
-      scrollMobileToRealIdx(0, "auto");
+      snapFromTrailingClone();
       return;
     }
 
@@ -1259,20 +1347,43 @@ function AquaHeroSideCard({
       const pillar = AQUA_HERO_PILLAR_DETAILS[nextIdx];
       return pillar && current === pillar.id ? current : null;
     });
-  }, [scrollMobileToRealIdx, slideIdx, snapMobileCarousel]);
+  }, [
+    scrollMobileToRealIdx,
+    slideIdx,
+    snapMobileCarousel,
+    snapFromLeadingClone,
+    snapFromTrailingClone,
+  ]);
 
   const handleMobileCardTap = useCallback(() => {
     if (mobileScrollSyncRef.current || mobileTouchMovedRef.current) return;
     onMobileExpandedChange?.(!mobileExpanded);
   }, [mobileExpanded, onMobileExpandedChange]);
 
-  const handleMobileTouchStart = useCallback(() => {
-    mobileTouchMovedRef.current = false;
-  }, []);
+  const handleMobileTouchStart = useCallback(
+    (event: TouchEvent<HTMLDivElement>) => {
+      const touch = event.touches[0];
+      if (touch) {
+        mobileTouchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      }
+      mobileTouchMovedRef.current = false;
+    },
+    [],
+  );
 
-  const handleMobileTouchMove = useCallback(() => {
-    mobileTouchMovedRef.current = true;
-  }, []);
+  const handleMobileTouchMove = useCallback(
+    (event: TouchEvent<HTMLDivElement>) => {
+      const start = mobileTouchStartRef.current;
+      const touch = event.touches[0];
+      if (!start || !touch) return;
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+      if (Math.hypot(dx, dy) > AQUA_HERO_MOBILE_TAP_SLOP_PX) {
+        mobileTouchMovedRef.current = true;
+      }
+    },
+    [],
+  );
 
   const handleMobileTouchEnd = useCallback(() => {
     window.requestAnimationFrame(() => {
@@ -1363,12 +1474,27 @@ function AquaHeroSideCard({
                   }}
                   aria-hidden={!isActive || mobileExpanded}
                 >
-                  <div className="h-full">
+                  <div className="relative h-full min-h-[148px]">
+                    {isActive && (
+                      <button
+                        type="button"
+                        className={cn(
+                          "absolute inset-0 z-20 cursor-pointer rounded-[20px] bg-transparent",
+                          AQUA_HERO_STATS_CARD_ROUNDED,
+                        )}
+                        aria-label={`Ver detalles: ${statSlide.theme}`}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMobileCardTap();
+                        }}
+                      />
+                    )}
                     <AquaHeroMobileCardPanel
                       display={statSlide}
                       contentKey={`slide-${realIdx}-${loopIdx}`}
                       reduceMotion={reduceMotion}
                       expanded={false}
+                      enableTap={false}
                       onTap={handleMobileCardTap}
                     />
                   </div>
@@ -1692,7 +1818,7 @@ export default function HeroSA() {
         style={{ y: bgParallaxY }}
         aria-hidden
       >
-        <HeroBackground />
+        <HeroBackground playbackReady={heroRevealReady} />
       </motion.div>
 
       <div className="relative z-10 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-10 pt-[calc(5.125rem+10px)] sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:overflow-visible lg:px-12 lg:pb-24">
@@ -1707,36 +1833,113 @@ export default function HeroSA() {
   );
 }
 
-function HeroBackground() {
+function HeroBackground({
+  playbackReady,
+}: {
+  /** After preloader — content visible; iOS needs this before reliable autoplay. */
+  playbackReady: boolean;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
+  const playAttemptsRef = useRef(0);
 
   useEffect(() => {
     if (reduceMotion) return;
     const video = videoRef.current;
     if (!video) return;
 
-    const ensurePlaying = () => {
+    let cancelled = false;
+    let retryTimer: number | undefined;
+    let mayPlay = playbackReady;
+
+    const attemptPlay = () => {
+      if (cancelled || !mayPlay) return;
+
       video.muted = true;
       video.defaultMuted = true;
+      video.playsInline = true;
+
+      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+        video.load();
+      }
+
       void video.play().catch(() => {});
     };
 
-    ensurePlaying();
-    video.addEventListener("loadeddata", ensurePlaying);
-    video.addEventListener("canplay", ensurePlaying);
+    const scheduleRetry = () => {
+      if (cancelled || playAttemptsRef.current >= HERO_VIDEO_PLAY_MAX_ATTEMPTS) {
+        return;
+      }
+      playAttemptsRef.current += 1;
+      retryTimer = window.setTimeout(attemptPlay, HERO_VIDEO_PLAY_RETRY_MS);
+    };
+
+    const onReady = () => {
+      attemptPlay();
+      scheduleRetry();
+    };
+
+    const onPlaying = () => {
+      playAttemptsRef.current = HERO_VIDEO_PLAY_MAX_ATTEMPTS;
+    };
 
     const onVisibilityChange = () => {
-      if (!document.hidden) ensurePlaying();
+      if (!document.hidden) attemptPlay();
     };
+
+    const onPageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) attemptPlay();
+    };
+
+    const unlockOnGesture = () => {
+      mayPlay = true;
+      attemptPlay();
+    };
+
+    const onContentVisible = () => {
+      mayPlay = true;
+      playAttemptsRef.current = 0;
+      attemptPlay();
+    };
+
+    if (playbackReady) {
+      mayPlay = true;
+      playAttemptsRef.current = 0;
+      attemptPlay();
+    }
+
+    video.addEventListener("loadedmetadata", onReady);
+    video.addEventListener("loadeddata", onReady);
+    video.addEventListener("canplay", onReady);
+    video.addEventListener("canplaythrough", onReady);
+    video.addEventListener("playing", onPlaying);
     document.addEventListener("visibilitychange", onVisibilityChange);
+    window.addEventListener("pageshow", onPageShow);
+    window.addEventListener("hyperia:hero-content-visible", onContentVisible);
+    document.addEventListener("touchstart", unlockOnGesture, {
+      capture: true,
+      once: true,
+    });
+    document.addEventListener("click", unlockOnGesture, {
+      capture: true,
+      once: true,
+    });
 
     return () => {
-      video.removeEventListener("loadeddata", ensurePlaying);
-      video.removeEventListener("canplay", ensurePlaying);
+      cancelled = true;
+      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
+      video.removeEventListener("loadedmetadata", onReady);
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("canplay", onReady);
+      video.removeEventListener("canplaythrough", onReady);
+      video.removeEventListener("playing", onPlaying);
       document.removeEventListener("visibilitychange", onVisibilityChange);
+      window.removeEventListener("pageshow", onPageShow);
+      window.removeEventListener("hyperia:hero-content-visible", onContentVisible);
+      document.removeEventListener("touchstart", unlockOnGesture, true);
+      document.removeEventListener("click", unlockOnGesture, true);
     };
-  }, [reduceMotion]);
+  }, [reduceMotion, playbackReady]);
 
   return (
     <>

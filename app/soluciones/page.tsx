@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import CTABanner from "@/components/cta-banner";
+import ImpactSection from "@/components/impact-section";
 
 export const metadata: Metadata = {
   title: "Soluciones — Sistema de optimización productiva",
@@ -82,16 +84,32 @@ const INTEGRATION_POINTS = [
 export default function SolucionesPage() {
   return (
     <>
-      {/* Header */}
-      <section className="bg-ns-dark text-white py-20 px-6">
-        <div className="max-w-4xl mx-auto">
+      {/* Hero */}
+      <section className="relative -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden text-white">
+        <Image
+          src="/nutriservice_workers2.webp"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ns-dark via-ns-dark/80 to-ns-dark/35"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ns-dark/85 via-ns-dark/50 to-transparent"
+          aria-hidden
+        />
+        <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-4xl flex-col justify-end px-6 pb-16 pt-32 sm:px-10 sm:pb-20 sm:pt-36 lg:px-12 lg:pb-24">
           <p className="text-xs font-semibold uppercase tracking-widest text-ns-emerald mb-4">
             Soluciones
           </p>
-          <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-5">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-5 max-w-3xl">
             Un sistema diseñado para resultados productivos reales
           </h1>
-          <p className="text-lg text-white/60 leading-relaxed max-w-2xl">
+          <p className="text-lg sm:text-xl text-white/70 leading-relaxed max-w-2xl">
             No vendemos suplementos. Integramos diagnóstico, formulación
             precisa, implementación acompañada y optimización continua en un
             modelo que convierte la nutrición en una ventaja competitiva.
@@ -122,6 +140,8 @@ export default function SolucionesPage() {
           </div>
         </div>
       </section>
+
+      <ImpactSection withCover={false} />
 
       {/* 4-step system detail */}
       <section className="py-24 px-6 bg-white">
