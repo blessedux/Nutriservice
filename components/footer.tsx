@@ -2,8 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import FooterNewsletter from "@/components/footer-newsletter";
-
 const SOLUCIONES_LINKS = [
   { href: "/industrias/acuicola", label: "Acuícola" },
   { href: "/industrias/avicola", label: "Aves" },
@@ -37,23 +35,7 @@ function SocialIconLinkedIn({ className }: { className?: string }) {
   );
 }
 
-function SocialIconGlobe({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.75"
-      className={className}
-      aria-hidden
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M2 12h20M12 2a15 15 0 0 1 4 10 15 15 0 0 1-4 10 15 15 0 0 1-4-10 15 15 0 0 1 4-10z" />
-    </svg>
-  );
-}
-
-function SocialIconVimeo({ className }: { className?: string }) {
+function SocialIconInstagram({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 24 24"
@@ -61,7 +43,20 @@ function SocialIconVimeo({ className }: { className?: string }) {
       className={className}
       aria-hidden
     >
-      <path d="M23.977 6.416c-.105 2.338-1.739 5.543-4.894 9.609-3.268 4.247-6.026 6.37-8.29 6.37-1.405 0-2.599-1.299-3.532-3.898-.641-2.385-1.284-4.77-1.927-7.155-.713-2.597-1.479-3.896-2.304-3.896-.178 0-.806.378-1.879 1.132L0 7.108c1.188-1.048 2.359-2.096 3.518-3.139 1.579-1.376 2.779-2.099 3.612-2.174 1.898-.179 3.065 1.118 3.507 3.893.472 2.994.797 4.852.973 5.578.539 2.45 1.131 3.674 1.774 3.674.502 0 1.256-.794 2.265-2.385 1.004-1.591 1.54-2.806 1.611-3.647.143-1.371-.393-2.061-1.611-2.061-.573 0-1.164.132-1.774.397 1.179-3.868 3.434-5.756 6.761-5.653 2.472.066 3.627 1.664 3.465 4.785z" />
+      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.766 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+    </svg>
+  );
+}
+
+function SocialIconWhatsApp({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden
+    >
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.435 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
     </svg>
   );
 }
@@ -79,6 +74,11 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-[#0a192f] text-white">
+      <div
+        className="pointer-events-none absolute inset-0 bg-[length:auto_100%] bg-[position:calc(100%+2rem)_center] bg-no-repeat sm:bg-cover sm:bg-[position:right_center]"
+        style={{ backgroundImage: "url(/Footer_bg_img.webp)" }}
+        aria-hidden
+      />
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.45]"
         aria-hidden
@@ -101,44 +101,45 @@ export default function Footer() {
                 className="h-auto w-full object-contain object-left"
               />
             </Link>
-            <p className="max-w-[320px] text-sm leading-[1.62] text-white/40">
-              Líderes en biotecnología aplicada a la nutrición animal industrial.
-              Ciencia para el rendimiento global.
+            <p className="max-w-[320px] text-sm leading-[1.62] text-white">
+              Creemos en una nutrición inteligente, responsable y adaptada a cada
+              necesidad, porque cada especie y cada productor merece una solución
+              pensada a su medida.
             </p>
             <div className="flex gap-4">
               <a
                 href="https://www.linkedin.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white/50 transition-colors hover:border-white/25 hover:text-white"
+                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white transition-colors hover:border-white/25 hover:opacity-80"
                 aria-label="LinkedIn"
               >
                 <SocialIconLinkedIn className="size-[14px]" />
               </a>
               <a
-                href="https://nutriservice.cl"
+                href="https://www.instagram.com/nutriservicecl/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white/50 transition-colors hover:border-white/25 hover:text-white"
-                aria-label="Sitio web"
+                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white transition-colors hover:border-white/25 hover:opacity-80"
+                aria-label="Instagram"
               >
-                <SocialIconGlobe className="size-4" />
+                <SocialIconInstagram className="size-4" />
               </a>
               <a
-                href="https://vimeo.com/"
+                href="https://wa.me/56900000000"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white/50 transition-colors hover:border-white/25 hover:text-white"
-                aria-label="Vimeo"
+                className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white transition-colors hover:border-white/25 hover:opacity-80"
+                aria-label="WhatsApp"
               >
-                <SocialIconVimeo className="size-4" />
+                <SocialIconWhatsApp className="size-4" />
               </a>
             </div>
           </div>
 
           {/* Soluciones */}
           <nav
-            className="flex flex-col gap-6 lg:col-span-3 lg:col-start-5"
+            className="flex flex-col items-end gap-6 text-right lg:col-span-3 lg:col-start-5 lg:mt-auto lg:items-start lg:text-left"
             aria-label="Soluciones"
           >
             <FooterColumnTitle>Soluciones</FooterColumnTitle>
@@ -147,7 +148,7 @@ export default function Footer() {
                 <li key={item.href + item.label}>
                   <Link
                     href={item.href}
-                    className="text-xs leading-4 text-white/30 transition-colors hover:text-white sm:text-sm"
+                    className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
                   >
                     {item.label}
                   </Link>
@@ -158,7 +159,7 @@ export default function Footer() {
 
           {/* Compañía */}
           <nav
-            className="flex flex-col gap-6 lg:col-span-2"
+            className="flex flex-col items-end gap-6 text-right lg:col-span-4 lg:mt-auto lg:items-start lg:text-left"
             aria-label="Compañía"
           >
             <FooterColumnTitle>Compañía</FooterColumnTitle>
@@ -167,7 +168,7 @@ export default function Footer() {
                 <li key={item.label}>
                   <Link
                     href={item.href}
-                    className="text-xs leading-4 text-white/30 transition-colors hover:text-white sm:text-sm"
+                    className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
                   >
                     {item.label}
                   </Link>
@@ -175,30 +176,21 @@ export default function Footer() {
               ))}
             </ul>
           </nav>
-
-          {/* Newsletter */}
-          <div className="flex flex-col gap-6 lg:col-span-3">
-            <FooterColumnTitle>Newsletter técnico</FooterColumnTitle>
-            <p className="max-w-sm text-[10px] leading-[15px] text-white/30">
-              Reciba reportes trimestrales de avance en biotecnología.
-            </p>
-            <FooterNewsletter />
-          </div>
         </div>
 
-        <div className="flex flex-col gap-8 pt-12 md:flex-row md:items-center md:justify-between md:gap-6">
-          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-white/20">
+        <div className="flex flex-col items-center gap-8 pt-12 text-center">
+          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-white">
             © {year} Nutriservice SPA • V 1.1
           </p>
           <nav
-            className="flex flex-wrap gap-x-10 gap-y-3 md:gap-x-12"
+            className="flex flex-wrap justify-center gap-x-10 gap-y-3 md:gap-x-12"
             aria-label="Legal"
           >
             {LEGAL_LINKS.map((item) => (
               <Link
                 key={item.href + item.label}
                 href={item.href}
-                className="text-[9px] font-bold uppercase tracking-[0.28em] text-white/20 transition-colors hover:text-white/45"
+                className="text-[9px] font-bold uppercase tracking-[0.28em] text-white transition-colors hover:opacity-80"
               >
                 {item.label}
               </Link>

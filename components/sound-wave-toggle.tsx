@@ -9,14 +9,17 @@ import {
   type MutableRefObject,
 } from "react";
 
+import { AUDIO_FADE_MS } from "@/lib/audio-constants";
+import { broadcastFxMuted } from "@/lib/audio-fx-state";
 import { setAmbientMasterMuted } from "@/lib/audio-master-state";
+import { easeInQuad, easeOutQuad } from "@/lib/audio-fade";
+import { subscribeTabAudioHidden } from "@/lib/tab-audio-visibility";
 
 const BASE_AMPLITUDE = 5;
 const CANVAS_LOGICAL_PX = 56;
 const DETAILS = 20;
 const POINT_COUNT = DETAILS * 24;
-const FADE_DURATION = 0.55;
-const FADE_MS = FADE_DURATION * 1000;
+const FADE_MS = AUDIO_FADE_MS;
 
 type WaveTone = "on-dark" | "on-light";
 
@@ -39,13 +42,8 @@ function defaultParams(): WaveParams {
   };
 }
 
-function easeOutQuad(t: number): number {
-  const u = 1 - t;
-  return 1 - u * u;
-}
-
-function easeInQuad(t: number): number {
-  return t * t;
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
 }
 
 function killFade(refs: FadeRefs) {
@@ -64,6 +62,7 @@ function fadeVolumeAmplitude(
   volTo: number,
   ampFrom: number,
   ampTo: number,
+  durationMs: number,
   ease: (t: number) => number,
   onComplete?: () => void,
 ) {
@@ -72,7 +71,7 @@ function fadeVolumeAmplitude(
   const t0 = performance.now();
   const step = (now: number) => {
     if (token !== refs.gen.current) return;
-    const raw = Math.min(1, (now - t0) / FADE_MS);
+    const raw = Math.min(1, (now - t0) / durationMs);
     const k = ease(raw);
     audio.volume = clamp(volFrom + (volTo - volFrom) * k, 0, 1);
     params.amplitude = ampFrom + (ampTo - ampFrom) * k;
@@ -88,10 +87,6 @@ function fadeVolumeAmplitude(
   refs.raf.current = requestAnimationFrame(step);
 }
 
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max);
-}
-
 function cx(...parts: Array<string | undefined | false>): string {
   return parts.filter(Boolean).join(" ");
 }
@@ -105,8 +100,11 @@ export type SoundWaveToggleProps = {
   buttonClassName?: string;
   labelClassName?: string;
   showLabel?: boolean;
+  label?: string;
   /** Stroke gradient: light wave on dark UI vs dark wave on light UI */
   tone?: WaveTone;
+  /** When false, audio stays muted until the user taps the control (mobile menu). */
+  autoBootstrap?: boolean;
 };
 
 /**
@@ -120,7 +118,9 @@ export function SoundWaveToggle({
   buttonClassName,
   labelClassName,
   showLabel = true,
+  label = "Sound",
   tone = "on-dark",
+  autoBootstrap = true,
 }: SoundWaveToggleProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -140,13 +140,18 @@ export function SoundWaveToggle({
   const toneRef = useRef<WaveTone>(tone);
   const fadeGenRef = useRef(0);
   const fadeAnimRafRef = useRef<number | null>(null);
+  const autoBootstrapRef = useRef(autoBootstrap);
+
+  useEffect(() => {
+    autoBootstrapRef.current = autoBootstrap;
+  }, [autoBootstrap]);
 
   const fadeRefs = useMemo<FadeRefs>(
     () => ({ gen: fadeGenRef, raf: fadeAnimRafRef }),
     [],
   );
 
-  const [isMuted, setIsMuted] = useState(false);
+  const [isMuted, setIsMuted] = useState(() => !autoBootstrap);
 
   useEffect(() => {
     toneRef.current = tone;
@@ -172,6 +177,7 @@ export function SoundWaveToggle({
       0,
       params.amplitude,
       0,
+      FADE_MS,
       easeOutQuad,
       () => {
         isFadingRef.current = false;
@@ -203,6 +209,7 @@ export function SoundWaveToggle({
           maxLinearGainRef.current,
           p.amplitude,
           BASE_AMPLITUDE,
+          FADE_MS,
           easeInQuad,
           () => {
             isFadingRef.current = false;
@@ -239,6 +246,7 @@ export function SoundWaveToggle({
     audioRef.current = audio;
 
     const bootstrapAudible = async () => {
+      if (!autoBootstrapRef.current) return;
       const a = audioRef.current;
       if (!a || audioSessionReadyRef.current) return;
       a.volume = 0;
@@ -259,6 +267,7 @@ export function SoundWaveToggle({
           maxLinearGainRef.current,
           0,
           BASE_AMPLITUDE,
+          FADE_MS,
           easeOutQuad,
           () => {
             isFadingRef.current = false;
@@ -276,6 +285,11 @@ export function SoundWaveToggle({
         setMuted(true);
       }
     };
+
+    if (!autoBootstrapRef.current) {
+      isMutedRef.current = true;
+      paramsRef.current.amplitude = 0;
+    }
 
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext("2d");
@@ -346,12 +360,78 @@ export function SoundWaveToggle({
 
     rafRef.current = requestAnimationFrame(tick);
 
-    void bootstrapAudible();
+    if (autoBootstrapRef.current) {
+      void bootstrapAudible();
+    }
 
     const onStartSound = () => {
-      void bootstrapAudible();
+      if (autoBootstrapRef.current) void bootstrapAudible();
     };
     window.addEventListener("hyperia:start-sound", onStartSound);
+
+    const duckForHiddenTab = () => {
+      const a = audioRef.current;
+      if (!a) return;
+      killFade(fadeRefs);
+      isFadingRef.current = false;
+      fadeVolumeAmplitude(
+        fadeRefs,
+        a,
+        paramsRef.current,
+        a.volume,
+        0,
+        paramsRef.current.amplitude,
+        0,
+        FADE_MS,
+        easeOutQuad,
+        () => {
+          if (!aliveRef.current || !audioRef.current) return;
+          audioRef.current.pause();
+        },
+      );
+    };
+
+    const restoreAfterVisibleTab = () => {
+      const a = audioRef.current;
+      if (!a || isMutedRef.current || !audioSessionReadyRef.current) return;
+      killFade(fadeRefs);
+      isFadingRef.current = true;
+      void a
+        .play()
+        .then(() => {
+          if (!aliveRef.current || !audioRef.current) {
+            isFadingRef.current = false;
+            return;
+          }
+          const playing = audioRef.current;
+          const params = paramsRef.current;
+          fadeVolumeAmplitude(
+            fadeRefs,
+            playing,
+            params,
+            playing.volume,
+            maxLinearGainRef.current,
+            0,
+            BASE_AMPLITUDE,
+            FADE_MS,
+            easeInQuad,
+            () => {
+              isFadingRef.current = false;
+            },
+          );
+        })
+        .catch(() => {
+          isFadingRef.current = false;
+        });
+    };
+
+    const unsubscribeTab = subscribeTabAudioHidden((hidden) => {
+      if (hidden) {
+        duckForHiddenTab();
+      } else {
+        restoreAfterVisibleTab();
+      }
+    });
 
     return () => {
       aliveRef.current = false;
@@ -360,6 +440,7 @@ export function SoundWaveToggle({
         rafRef.current = null;
       }
       killFade(fadeRefs);
+      unsubscribeTab();
       window.removeEventListener("hyperia:start-sound", onStartSound);
       const a = audioRef.current;
       if (a) {
@@ -379,6 +460,9 @@ export function SoundWaveToggle({
         detail: { muted: isMuted },
       }),
     );
+    if (!isMuted) {
+      broadcastFxMuted(false);
+    }
   }, [isMuted]);
 
   return (
@@ -398,7 +482,7 @@ export function SoundWaveToggle({
         )}
       >
         {showLabel ? (
-          <span className={cx("select-none", labelClassName)}>Sound</span>
+          <span className={cx("select-none", labelClassName)}>{label}</span>
         ) : null}
         <canvas
           ref={canvasRef}

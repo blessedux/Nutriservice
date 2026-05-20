@@ -14,6 +14,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import HeroCtaBar from "@/components/hero-cta-bar";
 import { HeroSalmonAmbientAudio } from "@/components/hero-salmon-ambient-audio";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
+import { useMobileExperience } from "@/hooks/use-mobile-experience";
 import { cn } from "@/lib/utils";
 
 function HeroHeadLine({
@@ -37,7 +38,8 @@ function HeroHeadLine({
   );
 }
 
-const AQUA_HERO_VIDEO_SRC = "/Salmon_sequence_optimized.webm";
+const AQUA_HERO_VIDEO_WEBM_SRC = "/Salmon_sequence_optimized.webm";
+const AQUA_HERO_VIDEO_MP4_SRC = "/Salmon_sequence_optimized.mp4";
 const HERO_LAST_LINE_DELAY_MS = 440;
 
 const AQUA_HERO_STATS_INTERVAL_MS = 5_000;
@@ -63,6 +65,7 @@ type AquaHeroCardDisplay = {
   theme: string;
   chartKind: AquaHeroChartKind;
   hoverParagraph: string;
+  mobileHoverParagraph: string;
   source: string;
   metrics: readonly AquaHeroMetric[];
 };
@@ -88,6 +91,8 @@ const AQUA_HERO_STAT_SLIDES: readonly AquaHeroStatSlide[] = [
     chartKind: "efficiency-bars",
     hoverParagraph:
       "Los programas que integran enzimas, prebióticos, nucleótidos y palatantes funcionales permiten extraer más energía y proteína de cada kilo de alimento, sostener mejor el consumo en fases críticas y reducir la variabilidad entre animales. El resultado típico es una mejora medible en conversión alimenticia, costo de alimento por kilo producido y uniformidad de peso a cosecha, especialmente cuando la nutrición va alineada con un buen manejo y bioseguridad.",
+    mobileHoverParagraph:
+      "Más energía y proteína por kilo de alimento, con menos variabilidad entre animales. Mejora medible en FCR, costo por kg producido y uniformidad a cosecha.",
     metrics: [
       {
         label: "FCR",
@@ -111,6 +116,8 @@ const AQUA_HERO_STAT_SLIDES: readonly AquaHeroStatSlide[] = [
     chartKind: "risk-curve",
     hoverParagraph:
       "Al reforzar la barrera intestinal, modular la microbiota y apoyar la respuesta inmunitaria, estos aditivos reducen la incidencia y severidad de cuadros entéricos y respiratorios, así como la mortalidad asociada a fases de alto estrés. Una salud más estable se traduce en menos interrupciones productivas, menor dependencia de terapias antibióticas y más lotes que completan su ciclo dentro de los parámetros sanitarios planificados.",
+    mobileHoverParagraph:
+      "Barrera intestinal y microbiota más estables reducen cuadros entéricos y respiratorios en fases críticas. Menos mortalidad, menos antibióticos y lotes que completan el ciclo en parámetros sanitarios.",
     metrics: [
       {
         label: "Mortalidad",
@@ -134,6 +141,8 @@ const AQUA_HERO_STAT_SLIDES: readonly AquaHeroStatSlide[] = [
     chartKind: "sigma-bands",
     hoverParagraph:
       "Cuando la formulación está respaldada por tecnologías nutricionales estables y bien caracterizadas, la respuesta productiva se vuelve más predecible lote a lote. Se reduce la deriva de FCR, mejora la proporción de animales dentro del rango objetivo de peso y disminuye la merma por canales fuera de especificación. Esta consistencia facilita planificar, cumplir contratos y escalar producción sin sorpresas.",
+    mobileHoverParagraph:
+      "Formulaciones estables vuelven la respuesta más predecible lote a lote. Menos deriva de FCR, más animales en rango de peso y menos merma fuera de especificación.",
     metrics: [
       {
         label: "Deriva FCR (σ)",
@@ -157,6 +166,8 @@ const AQUA_HERO_STAT_SLIDES: readonly AquaHeroStatSlide[] = [
     chartKind: "impact-stack",
     hoverParagraph:
       "Una mejor digestibilidad de proteína y fósforo, junto con una conversión alimenticia más eficiente, implica menos nutrientes excretados por kilo producido y menor uso total de materias primas. Esto se refleja en menores cargas de nitrógeno y fósforo al ambiente y en una huella de carbono más baja por unidad de carne, huevo o pescado, alineando la rentabilidad del sistema con los objetivos de sostenibilidad del productor y de la cadena.",
+    mobileHoverParagraph:
+      "Mejor digestibilidad y conversión implican menos nutrientes excretados y menos alimento por kilo producido. Menor carga de N y P, y huella de carbono más baja por unidad producida.",
     metrics: [
       {
         label: "N excretado / kg",
@@ -176,6 +187,79 @@ const AQUA_HERO_STAT_SLIDES: readonly AquaHeroStatSlide[] = [
   },
 ];
 
+const AQUA_HERO_MOBILE_LOOP_SLIDES: readonly AquaHeroStatSlide[] = [
+  AQUA_HERO_STAT_SLIDES[AQUA_HERO_STAT_SLIDES.length - 1],
+  ...AQUA_HERO_STAT_SLIDES,
+  AQUA_HERO_STAT_SLIDES[0],
+];
+
+const AQUA_HERO_MOBILE_LOOP_OFFSET = 1;
+const AQUA_HERO_MOBILE_CARD_GAP_PX = 10;
+const AQUA_HERO_MOBILE_CARD_SHELL_MIN_PX = 132;
+
+/** Horizontal-only mask — softens side shadows without fading the card bottom. */
+const AQUA_HERO_STATS_SHADOW_SIDE_MASK =
+  "linear-gradient(to right, transparent 0, black 16px, black calc(100% - 16px), transparent 100%)";
+
+const AQUA_HERO_STATS_SHADOW_BOTTOM_PAD_PX = 14;
+const AQUA_HERO_STATS_CARD_ROUNDED = "rounded-[20px]";
+
+function AquaHeroStatsCardShadowShell({
+  children,
+  className,
+  shadowClass,
+}: {
+  children: ReactNode;
+  className?: string;
+  shadowClass: string;
+}) {
+  return (
+    <div className={cn("relative overflow-visible", className)}>
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-0 z-0",
+          AQUA_HERO_STATS_CARD_ROUNDED,
+          shadowClass,
+          "blur-[5px] opacity-90",
+        )}
+        style={{
+          WebkitMaskImage: AQUA_HERO_STATS_SHADOW_SIDE_MASK,
+          maskImage: AQUA_HERO_STATS_SHADOW_SIDE_MASK,
+        }}
+      />
+      <div
+        className={cn(
+          "relative z-10 h-full w-full overflow-hidden",
+          AQUA_HERO_STATS_CARD_ROUNDED,
+        )}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function getMobileCarouselSlides(container: HTMLElement): HTMLElement[] {
+  return [...container.querySelectorAll<HTMLElement>("[data-mobile-slide]")];
+}
+
+function getActiveMobileLoopIdx(container: HTMLElement): number {
+  const slides = getMobileCarouselSlides(container);
+  if (slides.length === 0) return AQUA_HERO_MOBILE_LOOP_OFFSET;
+
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  for (let i = 0; i < slides.length; i += 1) {
+    const dist = Math.abs(container.scrollLeft - slides[i].offsetLeft);
+    if (dist < bestDist) {
+      bestDist = dist;
+      bestIdx = i;
+    }
+  }
+  return bestIdx;
+}
+
 const AQUA_HERO_PILLAR_DETAILS: readonly AquaHeroPillarDetail[] = [
   {
     id: "rendimiento",
@@ -185,6 +269,7 @@ const AQUA_HERO_PILLAR_DETAILS: readonly AquaHeroPillarDetail[] = [
     chartKind: "efficiency-bars",
     hoverParagraph:
       "Los programas que integran enzimas, prebióticos, nucleótidos y palatantes funcionales permiten extraer más energía y proteína de cada kilo de alimento, sostener mejor el consumo en fases críticas y reducir la variabilidad entre animales. El resultado típico es una mejora medible en conversión alimenticia, costo de alimento por kilo producido y uniformidad de peso a cosecha, especialmente cuando la nutrición va alineada con un buen manejo y bioseguridad.",
+    mobileHoverParagraph: AQUA_HERO_STAT_SLIDES[0].mobileHoverParagraph,
     metrics: AQUA_HERO_STAT_SLIDES[0].metrics,
     source: AQUA_HERO_STAT_SLIDES[0].source,
   },
@@ -195,6 +280,7 @@ const AQUA_HERO_PILLAR_DETAILS: readonly AquaHeroPillarDetail[] = [
     pillarChartKind: "mortality-trend",
     chartKind: "risk-curve",
     hoverParagraph: AQUA_HERO_STAT_SLIDES[1].hoverParagraph,
+    mobileHoverParagraph: AQUA_HERO_STAT_SLIDES[1].mobileHoverParagraph,
     metrics: AQUA_HERO_STAT_SLIDES[1].metrics,
     source: AQUA_HERO_STAT_SLIDES[1].source,
   },
@@ -205,6 +291,7 @@ const AQUA_HERO_PILLAR_DETAILS: readonly AquaHeroPillarDetail[] = [
     pillarChartKind: "sigma-converge",
     chartKind: "sigma-bands",
     hoverParagraph: AQUA_HERO_STAT_SLIDES[2].hoverParagraph,
+    mobileHoverParagraph: AQUA_HERO_STAT_SLIDES[2].mobileHoverParagraph,
     metrics: AQUA_HERO_STAT_SLIDES[2].metrics,
     source: AQUA_HERO_STAT_SLIDES[2].source,
   },
@@ -239,6 +326,223 @@ function metricShortValue(value: string): string {
     return `${gtPct[1].replace(/\s/g, "")}%`;
   }
   return value.split(" ")[0] ?? value;
+}
+
+function AquaHeroMobileCardPanel({
+  display,
+  contentKey,
+  reduceMotion,
+  expanded,
+  onTap,
+}: {
+  display: AquaHeroCardDisplay;
+  contentKey: string;
+  reduceMotion: boolean;
+  expanded: boolean;
+  onTap: () => void;
+}) {
+  const [showSource, setShowSource] = useState(false);
+  const typedParagraph = useTypewriter(
+    display.mobileHoverParagraph,
+    expanded,
+    AQUA_HERO_HOVER_TYPEWRITER_MS,
+    reduceMotion,
+  );
+
+  useEffect(() => {
+    if (!expanded) setShowSource(false);
+  }, [expanded, contentKey]);
+
+  return (
+    <AquaHeroStatsCardShadowShell
+      className="h-full min-h-0 w-full"
+      shadowClass="shadow-[0_8px_32px_-12px_rgba(0,0,0,0.5)]"
+    >
+      <motion.div
+        role="button"
+        tabIndex={0}
+        onClick={(e) => {
+          e.stopPropagation();
+          onTap();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onTap();
+          }
+        }}
+        className={cn(
+          "flex h-full min-h-0 w-full cursor-pointer flex-col overflow-hidden border border-white/20 bg-white/[0.07] px-4 py-3 text-left backdrop-blur-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60",
+          AQUA_HERO_STATS_CARD_ROUNDED,
+        )}
+        aria-expanded={expanded}
+        transition={
+          reduceMotion ? { duration: 0 } : AQUA_HERO_HOVER_LAYOUT_TRANSITION
+        }
+      >
+      <div className="flex h-full min-h-0 flex-col border-l border-cyan-100/25 pl-3.5">
+        {expanded ? (
+          <>
+            <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/72">
+              {display.theme}
+            </p>
+            <div className="mt-2.5 min-h-0 flex-1">
+              <motion.p
+                className="pr-0.5 text-[15px] leading-[1.45] text-white/75"
+                initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={
+                  reduceMotion
+                    ? { duration: 0 }
+                    : { duration: 0.45, ease: AQUA_HERO_HOVER_LAYOUT_TRANSITION.ease }
+                }
+              >
+                {typedParagraph}
+              </motion.p>
+            </div>
+
+            <div className="shrink-0 pt-2">
+              <div className="flex items-center justify-center overflow-hidden py-1">
+                <div className="flex w-full items-center justify-center gap-1">
+                  <div className="w-[1.65rem] shrink-0">
+                    <AquaHeroMetricFlank slide={display} side="labels" />
+                  </div>
+                  <div className="flex min-w-0 flex-1 items-center justify-center">
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.div
+                        key={contentKey}
+                        className="flex w-full items-center justify-center"
+                        initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
+                        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                      >
+                        <AquaHeroMiniChart kind={display.chartKind} />
+                      </motion.div>
+                    </AnimatePresence>
+                  </div>
+                  <div className="w-[2.35rem] shrink-0">
+                    <AquaHeroMetricFlank slide={display} side="values" />
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSource((v) => !v);
+                }}
+                className="mt-1.5 w-full shrink-0 cursor-pointer text-left text-[8px] font-medium normal-case leading-snug tracking-[0.12em] text-white/38 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/55 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/50"
+                aria-expanded={showSource}
+              >
+                {showSource ? display.source : AQUA_HERO_FOOTNOTE_DEFAULT}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="shrink-0 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/72">
+              {display.theme}
+            </p>
+
+            <div className="relative mt-2.5 h-[2.65rem] overflow-hidden">
+              <AquaHeroMobileStatsRow display={display} contentKey={contentKey} />
+            </div>
+
+            <div className="flex shrink-0 items-center justify-center overflow-hidden py-1.5">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={contentKey}
+                  className="flex w-full items-center justify-center"
+                  initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <AquaHeroMiniChart kind={display.chartKind} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </>
+        )}
+      </div>
+      </motion.div>
+    </AquaHeroStatsCardShadowShell>
+  );
+}
+
+function AquaHeroMobileStatsRow({
+  display,
+  contentKey,
+}: {
+  display: AquaHeroCardDisplay;
+  contentKey: string;
+}) {
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={contentKey}
+        className="grid grid-cols-3 gap-1.5"
+        initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={reduceMotion ? undefined : { opacity: 0, y: -6 }}
+        transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {display.metrics.map((row) => (
+          <div key={row.label} className="min-w-0 cursor-default text-center">
+            <p className="truncate text-[8px] font-semibold uppercase tracking-[0.14em] text-white/48">
+              {metricShortLabel(row.label)}
+            </p>
+            <p className="mt-0.5 truncate text-[10px] font-semibold tabular-nums text-white/88">
+              {metricShortValue(row.value)}
+            </p>
+          </div>
+        ))}
+      </motion.div>
+    </AnimatePresence>
+  );
+}
+
+function AquaHeroPillarDots({
+  activePillarId,
+  onToggle,
+  className,
+}: {
+  activePillarId: AquaHeroPillarId | null;
+  onToggle: (pillarId: AquaHeroPillarId) => void;
+  className?: string;
+}) {
+  return (
+    <div
+      className={cn("mt-1.5 flex items-center justify-center gap-2.5", className)}
+      role="tablist"
+      aria-label="Pilares de indicadores"
+    >
+      {AQUA_HERO_PILLAR_DETAILS.map((p) => {
+        const isActive = activePillarId === p.id;
+        return (
+          <button
+            key={p.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            aria-label={`Ver pilar ${p.label}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggle(p.id);
+            }}
+            className={cn(
+              "rounded-full transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60",
+              isActive ? "h-2 w-2 bg-white" : "h-1.5 w-1.5 bg-white/32 hover:bg-white/55",
+            )}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 function AquaHeroMetricFlank({
@@ -523,7 +827,7 @@ function AquaHeroAdvanceControl({
         e.stopPropagation();
         onAdvance();
       }}
-      className="absolute -right-1 -top-1 z-20 flex h-7 w-7 items-center justify-center rounded-full bg-white/[0.06] text-white/80 backdrop-blur-sm transition-colors hover:bg-white/[0.12] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60"
+      className="absolute -right-1 -top-1 z-20 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-white/[0.06] text-white/80 backdrop-blur-sm transition-colors hover:bg-white/[0.12] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60"
       aria-label="Siguiente indicador"
     >
       <svg
@@ -686,7 +990,18 @@ function PillarChart({ kind }: { kind: PillarChartKind }) {
   );
 }
 
-function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
+function AquaHeroSideCard({
+  heroRevealReady,
+  mobileExpanded = false,
+  onMobileExpandedChange,
+  headlineCollapsePx = 0,
+}: {
+  heroRevealReady: boolean;
+  mobileExpanded?: boolean;
+  onMobileExpandedChange?: (expanded: boolean) => void;
+  headlineCollapsePx?: number;
+}) {
+  const isMobile = useMobileExperience();
   const reduceMotion = useReducedMotion() ?? false;
   const [slideIdx, setSlideIdx] = useState(0);
   const [hovered, setHovered] = useState(false);
@@ -694,8 +1009,16 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
   const [showSource, setShowSource] = useState(false);
   const [rotationProgress, setRotationProgress] = useState(0);
   const rotationProgressRef = useRef(0);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const mobileScrollSyncRef = useRef(false);
+  const mobileScrollEndTimerRef = useRef<number | null>(null);
+  const mobileTouchMovedRef = useRef(false);
+  const mobileLoopReadyRef = useRef(false);
+  const mobileCardZoneRef = useRef<HTMLDivElement>(null);
+  const [mobileCardZoneHeight, setMobileCardZoneHeight] = useState(0);
+  const [mobileCollapsedCardHeight, setMobileCollapsedCardHeight] = useState(0);
 
-  const isRotating = activePillarId === null;
+  const isRotating = activePillarId === null && !mobileExpanded;
   const idx = reduceMotion || !isRotating ? 0 : slideIdx;
   const slide = AQUA_HERO_STAT_SLIDES[idx];
   const activePillar = AQUA_HERO_PILLAR_DETAILS.find((p) => p.id === activePillarId);
@@ -709,7 +1032,18 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
   }, []);
 
   const togglePillar = useCallback((pillarId: AquaHeroPillarId) => {
-    setActivePillarId((current) => (current === pillarId ? null : pillarId));
+    setActivePillarId((current) => {
+      const next = current === pillarId ? null : pillarId;
+      if (next) {
+        const pillarIdx = AQUA_HERO_PILLAR_DETAILS.findIndex((p) => p.id === pillarId);
+        if (pillarIdx >= 0) {
+          rotationProgressRef.current = 0;
+          setRotationProgress(0);
+          setSlideIdx(pillarIdx);
+        }
+      }
+      return next;
+    });
     setShowSource(false);
   }, []);
 
@@ -718,8 +1052,114 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
       setSlideIdx(0);
       setActivePillarId(null);
       setShowSource(false);
+      onMobileExpandedChange?.(false);
     }
-  }, [heroRevealReady]);
+  }, [heroRevealReady, onMobileExpandedChange]);
+
+  const scrollMobileToLoopIdx = useCallback(
+    (loopIdx: number, behavior: ScrollBehavior) => {
+      const container = mobileScrollRef.current;
+      if (!container) return;
+
+      const slides = getMobileCarouselSlides(container);
+      const target = slides[loopIdx];
+      if (!target) return;
+
+      mobileScrollSyncRef.current = true;
+      container.scrollTo({
+        left: target.offsetLeft,
+        behavior,
+      });
+
+      const unlockMs = behavior === "auto" || reduceMotion ? 0 : 420;
+      window.setTimeout(() => {
+        mobileScrollSyncRef.current = false;
+      }, unlockMs);
+    },
+    [reduceMotion],
+  );
+
+  const scrollMobileToRealIdx = useCallback(
+    (realIdx: number, behavior: ScrollBehavior) => {
+      scrollMobileToLoopIdx(realIdx + AQUA_HERO_MOBILE_LOOP_OFFSET, behavior);
+    },
+    [scrollMobileToLoopIdx],
+  );
+
+  const snapMobileCarousel = useCallback(() => {
+    const container = mobileScrollRef.current;
+    if (!container || mobileScrollSyncRef.current) return;
+
+    const loopIdx = getActiveMobileLoopIdx(container);
+    const slides = getMobileCarouselSlides(container);
+    const target = slides[loopIdx];
+    if (!target) return;
+
+    if (Math.abs(container.scrollLeft - target.offsetLeft) <= 2) {
+      return;
+    }
+
+    scrollMobileToLoopIdx(loopIdx, reduceMotion ? "auto" : "smooth");
+  }, [reduceMotion, scrollMobileToLoopIdx]);
+
+  useEffect(() => {
+    if (!isMobile || mobileExpanded) return;
+    const zone = mobileCardZoneRef.current;
+    if (!zone) return;
+
+    const measure = () => {
+      const zoneHeight = zone.getBoundingClientRect().height;
+      const scrollHeight =
+        mobileScrollRef.current?.getBoundingClientRect().height ?? 0;
+
+      if (zoneHeight > 0) {
+        setMobileCardZoneHeight(zoneHeight);
+      }
+      if (scrollHeight > 0) {
+        setMobileCollapsedCardHeight(scrollHeight);
+      }
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(zone);
+    if (mobileScrollRef.current) {
+      observer.observe(mobileScrollRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isMobile, mobileExpanded, slideIdx]);
+
+  useEffect(() => {
+    if (!isMobile || !heroRevealReady) return;
+    const container = mobileScrollRef.current;
+    if (!container || mobileLoopReadyRef.current) return;
+
+    mobileLoopReadyRef.current = true;
+    scrollMobileToRealIdx(0, "auto");
+  }, [heroRevealReady, isMobile, scrollMobileToRealIdx]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const container = mobileScrollRef.current;
+    if (!container) return;
+
+    const slides = getMobileCarouselSlides(container);
+    const target = slides[slideIdx + AQUA_HERO_MOBILE_LOOP_OFFSET];
+    if (!target) return;
+    if (Math.abs(container.scrollLeft - target.offsetLeft) < 4) return;
+
+    scrollMobileToRealIdx(slideIdx, reduceMotion ? "auto" : "smooth");
+  }, [slideIdx, isMobile, reduceMotion, scrollMobileToRealIdx]);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const container = mobileScrollRef.current;
+    if (!container) return;
+
+    const onScrollEnd = () => snapMobileCarousel();
+    container.addEventListener("scrollend", onScrollEnd);
+    return () => container.removeEventListener("scrollend", onScrollEnd);
+  }, [isMobile, snapMobileCarousel]);
 
   useEffect(() => {
     setShowSource(false);
@@ -747,7 +1187,18 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
       setRotationProgress(progress);
       if (progress >= 1) {
         rotationProgressRef.current = 0;
-        setSlideIdx((p) => (p + 1) % AQUA_HERO_STAT_SLIDES.length);
+        if (
+          isMobile &&
+          slideIdx === AQUA_HERO_STAT_SLIDES.length - 1 &&
+          mobileScrollRef.current
+        ) {
+          scrollMobileToLoopIdx(
+            AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1,
+            reduceMotion ? "auto" : "smooth",
+          );
+        } else {
+          setSlideIdx((p) => (p + 1) % AQUA_HERO_STAT_SLIDES.length);
+        }
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -755,18 +1206,228 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
 
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [heroRevealReady, reduceMotion, hovered, isRotating, slideIdx]);
+  }, [heroRevealReady, reduceMotion, hovered, isRotating, slideIdx, mobileExpanded, isMobile, scrollMobileToLoopIdx]);
+
+  const handleMobileScroll = useCallback(() => {
+    const container = mobileScrollRef.current;
+    if (!container) return;
+
+    if (!mobileScrollSyncRef.current) {
+      if (mobileScrollEndTimerRef.current !== null) {
+        window.clearTimeout(mobileScrollEndTimerRef.current);
+      }
+      mobileScrollEndTimerRef.current = window.setTimeout(() => {
+        snapMobileCarousel();
+        mobileScrollEndTimerRef.current = null;
+      }, 64);
+    }
+
+    if (mobileScrollSyncRef.current) return;
+
+    const loopIdx = getActiveMobileLoopIdx(container);
+    const lastLoopIdx = AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1;
+
+    if (loopIdx <= 0) {
+      rotationProgressRef.current = 0;
+      setRotationProgress(0);
+      setSlideIdx(AQUA_HERO_STAT_SLIDES.length - 1);
+      scrollMobileToRealIdx(AQUA_HERO_STAT_SLIDES.length - 1, "auto");
+      return;
+    }
+
+    if (loopIdx >= lastLoopIdx) {
+      rotationProgressRef.current = 0;
+      setRotationProgress(0);
+      setSlideIdx(0);
+      scrollMobileToRealIdx(0, "auto");
+      return;
+    }
+
+    const nextIdx = loopIdx - AQUA_HERO_MOBILE_LOOP_OFFSET;
+    if (
+      nextIdx === slideIdx ||
+      nextIdx < 0 ||
+      nextIdx >= AQUA_HERO_STAT_SLIDES.length
+    ) {
+      return;
+    }
+
+    rotationProgressRef.current = 0;
+    setRotationProgress(0);
+    setSlideIdx(nextIdx);
+    setActivePillarId((current) => {
+      const pillar = AQUA_HERO_PILLAR_DETAILS[nextIdx];
+      return pillar && current === pillar.id ? current : null;
+    });
+  }, [scrollMobileToRealIdx, slideIdx, snapMobileCarousel]);
+
+  const handleMobileCardTap = useCallback(() => {
+    if (mobileScrollSyncRef.current || mobileTouchMovedRef.current) return;
+    onMobileExpandedChange?.(!mobileExpanded);
+  }, [mobileExpanded, onMobileExpandedChange]);
+
+  const handleMobileTouchStart = useCallback(() => {
+    mobileTouchMovedRef.current = false;
+  }, []);
+
+  const handleMobileTouchMove = useCallback(() => {
+    mobileTouchMovedRef.current = true;
+  }, []);
+
+  const handleMobileTouchEnd = useCallback(() => {
+    window.requestAnimationFrame(() => {
+      snapMobileCarousel();
+    });
+  }, [snapMobileCarousel]);
 
   const typedText = useTypewriter(
     display.hoverParagraph,
-    hovered,
+    hovered && !isMobile,
     AQUA_HERO_HOVER_TYPEWRITER_MS,
     reduceMotion,
   );
 
+  if (isMobile) {
+    const hasLockedHeights =
+      mobileCardZoneHeight > 0 && mobileCollapsedCardHeight > 0;
+    const slideShellHeight = hasLockedHeights
+      ? mobileCollapsedCardHeight
+      : AQUA_HERO_MOBILE_CARD_SHELL_MIN_PX;
+    const expandedPanelHeight =
+      hasLockedHeights && headlineCollapsePx > 0
+        ? mobileCollapsedCardHeight + headlineCollapsePx
+        : slideShellHeight + Math.max(headlineCollapsePx, 160);
+    const activeSlide = AQUA_HERO_STAT_SLIDES[slideIdx];
+    const collapsedShellHeight =
+      slideShellHeight + AQUA_HERO_STATS_SHADOW_BOTTOM_PAD_PX;
+    const cardStageHeight = mobileExpanded
+      ? expandedPanelHeight
+      : slideShellHeight;
+
+    return (
+      <div
+        ref={mobileCardZoneRef}
+        className="relative w-full max-w-[300px] overflow-visible lg:ml-auto"
+        style={
+          hasLockedHeights && !mobileExpanded
+            ? { height: mobileCardZoneHeight, minHeight: mobileCardZoneHeight }
+            : { minHeight: collapsedShellHeight + 28 }
+        }
+        aria-live={reduceMotion ? "off" : "polite"}
+        aria-atomic="true"
+      >
+        <div
+          className="relative overflow-visible"
+          style={{
+            height: collapsedShellHeight,
+            minHeight: collapsedShellHeight,
+          }}
+        >
+          <div
+            className="absolute inset-x-0 bottom-0 overflow-visible"
+            style={{ height: cardStageHeight }}
+          >
+            <div
+              ref={mobileScrollRef}
+              className={cn(
+                "absolute inset-x-0 bottom-0 flex snap-x snap-mandatory overflow-x-auto overflow-y-hidden overscroll-y-none scroll-smooth [-ms-overflow-style:none] [scrollbar-width:none] [touch-action:pan-x] [&::-webkit-scrollbar]:hidden",
+                mobileExpanded && "pointer-events-none invisible",
+              )}
+              style={{ height: slideShellHeight }}
+              onScroll={handleMobileScroll}
+              onTouchStart={handleMobileTouchStart}
+              onTouchMove={handleMobileTouchMove}
+              onTouchEnd={handleMobileTouchEnd}
+              aria-label="Indicadores en campo"
+              aria-hidden={mobileExpanded}
+            >
+            {AQUA_HERO_MOBILE_LOOP_SLIDES.map((statSlide, loopIdx) => {
+              const realIdx =
+                loopIdx === 0
+                  ? AQUA_HERO_STAT_SLIDES.length - 1
+                  : loopIdx === AQUA_HERO_MOBILE_LOOP_SLIDES.length - 1
+                    ? 0
+                    : loopIdx - AQUA_HERO_MOBILE_LOOP_OFFSET;
+              const isActive = realIdx === slideIdx;
+
+              return (
+                <div
+                  key={`${statSlide.id}-${loopIdx}`}
+                  data-mobile-slide
+                  data-slide-idx={realIdx}
+                  className="relative box-border shrink-0 snap-center snap-always"
+                  style={{
+                    width: `calc(100% - ${AQUA_HERO_MOBILE_CARD_GAP_PX}px)`,
+                    height: slideShellHeight,
+                    marginRight: AQUA_HERO_MOBILE_CARD_GAP_PX,
+                  }}
+                  aria-hidden={!isActive || mobileExpanded}
+                >
+                  <div className="h-full">
+                    <AquaHeroMobileCardPanel
+                      display={statSlide}
+                      contentKey={`slide-${realIdx}-${loopIdx}`}
+                      reduceMotion={reduceMotion}
+                      expanded={false}
+                      onTap={handleMobileCardTap}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+            </div>
+
+            <AnimatePresence initial={false}>
+              {mobileExpanded && (
+                <motion.div
+                  key={`expanded-${slideIdx}`}
+                  className={cn(
+                    "pointer-events-auto absolute inset-x-0 bottom-0 z-30 overflow-hidden",
+                    AQUA_HERO_STATS_CARD_ROUNDED,
+                  )}
+                  style={{ transformOrigin: "bottom center" }}
+                  initial={
+                    reduceMotion
+                      ? false
+                      : { height: slideShellHeight, opacity: 1 }
+                  }
+                  animate={{ height: expandedPanelHeight, opacity: 1 }}
+                  exit={
+                    reduceMotion
+                      ? undefined
+                      : { height: slideShellHeight, opacity: 1 }
+                  }
+                  transition={
+                    reduceMotion
+                      ? { duration: 0 }
+                      : AQUA_HERO_HOVER_LAYOUT_TRANSITION
+                  }
+                >
+                  <AquaHeroMobileCardPanel
+                    display={activeSlide}
+                    contentKey={`expanded-slide-${slideIdx}`}
+                    reduceMotion={reduceMotion}
+                    expanded
+                    onTap={handleMobileCardTap}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        <AquaHeroPillarDots
+          activePillarId={activePillarId}
+          onToggle={togglePillar}
+          className="relative z-10"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
-      className="w-full max-w-[336px] lg:ml-auto"
+      className="w-full max-w-[336px] cursor-default lg:ml-auto"
       aria-live={reduceMotion ? "off" : "polite"}
       aria-atomic="true"
       onMouseEnter={() => setHovered(true)}
@@ -778,8 +1439,14 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
         }
       }}
     >
-      <div className="overflow-hidden rounded-2xl border border-white/20 bg-white/[0.07] p-5 shadow-[0_12px_48px_-16px_rgba(0,0,0,0.55)] backdrop-blur-xl sm:p-6">
-        <motion.div className="relative border-l border-cyan-100/25 pl-5 sm:pl-6">
+      <AquaHeroStatsCardShadowShell shadowClass="shadow-[0_12px_48px_-16px_rgba(0,0,0,0.55)]">
+        <div
+          className={cn(
+            "cursor-default overflow-hidden border border-white/20 bg-white/[0.07] p-5 backdrop-blur-xl sm:p-6",
+            AQUA_HERO_STATS_CARD_ROUNDED,
+          )}
+        >
+          <motion.div className="relative border-l border-cyan-100/25 pl-5 sm:pl-6">
           <div className="relative pr-8">
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-white/78">
               {activePillar ? activePillar.theme : "Indicadores en campo"}
@@ -827,7 +1494,7 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
               <AnimatePresence mode="wait" initial={false}>
                 <motion.dl
                   key={contentKey}
-                  className="space-y-2.5 text-[11px] uppercase tracking-[0.1em]"
+                  className="cursor-default space-y-2.5 text-[11px] uppercase tracking-[0.1em]"
                   initial={reduceMotion ? false : { opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
@@ -836,12 +1503,12 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
                   {display.metrics.map((row) => (
                     <div
                       key={row.label}
-                      className="flex items-start justify-between gap-2 border-b border-white/[0.06] pb-2.5 last:border-0 last:pb-0"
+                      className="flex cursor-default items-start justify-between gap-2 border-b border-white/[0.06] pb-2.5 last:border-0 last:pb-0"
                     >
-                      <dt className="max-w-[48%] shrink-0 font-medium normal-case leading-snug tracking-normal text-white/55">
+                      <dt className="max-w-[48%] shrink-0 cursor-default font-medium normal-case leading-snug tracking-normal text-white/55">
                         {row.label}
                       </dt>
-                      <dd className="max-w-[52%] text-right text-[10px] font-semibold leading-snug tracking-tight break-words whitespace-normal text-white/90 tabular-nums sm:text-[11px]">
+                      <dd className="max-w-[52%] cursor-default text-right text-[10px] font-semibold leading-snug tracking-tight break-words whitespace-normal text-white/90 tabular-nums sm:text-[11px]">
                         {row.value}
                       </dd>
                     </div>
@@ -939,7 +1606,7 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
               e.stopPropagation();
               setShowSource((v) => !v);
             }}
-            className="mt-2 w-full text-left text-[8px] font-medium normal-case leading-snug tracking-[0.12em] text-white/38 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/55 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/50"
+            className="mt-2 w-full cursor-default text-left text-[8px] font-medium normal-case leading-snug tracking-[0.12em] text-white/38 underline decoration-white/20 underline-offset-2 transition-colors hover:text-white/55 focus-visible:outline focus-visible:outline-1 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/50"
             aria-expanded={showSource}
           >
             <AnimatePresence mode="wait" initial={false}>
@@ -971,7 +1638,7 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
                     togglePillar(p.id);
                   }}
                   className={cn(
-                    "flex flex-col items-center gap-1.5 rounded-lg px-1 py-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60",
+                    "flex cursor-pointer flex-col items-center gap-1.5 rounded-lg px-1 py-1.5 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300/60",
                     isActive
                       ? "bg-white/[0.08] ring-1 ring-cyan-300/35"
                       : "hover:bg-white/[0.05]",
@@ -993,7 +1660,8 @@ function AquaHeroSideCard({ heroRevealReady }: { heroRevealReady: boolean }) {
             })}
           </div>
         </div>
-      </div>
+        </div>
+      </AquaHeroStatsCardShadowShell>
     </div>
   );
 }
@@ -1011,15 +1679,12 @@ export default function HeroSA() {
   const bgParallaxY = useTransform(scrollYProgress, (p) =>
     reduceMotion ? 0 : p * 110,
   );
-  const fgParallaxY = useTransform(scrollYProgress, (p) =>
-    reduceMotion ? 0 : p * -36,
-  );
 
   return (
     <section
       ref={sectionRef}
       id="inicio"
-      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white lg:min-h-screen"
+      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white max-lg:overflow-visible lg:min-h-screen"
     >
       <HeroSalmonAmbientAudio heroRootRef={sectionRef} />
       <motion.div
@@ -1030,35 +1695,65 @@ export default function HeroSA() {
         <HeroBackground />
       </motion.div>
 
-      <motion.div
-        className="relative z-10 flex min-h-[100dvh] w-full flex-col px-6 pb-12 pt-[calc(5.125rem+10px)] sm:px-10 sm:pt-[calc(6rem+10px)] lg:px-12"
-        style={{ y: fgParallaxY }}
-      >
-        <motion.div
-          className="flex min-h-0 flex-1 flex-col lg:justify-start"
+      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-10 pt-[calc(5.125rem+10px)] sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:overflow-visible lg:px-12 lg:pb-24">
+        <div
+          className="flex min-h-0 flex-1 flex-col justify-start overflow-visible"
           data-hero-animate={heroRevealReady ? "true" : "false"}
         >
           <HeroPrimaryContent heroRevealReady={heroRevealReady} />
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </section>
   );
 }
 
 function HeroBackground() {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    if (reduceMotion) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    const ensurePlaying = () => {
+      video.muted = true;
+      video.defaultMuted = true;
+      void video.play().catch(() => {});
+    };
+
+    ensurePlaying();
+    video.addEventListener("loadeddata", ensurePlaying);
+    video.addEventListener("canplay", ensurePlaying);
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) ensurePlaying();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+
+    return () => {
+      video.removeEventListener("loadeddata", ensurePlaying);
+      video.removeEventListener("canplay", ensurePlaying);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [reduceMotion]);
+
   return (
     <>
       <div className="absolute inset-0 z-0 bg-slate-950" aria-hidden />
       <video
+        ref={videoRef}
         className="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:opacity-0"
         autoPlay
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="auto"
+        disablePictureInPicture
         aria-hidden
       >
-        <source src={AQUA_HERO_VIDEO_SRC} type="video/webm" />
+        <source src={AQUA_HERO_VIDEO_MP4_SRC} type="video/mp4" />
+        <source src={AQUA_HERO_VIDEO_WEBM_SRC} type="video/webm" />
       </video>
       <div
         className="absolute inset-y-0 left-0 z-[1] w-1/2 backdrop-blur-[2px]"
@@ -1069,42 +1764,109 @@ function HeroBackground() {
 }
 
 function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
+  const isMobile = useMobileExperience();
+  const reduceMotion = useReducedMotion() ?? false;
+  const [mobileCardExpanded, setMobileCardExpanded] = useState(false);
+  const headlineCollapseRef = useRef<HTMLDivElement>(null);
+  const [headlineCollapsePx, setHeadlineCollapsePx] = useState(0);
+
+  useEffect(() => {
+    const node = headlineCollapseRef.current;
+    if (!node) return;
+
+    const measure = () => {
+      if (node.offsetHeight > 0) {
+        setHeadlineCollapsePx(node.offsetHeight);
+      }
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) setMobileCardExpanded(false);
+  }, [isMobile]);
+
   return (
-    <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-x-11 gap-y-11 pt-1 sm:gap-x-12 sm:gap-y-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,352px)] lg:gap-x-14 xl:gap-x-16">
-      <div className="max-w-xl lg:max-w-lg xl:max-w-xl">
-        <div className="hero-tag-lr mb-5 flex items-center gap-4 sm:mb-6">
+    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col gap-2 overflow-visible pt-1 sm:gap-6 lg:grid lg:flex-none lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,352px)] lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-14 lg:gap-y-12 xl:gap-x-16">
+      <div className="order-1 max-w-xl shrink-0 overflow-visible lg:col-start-1 lg:row-start-1 lg:max-w-lg xl:max-w-xl">
+        <div className="hero-tag-lr relative z-30 mb-3.5 flex items-center gap-4 sm:mb-6">
           <span className="h-px w-10 shrink-0 bg-blue-600" aria-hidden />
           <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/55">
             Excelencia industrial desde 1993
           </p>
         </div>
 
-        <h1 className="max-w-xl text-balance text-4xl font-light leading-[0.96] tracking-[-0.05em] text-white sm:text-5xl lg:text-6xl xl:text-7xl">
-          <HeroHeadLine delayMs={140}>Inteligencia Nutricional</HeroHeadLine>
-          <HeroHeadLine delayMs={240}>Industrial</HeroHeadLine>
-        </h1>
+        <motion.div
+          ref={headlineCollapseRef}
+          className={cn(
+            "relative z-0 overflow-visible",
+            isMobile && mobileCardExpanded && "pointer-events-none",
+          )}
+          initial={false}
+          animate={
+            isMobile && mobileCardExpanded
+              ? {
+                  filter: reduceMotion ? "blur(0px)" : "blur(11px)",
+                  opacity: 0.68,
+                }
+              : {
+                  filter: "blur(0px)",
+                  opacity: 1,
+                }
+          }
+          transition={
+            reduceMotion ? { duration: 0 } : AQUA_HERO_HOVER_LAYOUT_TRANSITION
+          }
+        >
+          <h1 className="max-w-xl text-balance text-[2rem] font-light leading-[0.98] tracking-[-0.05em] text-white sm:text-5xl sm:leading-[0.96] lg:text-6xl xl:text-7xl">
+            <HeroHeadLine delayMs={140}>Inteligencia Nutricional</HeroHeadLine>
+            <HeroHeadLine delayMs={240}>Industrial</HeroHeadLine>
+          </h1>
 
-        <motion.div className="mt-6 max-w-lg text-base leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
-          <HeroHeadLine delayMs={340}>
-            Transformamos ciencia compleja en rendimiento confiable
-          </HeroHeadLine>
-          <HeroHeadLine delayMs={440}>
-            para operaciones productivas de gran escala.
-          </HeroHeadLine>
+          <div className="mt-4 max-w-lg text-sm leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
+            <span className="lg:hidden">
+              <HeroHeadLine delayMs={340}>
+                Transformamos ciencia compleja en rendimiento
+              </HeroHeadLine>
+              <HeroHeadLine delayMs={440}>
+                confiable para operaciones productivas de gran escala.
+              </HeroHeadLine>
+            </span>
+            <span className="hidden lg:inline">
+              <HeroHeadLine delayMs={340}>
+                Transformamos ciencia compleja en rendimiento confiable
+              </HeroHeadLine>
+              <HeroHeadLine delayMs={440}>
+                para operaciones productivas de gran escala.
+              </HeroHeadLine>
+            </span>
+          </div>
         </motion.div>
+      </div>
 
+      <motion.div className="relative z-20 order-2 flex w-full shrink-0 justify-start overflow-visible lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:justify-end lg:pt-[calc(1.5rem+0.625rem)]">
+        <AquaHeroSideCard
+          heroRevealReady={heroRevealReady}
+          mobileExpanded={mobileCardExpanded}
+          onMobileExpandedChange={setMobileCardExpanded}
+          headlineCollapsePx={headlineCollapsePx}
+        />
+      </motion.div>
+
+      <div className="relative z-40 order-3 max-w-xl shrink-0 lg:col-start-1 lg:row-start-2 lg:max-w-lg xl:max-w-xl">
         <HeroCtaBar
           variant="inline"
           tone="on-dark"
           heroRevealReady={heroRevealReady}
           heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
           secondaryHref="/#calculadora"
+          className="relative z-40 !mt-0 max-lg:[&>div]:!mt-1 max-lg:[&>div]:pointer-events-auto"
         />
       </div>
-
-      <motion.div className="flex w-full justify-start lg:justify-end lg:pt-[calc(1.5rem+0.625rem)]">
-        <AquaHeroSideCard heroRevealReady={heroRevealReady} />
-      </motion.div>
     </div>
   );
 }

@@ -1,13 +1,18 @@
 import type { Metadata } from "next";
 
-import GooeySearchDemo from "@/21st-publish/gooey-search/demos/default/code.demo";
+import { SitePlaceholderPage } from "@/components/site-placeholder-page";
 
 export const metadata: Metadata = {
   title: "I+D",
   description:
-    "Investigación y desarrollo aplicado — exploración interactiva.",
+    "Investigación y desarrollo aplicado — laboratorio de nutrición industrial.",
 };
 
 export default function TecnologiaPage() {
-  return <GooeySearchDemo />;
+  return (
+    <SitePlaceholderPage
+      title="I+D"
+      description="Investigación y desarrollo aplicado. Contenido en construcción."
+    />
+  );
 }

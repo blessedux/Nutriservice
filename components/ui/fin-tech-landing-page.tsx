@@ -107,7 +107,7 @@ function Planet() {
 const DEMO_NAV = [
   { href: "/soluciones", label: "Soluciones" },
   { href: "/tecnologia", label: "I+D" },
-  { href: "/#impact", label: "Impact" },
+  { href: "/impact", label: "Impact" },
 ] as const;
 
 function DemoChromeNav() {

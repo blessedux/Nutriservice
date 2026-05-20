@@ -97,7 +97,7 @@ export default function HeroCtaBar({
           "flex flex-col gap-3 transition-[opacity,transform] duration-[520ms] ease-out sm:flex-row sm:items-center sm:gap-4",
           variant === "strip"
             ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
-            : "ml-0 mr-auto mt-10 max-w-xl items-stretch justify-start sm:mt-9",
+            : "ml-0 mr-auto mt-6 max-w-xl items-stretch justify-start sm:mt-9",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"

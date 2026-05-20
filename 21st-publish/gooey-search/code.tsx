@@ -244,11 +244,13 @@ function InfoIcon({ index }: { index: number }) {
   );
 }
 
-const buttonVariants = {
-  initial: { x: 0, width: 100 },
-  step1: { x: 0, width: 100 },
-  step2: { x: -30, width: 180 },
-};
+function createButtonVariants(expandedWidth: number) {
+  return {
+    initial: { x: 0, width: 100 },
+    step1: { x: 0, width: 100 },
+    step2: { x: -30, width: expandedWidth },
+  };
+}
 
 const iconVariants = {
   hidden: { x: -50, opacity: 0 },
@@ -291,12 +293,23 @@ export type GooeySearchProps = {
   /** Items matched against the debounced query (substring, case-insensitive). */
   data?: readonly string[];
   debounceMs?: number;
+  /** Collapsed button label (step 1). */
+  buttonLabel?: string;
+  /** Expanded input placeholder (step 2). */
+  placeholder?: string;
+  inputAriaLabel?: string;
+  /** Width in px when the search bar is expanded. */
+  expandedWidth?: number;
 };
 
 export function GooeySearch({
   className,
   data = gooeySearchDummyData,
   debounceMs = 500,
+  buttonLabel = "Search",
+  placeholder = "Type to search...",
+  inputAriaLabel = "Search input",
+  expandedWidth = 180,
 }: GooeySearchProps) {
   const reactId = useId();
   const filterId = useMemo(
@@ -314,6 +327,10 @@ export function GooeySearch({
 
   const debouncedSearchText = useDebounce(searchText, debounceMs);
   const isUnsupported = useMemo(() => isUnsupportedGooeyBrowser(), []);
+  const buttonVariants = useMemo(
+    () => createButtonVariants(expandedWidth),
+    [expandedWidth],
+  );
 
   const closeSearch = useCallback(() => {
     setSearchText("");
@@ -475,14 +492,14 @@ export function GooeySearch({
             }}
           >
             {step === 1 ? (
-              <span className="gooey-search-text">Search</span>
+              <span className="gooey-search-text">{buttonLabel}</span>
             ) : (
               <input
                 ref={inputRef}
                 type="text"
                 className="gooey-search-input"
-                placeholder="Type to search..."
-                aria-label="Search input"
+                placeholder={placeholder}
+                aria-label={inputAriaLabel}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onClick={(e) => e.stopPropagation()}

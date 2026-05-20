@@ -30,7 +30,7 @@ export default function CertificationsSection() {
   const y = useTransform(scrollYProgress, [0, 1], [48, -48]);
 
   return (
-    <div ref={wrapperRef} className="-mt-[25dvh]">
+    <div ref={wrapperRef} className="-mt-[25dvh] pointer-events-none">
       <HomeBlueBand
         id="certificaciones"
         height="half"
@@ -46,7 +46,7 @@ export default function CertificationsSection() {
         {/* Parallax content — moves slower than scroll */}
         <motion.div
           style={{ y: reduceMotion ? 0 : y }}
-          className="relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-6 sm:gap-10 sm:px-10 lg:px-12"
+          className="pointer-events-auto relative z-10 mx-auto flex w-full max-w-6xl flex-col items-center gap-8 px-6 sm:gap-10 sm:px-10 lg:px-12"
         >
           <header className="text-center">
             <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white/45">

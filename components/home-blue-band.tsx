@@ -32,9 +32,12 @@ export const HOME_INDUSTRIES_SEAM = mixHex(
 /** Ocean-floor loop shared by stats (bottom) and industrias (top). */
 export const OCEAN_FLOOR_VIDEO_SRC = "/ocean_floor.webm";
 
-/** Zoom + anchor so the stats bottom edge matches industrias top ~25%. */
-export const OCEAN_FLOOR_VIDEO_CLASSES =
-  "origin-bottom scale-[1.12] object-cover object-bottom";
+/** Stats band — pinned to section bottom so no gap shows above industrias. */
+export const OCEAN_FLOOR_STATS_VIDEO_CLASSES =
+  "origin-bottom scale-[1.18] object-cover object-bottom";
+
+/** Legacy alias — prefer stats/industries-specific tokens below. */
+export const OCEAN_FLOOR_VIDEO_CLASSES = OCEAN_FLOOR_STATS_VIDEO_CLASSES;
 
 /** Extra zoom for industrias — stats keeps `OCEAN_FLOOR_VIDEO_CLASSES`. */
 export const OCEAN_FLOOR_INDUSTRIES_VIDEO_CLASSES =

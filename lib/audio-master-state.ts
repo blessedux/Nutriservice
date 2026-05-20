@@ -1,4 +1,4 @@
-/** Sincronía entre mute del widget principal y capas opcionales (p. ej. audio del hero). */
+/** Mute de la música ambiental principal (`First_Blossom`, widget / menú Sonido). */
 let ambientMasterMuted = false;
 
 export function setAmbientMasterMuted(next: boolean) {

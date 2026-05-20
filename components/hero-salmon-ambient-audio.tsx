@@ -7,13 +7,21 @@ import {
   HERO_SEA_AMBIENT_GAIN,
   HERO_SEA_AUDIO_SRC,
 } from "@/lib/audio-gain";
-import { getAmbientMasterMuted } from "@/lib/audio-master-state";
+import { AUDIO_FADE_MS } from "@/lib/audio-constants";
+import {
+  easeInQuad,
+  easeOutQuad,
+  fadeAudioVolume,
+  killAudioFade,
+} from "@/lib/audio-fade";
+import { getFxMuted } from "@/lib/audio-fx-state";
+import { subscribeTabAudioHidden } from "@/lib/tab-audio-visibility";
 
-type MasterMutedEvent = CustomEvent<{ muted: boolean }>;
+type FxMutedEvent = CustomEvent<{ muted: boolean }>;
 
 /**
- * Mar / cueva bajo el video del hero (solo `/`). Solo suena si el hero intersecta el viewport
- * (cualquier fracción visible). Respeta mute global y `hyperia:start-sound`.
+ * Mar / cueva bajo el video del hero (solo `/`). Solo suena si el hero intersecta el viewport.
+ * Respeta mute FX (independiente de la música), tab en segundo plano y `hyperia:start-sound`.
  */
 export function HeroSalmonAmbientAudio({
   heroRootRef,
@@ -33,9 +41,11 @@ export function HeroSalmonAmbientAudio({
     let cancelled = false;
     let sea: HTMLAudioElement | null = null;
     let io: IntersectionObserver | null = null;
-    let onMaster: ((e: Event) => void) | null = null;
+    let onFx: ((e: Event) => void) | null = null;
+    let unsubscribeTab: (() => void) | null = null;
     let syncPlayback: (() => void) | null = null;
     let rafBind: number | null = null;
+    const fadeToken = { gen: 0, raf: null as number | null };
 
     const bind = () => {
       if (cancelled) return;
@@ -52,22 +62,33 @@ export function HeroSalmonAmbientAudio({
       audioRef.current = sea;
 
       let heroVisible = false;
-      let masterMuted = getAmbientMasterMuted();
+      let fxMuted = getFxMuted();
+      let tabHidden = false;
 
       syncPlayback = () => {
         if (!sea || cancelled) return;
-        sea.volume = masterMuted ? 0 : HERO_SEA_AMBIENT_GAIN;
-        if (!heroVisible) {
+        const silenced = fxMuted || tabHidden;
+        const nextGain = silenced ? 0 : HERO_SEA_AMBIENT_GAIN;
+        fadeAudioVolume(
+          fadeToken,
+          sea,
+          sea.volume,
+          nextGain,
+          AUDIO_FADE_MS,
+          silenced ? easeOutQuad : easeInQuad,
+        );
+
+        if (!heroVisible || fxMuted || tabHidden) {
           sea.pause();
           return;
         }
         void sea.play().catch(() => {});
       };
 
-      onMaster = (e: Event) => {
-        const { muted } = (e as MasterMutedEvent).detail ?? {};
+      onFx = (e: Event) => {
+        const { muted } = (e as FxMutedEvent).detail ?? {};
         if (typeof muted !== "boolean") return;
-        masterMuted = muted;
+        fxMuted = muted;
         syncPlayback?.();
       };
 
@@ -80,11 +101,13 @@ export function HeroSalmonAmbientAudio({
       );
       io.observe(root);
 
-      window.addEventListener(
-        "hyperia:master-muted",
-        onMaster as EventListener,
-      );
+      window.addEventListener("hyperia:fx-muted", onFx as EventListener);
       window.addEventListener("hyperia:start-sound", syncPlayback);
+
+      unsubscribeTab = subscribeTabAudioHidden((hidden) => {
+        tabHidden = hidden;
+        syncPlayback?.();
+      });
 
       syncPlayback();
     };
@@ -94,14 +117,15 @@ export function HeroSalmonAmbientAudio({
     return () => {
       cancelled = true;
       if (rafBind != null) cancelAnimationFrame(rafBind);
-      if (onMaster && syncPlayback) {
-        window.removeEventListener(
-          "hyperia:master-muted",
-          onMaster as EventListener,
-        );
+      if (onFx) {
+        window.removeEventListener("hyperia:fx-muted", onFx as EventListener);
+      }
+      if (syncPlayback) {
         window.removeEventListener("hyperia:start-sound", syncPlayback);
       }
+      unsubscribeTab?.();
       io?.disconnect();
+      killAudioFade(fadeToken);
       sea?.pause();
       audioRef.current = null;
     };

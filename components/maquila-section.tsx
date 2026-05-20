@@ -13,7 +13,7 @@ export default function MaquilaSection() {
       id="maquila"
       height="full"
       aria-label="Maquila"
-      className="justify-center overflow-hidden px-6 py-10 sm:px-10 lg:px-12"
+      className="relative z-10 -mt-[14rem] justify-center overflow-hidden px-6 py-10 sm:-mt-[16rem] sm:px-10 md:-mt-[18rem] lg:px-12"
     >
       <div className="relative mx-auto flex w-full max-w-7xl flex-1 items-center justify-end">
         <div

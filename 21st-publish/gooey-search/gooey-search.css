@@ -6,6 +6,12 @@
   isolation: isolate;
 }
 
+.gooey-search-root--navy .gooey-search-result,
+.gooey-search-root--navy .gooey-search-btn,
+.gooey-search-root--navy .gooey-search-icon-slot {
+  background-color: var(--color-ns-navy, #030a1c);
+}
+
 .gooey-search-root.gooey-search-root--no-goo .gooey-search-inner {
   filter: none !important;
 }
