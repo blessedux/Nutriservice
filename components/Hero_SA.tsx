@@ -2066,7 +2066,8 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
           tone="on-dark"
           heroRevealReady={heroRevealReady}
           heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-          secondaryHref="/#calculadora"
+          secondaryHref="/#proceso"
+          secondaryLabel="Ver el proceso ↓"
           className="relative z-40 !mt-0 max-lg:[&>div]:!mt-1 max-lg:[&>div]:pointer-events-auto"
         />
       </div>

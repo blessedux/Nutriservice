@@ -46,6 +46,22 @@ function usePrefersReducedMotion(): boolean {
   return reduced;
 }
 
+function scrollToHashTarget(href: string): boolean {
+  const hashIndex = href.indexOf("#");
+  if (hashIndex === -1) return false;
+
+  const id = href.slice(hashIndex + 1);
+  if (!id) return false;
+
+  const target = document.getElementById(id);
+  if (!target) return false;
+
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+  const nextUrl = href.startsWith("/") ? href : `#${id}`;
+  window.history.replaceState(null, "", nextUrl);
+  return true;
+}
+
 export default function HeroCtaBar({
   primaryHref = "/contacto",
   primaryLabel = "Agendar evaluación técnica",
@@ -115,6 +131,11 @@ export default function HeroCtaBar({
         </Link>
         <Link
           href={secondaryHref}
+          onClick={(event) => {
+            if (scrollToHashTarget(secondaryHref)) {
+              event.preventDefault();
+            }
+          }}
           className={cn(
             "inline-flex items-center justify-center rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
             secondaryBtn,

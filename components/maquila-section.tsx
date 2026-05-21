@@ -383,7 +383,7 @@ export default function MaquilaSection() {
       ref={sectionRef}
       id="maquila"
       aria-label="Maquila"
-      className="relative z-10 scroll-mt-24 overflow-visible text-white"
+      className="relative z-10 -mt-px scroll-mt-24 overflow-visible text-white"
       style={{ backgroundColor: HOME_BLUE_BG }}
     >
       <div className="mx-auto w-full max-w-7xl px-6 pb-20 pt-12 sm:px-10 sm:pb-24 sm:pt-14 md:pb-28 md:pt-16 lg:px-12 lg:pb-32 lg:pt-20 xl:px-20">

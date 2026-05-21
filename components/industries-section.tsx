@@ -212,6 +212,8 @@ function IndustryCard({
 
 function IndustriesCarousel() {
   const reduceMotion = useReducedMotion();
+  const isMobile = useMobileExperience();
+  const cardSpreadPx = isMobile !== false ? 156 : 228;
 
   /**
    * FocusRail-pattern state: a single integer `active` that can go negative
@@ -291,13 +293,9 @@ function IndustriesCarousel() {
   );
 
   return (
-    <motion.div
+    <div
       ref={containerRef}
-      className="relative mt-4 w-full max-w-[min(94vw,580px)] select-none outline-none px-2 sm:max-w-[min(82vw,600px)] sm:px-4 md:max-w-[min(72vw,600px)] md:px-6 mx-auto lg:mx-0 lg:mr-auto lg:mt-0 lg:px-8"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="relative mt-4 mx-auto w-full max-w-full select-none overflow-x-hidden outline-none px-2 sm:max-w-[min(82vw,600px)] sm:px-4 md:max-w-[min(72vw,600px)] md:px-6 lg:mx-0 lg:mr-auto lg:mt-0 lg:max-w-[min(94vw,580px)] lg:overflow-visible lg:px-8"
       tabIndex={0}
       onKeyDown={onKeyDown}
       onMouseEnter={() => setIsHovering(true)}
@@ -333,7 +331,7 @@ function IndustriesCarousel() {
         role="region"
         aria-roledescription="carousel"
         aria-label="Industrias — arrastra o desliza para explorar"
-        className="relative flex h-[440px] w-full items-center justify-center overflow-visible [perspective:1200px] sm:h-[500px] md:h-[540px]"
+        className="relative flex h-[440px] w-full items-center justify-center overflow-hidden [perspective:1200px] sm:h-[500px] md:h-[540px] lg:overflow-visible"
       >
         {/*
          * Draggable container — dragConstraints keep it visually anchored;
@@ -366,7 +364,7 @@ function IndustriesCarousel() {
                 className={cn("absolute", isCenter ? "z-20" : "z-10")}
                 initial={false}
                 animate={{
-                  x: offset * 228,
+                  x: offset * cardSpreadPx,
                   z: -dist * 80,
                   scale: isCenter ? 1 : 0.86,
                   rotateY: offset * -12,
@@ -451,7 +449,7 @@ function IndustriesCarousel() {
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
@@ -622,20 +620,18 @@ export default function IndustriesSection() {
 
   /** Flush with stats video at rest; slides further up over stats on scroll */
   const y = useTransform(scrollYProgress, [0, 0.32, 1], [0, -96, -380]);
+  /** Pull the next band up by the same amount `y` lifts this block — avoids body flash in the seam. */
+  const layoutPull = useTransform(y, (value) => `${value}px`);
 
   return (
-    <div
+    <motion.div
       ref={wrapperRef}
-      className="relative z-40 -mt-px bg-[#030A1C] pb-0"
+      style={{
+        y: reduceMotion ? 0 : y,
+        marginBottom: reduceMotion ? 0 : layoutPull,
+      }}
+      className="relative z-40 -mt-px overflow-x-hidden bg-[#030A1C] pb-0"
     >
-      <motion.div
-        style={{ y: reduceMotion ? 0 : y }}
-        className="relative z-40 -mb-[14rem] overflow-visible md:-mb-[16rem] lg:-mb-[18rem]"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
-      >
       <section
         id="industrias"
         className={cn(
@@ -646,7 +642,13 @@ export default function IndustriesSection() {
       >
         <IndustriesSectionBackground />
 
-        <div className="relative z-10 mx-auto flex min-h-full w-full max-w-[1440px] flex-col justify-center px-6 pt-10 pb-28 md:px-12 md:pt-12 md:pb-36 lg:pt-14 lg:pb-44">
+        <motion.div
+          className="relative z-10 mx-auto flex min-h-full w-full max-w-[1440px] flex-col justify-center px-6 pt-10 pb-28 md:px-12 md:pt-12 md:pb-36 lg:pt-14 lg:pb-44"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+        >
           <div className="mb-6 flex items-center gap-4 md:mb-8">
             <span
               className="h-px w-10 shrink-0"
@@ -692,9 +694,8 @@ export default function IndustriesSection() {
               </Link>
             </header>
           </div>
-        </div>
+        </motion.div>
       </section>
-      </motion.div>
-    </div>
+    </motion.div>
   );
 }
