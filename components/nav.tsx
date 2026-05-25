@@ -2,19 +2,24 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import { SoundFxToggle } from "@/components/sound-fx-toggle";
 import { SoundWaveToggle } from "@/components/sound-wave-toggle";
 import { useMobileExperience } from "@/hooks/use-mobile-experience";
 import { AMBIENT_MUSIC_MAX_GAIN } from "@/lib/audio-gain";
+import { getDivisionMedia } from "@/lib/productos-division-media";
+import {
+  getProductoBySlug,
+  resolveProductoDivision,
+} from "@/lib/productos-inventory";
 
 /** Matches Figma Nav — https://www.figma.com/design/mnXw2naZBw8QwX0JDuqOhp/Nutriservice?node-id=316-7993 */
 const NAV_LINKS = [
   { href: "/soluciones", label: "Soluciones" },
   { href: "/tecnologia", label: "I+D" },
-  { href: "/impact", label: "Impact" },
+  { href: "/impacto", label: "Impacto" },
 ] as const;
 
 const linkBase =
@@ -31,13 +36,37 @@ function useHash() {
   return hash;
 }
 
-export default function Nav() {
+function useProductDetailDarkNav(pathname: string): boolean {
+  const searchParams = useSearchParams();
+  if (!pathname.startsWith("/productos/")) return false;
+
+  const slug = pathname.split("/").filter(Boolean).at(-1);
+  if (!slug) return false;
+
+  const product = getProductoBySlug(slug);
+  if (!product) return false;
+
+  const division = resolveProductoDivision(
+    product,
+    searchParams.get("division") ?? undefined,
+  );
+  return getDivisionMedia(division).tone === "on-dark";
+}
+
+function NavInner() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const hash = useHash();
   const isMobile = useMobileExperience();
   const onHome = pathname === "/";
+  const onAcuicola = pathname === "/industrias/acuicola";
+  const onProductDarkNav = useProductDetailDarkNav(pathname);
+  const onContacto =
+    pathname === "/contacto" || pathname.startsWith("/contacto/");
+  const onDarkNav = onHome || onAcuicola || onProductDarkNav;
+  const onLightBlueNav = onContacto;
+  const onTransparentDarkNav = onAcuicola || onProductDarkNav;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -46,17 +75,17 @@ export default function Nav() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const linkMuted = onHome
+  const linkMuted = onDarkNav
     ? "text-white/60 hover:text-white"
     : "text-[rgba(30,58,138,0.5)] hover:text-[rgba(30,58,138,0.75)]";
-  const linkActive = onHome ? "text-white" : "text-[#1e3a8a]";
+  const linkActive = onDarkNav ? "text-white" : "text-[#1e3a8a]";
   const barDivider =
-    onHome ? "bg-white/28" : "bg-[rgba(30,58,138,0.2)]";
-  const ctaClasses = onHome
+    onDarkNav ? "bg-white/28" : "bg-[rgba(30,58,138,0.2)]";
+  const ctaClasses = onDarkNav
     ? "inline-flex shrink-0 items-center justify-center rounded-full border border-white/55 bg-white/10 px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-none backdrop-blur-sm transition-colors hover:bg-white/18 active:scale-[0.98]"
     : "inline-flex shrink-0 items-center justify-center rounded-full bg-[#0a192f] px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-sm transition-colors hover:bg-[#0d2140] active:scale-[0.98]";
-  const logoSrc = onHome ? "/nutriservice_logo_white.png" : "/nutriservice_logo_blue.png";
-  const burgerBar = onHome ? "bg-white" : "bg-[#111827]";
+  const logoSrc = onDarkNav ? "/nutriservice_logo_white.png" : "/nutriservice_logo_blue.png";
+  const burgerBar = onDarkNav ? "bg-white" : "bg-[#111827]";
 
   useEffect(() => {
     if (!open || isMobile !== true) return;
@@ -76,16 +105,22 @@ export default function Nav() {
 
   const headerSurface =
     open && isMobile === true
-      ? onHome
+      ? onDarkNav
         ? "border-b border-white/10 bg-slate-950"
-        : "border-b border-[rgba(10,25,47,0.08)] bg-white"
-      : scrolled
-        ? onHome
-          ? "border-b border-white/10 bg-slate-950/72 backdrop-blur-xl backdrop-saturate-150"
-          : "border-b border-[rgba(10,25,47,0.08)] bg-white/82 backdrop-blur-xl backdrop-saturate-150"
-        : onHome
-          ? "border-b border-white/10 bg-transparent"
-          : "border-b border-[rgba(10,25,47,0.08)] bg-transparent";
+        : onLightBlueNav
+          ? "border-b border-[rgba(10,25,47,0.08)] bg-[#A8C8D6]"
+          : "border-b border-[rgba(10,25,47,0.08)] bg-white"
+      : onTransparentDarkNav
+        ? "border-b border-white/10 bg-transparent"
+        : onLightBlueNav
+          ? "border-b border-[rgba(10,25,47,0.08)] bg-transparent"
+        : scrolled
+          ? onHome
+            ? "border-b border-white/10 bg-slate-950/72 backdrop-blur-xl backdrop-saturate-150"
+            : "border-b border-[rgba(10,25,47,0.08)] bg-white/82 backdrop-blur-xl backdrop-saturate-150"
+          : onHome
+            ? "border-b border-white/10 bg-transparent"
+            : "border-b border-[rgba(10,25,47,0.08)] bg-transparent";
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${headerSurface}`}>
@@ -118,7 +153,7 @@ export default function Nav() {
           <span className={`h-4 w-px shrink-0 ${barDivider}`} aria-hidden />
           <Link
             href="/contacto"
-            className={`${ctaClasses} ${isLinkActive("/contacto") ? (onHome ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
+            className={`${ctaClasses} ${isLinkActive("/contacto") ? (onDarkNav ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
           >
             Contacto
           </Link>
@@ -155,8 +190,8 @@ export default function Nav() {
             open
               ? "visible opacity-100"
               : "invisible pointer-events-none opacity-0"
-          } ${
-            onHome
+          }           ${
+            onDarkNav
               ? "bg-slate-950 text-white"
               : "bg-white text-[#0a192f]"
           }`}
@@ -179,7 +214,7 @@ export default function Nav() {
                 </Link>
               ))}
               <span
-                className={`h-px w-full ${onHome ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
+                className={`h-px w-full ${onDarkNav ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
                 aria-hidden
               />
               <Link
@@ -191,7 +226,7 @@ export default function Nav() {
                 Contacto
               </Link>
               <span
-                className={`h-px w-full ${onHome ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
+                className={`h-px w-full ${onDarkNav ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
                 aria-hidden
               />
               <SoundWaveToggle
@@ -200,9 +235,9 @@ export default function Nav() {
                 autoBootstrap={false}
                 showLabel
                 label="Sonido"
-                tone={onHome ? "on-dark" : "on-light"}
+                tone={onDarkNav ? "on-dark" : "on-light"}
                 labelClassName={
-                  onHome
+                  onDarkNav
                     ? "text-[10px] font-bold uppercase tracking-[3px] text-white/60"
                     : "text-[10px] font-bold uppercase tracking-[3px] text-[rgba(30,58,138,0.5)]"
                 }
@@ -210,9 +245,9 @@ export default function Nav() {
               />
               <SoundFxToggle
                 autoEnable={false}
-                tone={onHome ? "on-dark" : "on-light"}
+                tone={onDarkNav ? "on-dark" : "on-light"}
                 labelClassName={
-                  onHome
+                  onDarkNav
                     ? "text-[10px] font-bold uppercase tracking-[3px] text-white/60"
                     : "text-[10px] font-bold uppercase tracking-[3px] text-[rgba(30,58,138,0.5)]"
                 }
@@ -223,5 +258,19 @@ export default function Nav() {
         </div>
       ) : null}
     </header>
+  );
+}
+
+export default function Nav() {
+  return (
+    <Suspense
+      fallback={
+        <header className="fixed inset-x-0 top-0 z-50 border-b border-[rgba(10,25,47,0.08)] bg-transparent">
+          <div className="mx-auto flex h-16 max-w-[1280px] items-center px-6 sm:px-10 lg:px-12" />
+        </header>
+      }
+    >
+      <NavInner />
+    </Suspense>
   );
 }

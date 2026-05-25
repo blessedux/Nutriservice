@@ -1,5 +1,5 @@
 /** Ambient SFX (hero sea, UI cues) — independent from background music mute. */
-let fxMuted = true;
+let fxMuted = false;
 
 export function setFxMuted(next: boolean) {
   fxMuted = next;

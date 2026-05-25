@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import IndustriaAcuicolaPage from "@/components/industria-acuicola-page";
+import IndustriaProductosSection from "@/components/industria-productos-section";
 import { getIndustry, industryList } from "@/lib/industries";
 import CTABanner from "@/components/cta-banner";
 
@@ -20,17 +22,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-const ICONS: Record<string, string> = {
-  acuicola: "🐟",
-  avicola: "🐓",
-  porcina: "🐷",
-  mascotas: "🐾",
-};
-
 export default async function IndustryPage({ params }: Props) {
   const { slug } = await params;
   const ind = getIndustry(slug);
   if (!ind) notFound();
+
+  if (slug === "acuicola") {
+    return <IndustriaAcuicolaPage industry={ind} />;
+  }
 
   return (
     <>
@@ -39,7 +38,7 @@ export default async function IndustryPage({ params }: Props) {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-xs font-semibold uppercase tracking-widest text-ns-emerald">
-              {ICONS[ind.slug]} {ind.name}
+              {ind.name}
             </span>
             <span className="text-white/25">·</span>
             <Link
@@ -57,6 +56,12 @@ export default async function IndustryPage({ params }: Props) {
           </p>
         </div>
       </section>
+
+      <IndustriaProductosSection
+        industrySlug={ind.slug}
+        industryName={ind.name}
+        className="bg-white"
+      />
 
       {/* Problem cards */}
       <section className="py-20 px-6 bg-white">

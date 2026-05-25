@@ -51,7 +51,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${BASE}/nosotros`,
+      url: `${BASE}/impacto`,
       lastModified: now,
       changeFrequency: "yearly",
       priority: 0.6,

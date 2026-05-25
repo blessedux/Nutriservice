@@ -14,6 +14,7 @@ export default function SoundWidget() {
       <SoundWaveToggle
         audioSrc="/First_Blossom.mp3"
         maxLinearGain={AMBIENT_MUSIC_MAX_GAIN}
+        autoBootstrap={false}
         showLabel={false}
         tone="on-dark"
       />

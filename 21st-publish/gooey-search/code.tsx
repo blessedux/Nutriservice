@@ -300,6 +300,10 @@ export type GooeySearchProps = {
   inputAriaLabel?: string;
   /** Width in px when the search bar is expanded. */
   expandedWidth?: number;
+  /** Called when a dropdown result is clicked. */
+  onSelectResult?: (value: string) => void;
+  /** Called when Enter is pressed in the input. */
+  onSubmit?: (query: string) => void;
 };
 
 export function GooeySearch({
@@ -310,6 +314,8 @@ export function GooeySearch({
   placeholder = "Type to search...",
   inputAriaLabel = "Search input",
   expandedWidth = 180,
+  onSelectResult,
+  onSubmit,
 }: GooeySearchProps) {
   const reactId = useId();
   const filterId = useMemo(
@@ -412,6 +418,21 @@ export function GooeySearch({
     };
   }, [data, debouncedSearchText]);
 
+  const handleSelectResult = useCallback(
+    (item: string) => {
+      onSelectResult?.(item);
+      closeSearch();
+    },
+    [closeSearch, onSelectResult],
+  );
+
+  const handleSubmit = useCallback(() => {
+    const query = searchText.trim();
+    if (!query) return;
+    onSubmit?.(query);
+    closeSearch();
+  }, [closeSearch, onSubmit, searchText]);
+
   return (
     <div
       ref={rootRef}
@@ -446,8 +467,9 @@ export function GooeySearch({
             >
               <AnimatePresence mode="popLayout">
                 {searchData.map((item, index) => (
-                  <motion.div
+                  <motion.button
                     key={item}
+                    type="button"
                     whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                     variants={getResultItemVariants(index, isUnsupported)}
                     initial="initial"
@@ -456,6 +478,10 @@ export function GooeySearch({
                     transition={getResultItemTransition(index)}
                     className="gooey-search-result"
                     role="option"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      handleSelectResult(item);
+                    }}
                   >
                     <div className="gooey-search-result-title">
                       <InfoIcon index={index} />
@@ -467,7 +493,7 @@ export function GooeySearch({
                         {item}
                       </motion.span>
                     </div>
-                  </motion.div>
+                  </motion.button>
                 ))}
               </AnimatePresence>
             </motion.div>
@@ -502,6 +528,12 @@ export function GooeySearch({
                 aria-label={inputAriaLabel}
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key !== "Enter") return;
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleSubmit();
+                }}
                 onClick={(e) => e.stopPropagation()}
               />
             )}

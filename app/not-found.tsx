@@ -33,7 +33,7 @@ export default function NotFound() {
             { href: "/soluciones", label: "Soluciones" },
             { href: "/industrias", label: "Industrias" },
             { href: "/tecnologia", label: "Tecnología" },
-            { href: "/nosotros", label: "Nosotros" },
+            { href: "/impacto", label: "Impacto" },
           ].map((l) => (
             <Link
               key={l.href}

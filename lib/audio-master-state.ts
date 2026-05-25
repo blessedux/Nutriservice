@@ -1,5 +1,5 @@
 /** Mute de la música ambiental principal (`First_Blossom`, widget / menú Sonido). */
-let ambientMasterMuted = false;
+let ambientMasterMuted = true;
 
 export function setAmbientMasterMuted(next: boolean) {
   ambientMasterMuted = next;

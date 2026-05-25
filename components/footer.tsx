@@ -4,15 +4,15 @@ import type { ReactNode } from "react";
 
 const SOLUCIONES_LINKS = [
   { href: "/industrias/acuicola", label: "Acuícola" },
-  { href: "/industrias/avicola", label: "Aves" },
+  { href: "/industrias/avicola", label: "Avícola" },
+  { href: "/industrias/porcina", label: "Porcina" },
   { href: "/industrias/mascotas", label: "Mascotas" },
-  { href: "/industrias/porcina", label: "Ganadería" },
 ];
 
 const COMPANIA_LINKS = [
   { href: "/tecnologia", label: "I+D Lab" },
   { href: "/productos", label: "Calidad" },
-  { href: "/nosotros", label: "Carreras" },
+  { href: "/impacto", label: "Impacto" },
   { href: "/contacto", label: "Contacto" },
 ];
 

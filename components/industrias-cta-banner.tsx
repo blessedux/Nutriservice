@@ -19,7 +19,7 @@ export default function IndustriasCtaBanner({
     <section
       id={id}
       className={cn(
-        "bg-white px-6 py-12 sm:px-10 sm:py-16 lg:px-16 xl:px-32",
+        "bg-[#0a192f] px-6 py-12 sm:px-10 sm:py-16 lg:px-16 xl:px-32",
         id && "scroll-mt-24",
         className,
       )}

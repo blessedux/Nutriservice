@@ -12,7 +12,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
   {
     slug: "acuicola",
     vertical: "VERTICAL 01",
-    displayName: "Salmones",
+    displayName: "Acuícola",
     image: "/industries/acuicola.webp",
     challengeLines: ["Mortalidad por Estrés", "Térmico y Sanitario"],
     solutionLines: [
@@ -24,7 +24,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
   {
     slug: "avicola",
     vertical: "VERTICAL 02",
-    displayName: "Aves",
+    displayName: "Avícola",
     image: "/industries/avicola.webp",
     challengeLines: ["Optimización del FCR y", "Salud Intestinal"],
     solutionLines: [
@@ -37,7 +37,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
   {
     slug: "porcina",
     vertical: "VERTICAL 03",
-    displayName: "Cerdos",
+    displayName: "Porcina",
     image: "/industries/porcina.webp",
     challengeLines: ["Rendimiento en Etapas de", "Destete"],
     solutionLines: [

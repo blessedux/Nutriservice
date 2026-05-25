@@ -1,4 +1,5 @@
 import { PRODUCTOS_SEARCH_ITEMS as INVENTORY_SEARCH_ITEMS } from "@/lib/productos-inventory";
+import { PRODUCTOS_DIVISIONES } from "@/lib/productos-divisions";
 
 /** Functional benefit filters — not species / industry. */
 export const PRODUCTOS_CATEGORIAS = [
@@ -16,6 +17,7 @@ export const PRODUCTOS_CATEGORIAS = [
 ] as const;
 
 export const PRODUCTOS_SEARCH_ITEMS = [
+  ...PRODUCTOS_DIVISIONES.flatMap((d) => [d.label]),
   ...PRODUCTOS_CATEGORIAS.flatMap((c) => [c.label, c.detail]),
   ...INVENTORY_SEARCH_ITEMS,
 ];

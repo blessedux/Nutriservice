@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/impact",
+        destination: "/impacto",
+        permanent: true,
+      },
+      {
+        source: "/nosotros",
+        destination: "/impacto",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
