@@ -1,8 +1,9 @@
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
-export const MASCOTAS_VIDEO_WEBM = "/nutriservice_cat_sequence_optimized.webm";
-export const AVES_VIDEO_WEBM = "/nutriservice_chickens_light.webm";
-export const PORCINA_VIDEO_WEBM = "/nutriservice_pigs_light.webm";
+export const MASCOTAS_VIDEO_WEBM = PUBLIC_ASSETS.divisionVideo.mascotas;
+export const AVES_VIDEO_WEBM = PUBLIC_ASSETS.divisionVideo.aves;
+export const PORCINA_VIDEO_WEBM = PUBLIC_ASSETS.divisionVideo.porcina;
 
 export type DivisionMedia = {
   video?: { mp4?: string; webm: string };
@@ -17,8 +18,8 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
 > = {
   acuicola: {
     video: {
-      mp4: "/Salmon_sequence_optimized.mp4",
-      webm: "/Salmon_sequence_optimized.webm",
+      mp4: PUBLIC_ASSETS.hero.salmonMp4,
+      webm: PUBLIC_ASSETS.hero.salmonWebm,
     },
     tone: "on-dark",
   },
@@ -29,7 +30,7 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
     tone: "on-dark",
   },
   cerdos: {
-    fallbackImage: "/industries/porcina.webp",
+    fallbackImage: PUBLIC_ASSETS.industryPages.fallbackPorcina,
     tone: "on-light",
   },
   mascotas: {

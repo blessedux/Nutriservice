@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import ProblemMorphGlbViewer from "@/components/problem-morph-glb-viewer";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export type ProblemCard = {
   title: string;
@@ -326,7 +327,7 @@ function ProblemBackgroundLayers() {
     <>
       <div
         className="pointer-events-none absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url(/gradient_bg_teel.webp)" }}
+        style={{ backgroundImage: `url(${PUBLIC_ASSETS.problemSection.backgroundTeal})` }}
         aria-hidden
       />
       <div
@@ -554,8 +555,8 @@ export default function ProblemSection({
   revealPanel,
   bottomStats,
   morphChickenCardIndex = 1,
-  sheepModelSrc = "/sheep.glb",
-  chickenModelSrc = "/low_poly_chicken.glb",
+  sheepModelSrc = PUBLIC_ASSETS.problemSection.sheepModel,
+  chickenModelSrc = PUBLIC_ASSETS.problemSection.chickenModel,
 }: ProblemSectionProps) {
   const reducedMotion = usePrefersReducedMotion();
   const { ref: sectionRef, visible } = useSectionInView<HTMLElement>();

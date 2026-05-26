@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import GlbMorphHoverViewer from "@/components/glb-morph-hover-viewer";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export const metadata: Metadata = {
   title: "Model morph (test)",
@@ -28,7 +29,12 @@ export default function ModelMorphTestPage() {
       </section>
 
       <section className="px-6 py-12">
-        <GlbMorphHoverViewer srcs={["/sheep.glb", "/low_poly_chicken.glb"]} />
+        <GlbMorphHoverViewer
+          srcs={[
+            PUBLIC_ASSETS.problemSection.sheepModel,
+            PUBLIC_ASSETS.problemSection.chickenModel,
+          ]}
+        />
       </section>
     </div>
   );

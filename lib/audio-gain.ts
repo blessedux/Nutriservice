@@ -11,4 +11,6 @@ export const AMBIENT_MUSIC_MAX_GAIN = gainFromDb(AMBIENT_MUSIC_MAX_DB);
 /** Pista mar / salmón bajo el hero — mismo techo lineal que la música ambiental. */
 export const HERO_SEA_AMBIENT_GAIN = AMBIENT_MUSIC_MAX_GAIN;
 
-export const HERO_SEA_AUDIO_SRC = "/Sea_Underwater_mp3_2549177.mp3";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
+
+export const HERO_SEA_AUDIO_SRC = PUBLIC_ASSETS.audio.heroSeaUnderwater;

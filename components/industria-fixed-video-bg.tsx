@@ -1,9 +1,10 @@
 "use client";
 
 import DivisionVideoBg from "@/components/division-video-bg";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
-const DEFAULT_VIDEO_MP4 = "/Salmon_sequence_optimized.mp4";
-const DEFAULT_VIDEO_WEBM = "/Salmon_sequence_optimized.webm";
+const DEFAULT_VIDEO_MP4 = PUBLIC_ASSETS.hero.salmonMp4;
+const DEFAULT_VIDEO_WEBM = PUBLIC_ASSETS.hero.salmonWebm;
 
 type IndustriaFixedVideoBgProps = {
   mp4?: string;

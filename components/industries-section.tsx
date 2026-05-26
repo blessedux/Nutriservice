@@ -23,8 +23,10 @@ type WheelEntry = {
   industry: Industry;
 };
 
-const INDUSTRIES_BG_VIDEO_SRC = "/industries_background.webm";
-const INDUSTRIES_BG_IMAGE_SRC = "/background_nutriserviceA_highres.webp";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
+
+const INDUSTRIES_BG_VIDEO_SRC = PUBLIC_ASSETS.industriesSection.backgroundVideo;
+const INDUSTRIES_BG_IMAGE_SRC = PUBLIC_ASSETS.industriesSection.backgroundImage;
 
 /** Shorter band than media aspect — background scales up to keep visual size */
 const INDUSTRIES_SECTION_MIN_H =
@@ -33,20 +35,20 @@ const INDUSTRIES_BG_MEDIA_SCALE = "scale-[1.22]";
 
 const CARD_META: Record<string, CardMeta> = {
   acuicola: {
-    image: "/hero-sa-aqua-lab.webp",
+    image: PUBLIC_ASSETS.industriesSection.cardAcuicola,
     products: ["ACTIVEMOS", "MACROGARD", "SILIMARINA 80%", "NUCLEOFORCE"],
   },
   avicola: {
-    image: "/industries/avicola.webp",
+    image: PUBLIC_ASSETS.industriesSection.cardAvicola,
     title: "Aves",
     products: ["HALOR TID", "MICROACID PLUS", "M-PROVE", "S-PROVE"],
   },
   porcina: {
-    image: "/industries/porcina.webp",
+    image: PUBLIC_ASSETS.industriesSection.cardPorcina,
     products: ["MACROGARD", "HALOR TID", "M-PROVE", "NUCLEOFORCE"],
   },
   mascotas: {
-    image: "/catdog.webp",
+    image: PUBLIC_ASSETS.industriesSection.cardMascotas,
     products: ["PALAUP CH", "MACROGARD", "TECMAX PRO"],
   },
 };

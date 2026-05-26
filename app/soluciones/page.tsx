@@ -9,6 +9,7 @@ import {
   PRODUCTOS_INVENTORY,
   productosFilterHref,
 } from "@/lib/productos-inventory";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export const metadata: Metadata = {
   title: "Soluciones — Sistema de optimización productiva",
@@ -22,7 +23,7 @@ export default function SolucionesPage() {
       <section className="relative -mt-24 scroll-mt-24 bg-ns-surface px-6 pt-28 pb-10 sm:px-10 sm:pt-32 sm:pb-12 lg:px-12 lg:pt-36">
         <div className="relative mx-auto min-h-[min(100dvh,52rem)] w-full max-w-6xl overflow-hidden rounded-[2rem] text-white shadow-sm sm:rounded-[2.5rem]">
           <Image
-            src="/nutriservice_workers2.webp"
+            src={PUBLIC_ASSETS.shared.workersHero}
             alt=""
             fill
             priority

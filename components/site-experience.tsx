@@ -8,6 +8,7 @@ import {
   HOMEPAGE_PELLET_FRAMES,
   preloadScrollFrames,
 } from "@/lib/scroll-frame-preload";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
 /** Al menos la subida del contador — igual que el antiguo SitePreloader */
@@ -79,7 +80,7 @@ export function SiteExperience({
     const heroVideoPreload = document.createElement("link");
     heroVideoPreload.rel = "preload";
     heroVideoPreload.as = "video";
-    heroVideoPreload.href = "/Salmon_sequence_optimized.mp4";
+    heroVideoPreload.href = PUBLIC_ASSETS.hero.salmonMp4;
     heroVideoPreload.type = "video/mp4";
     document.head.appendChild(heroVideoPreload);
 

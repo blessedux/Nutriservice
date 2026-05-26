@@ -12,6 +12,7 @@ import {
 } from "framer-motion";
 
 import { HOME_BLUE_BG } from "@/components/home-blue-band";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
 type MaquilaStep = {
@@ -31,7 +32,7 @@ const MAQUILA_STEPS: MaquilaStep[] = [
     title: "Formulación Técnica",
     description:
       "Diseño de premixes y núcleos según especie, etapa productiva y objetivos nutricionales.",
-    image: "/maquila_hero.png",
+    image: PUBLIC_ASSETS.maquilaSection.tabFormulacionHero,
     imageWidth: 1298,
     imageHeight: 1212,
   },
@@ -41,7 +42,7 @@ const MAQUILA_STEPS: MaquilaStep[] = [
     title: "Producción Industrial",
     description:
       "Procesos estandarizados de mezclado, control de calidad y trazabilidad operacional.",
-    image: "/nutriservice_workers2.webp",
+    image: PUBLIC_ASSETS.shared.workersHero,
     imageWidth: 1536,
     imageHeight: 1024,
   },
@@ -51,7 +52,7 @@ const MAQUILA_STEPS: MaquilaStep[] = [
     title: "Optimización Productiva",
     description:
       "Soluciones enfocadas en digestibilidad, conversión alimenticia y estabilidad sanitaria.",
-    image: "/nutriservice_products_bg.webp",
+    image: PUBLIC_ASSETS.maquilaSection.tabProductsBg,
     imageWidth: 1536,
     imageHeight: 1024,
   },
@@ -108,25 +109,25 @@ function MaquilaReveal({
 
 const MAQUILA_PARTNER_LOGOS = [
   {
-    src: "/logos/Copy-of-logo-biorigin 1.svg",
+    src: PUBLIC_ASSETS.maquilaSection.logos.biorigin,
     alt: "Biorigin",
     width: 132,
     height: 36,
   },
   {
-    src: "/logos/Copy-of-logo-agrifirm 1.svg",
+    src: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
     alt: "Agrifirm",
     width: 132,
     height: 36,
   },
   {
-    src: "/logos/Copy-of-logo-nucienci 1.svg",
+    src: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
     alt: "Nucienci",
     width: 132,
     height: 36,
   },
   {
-    src: "/logos/bioiberica-logo 1.svg",
+    src: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
     alt: "Bioibérica",
     width: 230,
     height: 129,

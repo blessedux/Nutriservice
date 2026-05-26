@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const SOLUCIONES_LINKS = [
   { href: "/industrias/acuicola", label: "Acuícola" },
@@ -76,7 +77,7 @@ export default function Footer() {
     <footer className="relative overflow-hidden bg-[#0a192f] text-white">
       <div
         className="pointer-events-none absolute inset-0 bg-[length:auto_100%] bg-[position:calc(100%+2rem)_center] bg-no-repeat sm:bg-cover sm:bg-[position:right_center]"
-        style={{ backgroundImage: "url(/Footer_bg_img.webp)" }}
+        style={{ backgroundImage: `url(${PUBLIC_ASSETS.footer.background})` }}
         aria-hidden
       />
       <div
@@ -94,7 +95,7 @@ export default function Footer() {
           <div className="flex flex-col gap-6 lg:col-span-4">
             <Link href="/" className="inline-block w-[203px] max-w-full">
               <Image
-                src="/nutriservice_logo_white.png"
+                src={PUBLIC_ASSETS.brand.logoWhite}
                 alt="Nutriservice"
                 width={406}
                 height={126}

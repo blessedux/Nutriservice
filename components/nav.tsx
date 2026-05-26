@@ -9,6 +9,7 @@ import { SoundFxToggle } from "@/components/sound-fx-toggle";
 import { SoundWaveToggle } from "@/components/sound-wave-toggle";
 import { useMobileExperience } from "@/hooks/use-mobile-experience";
 import { AMBIENT_MUSIC_MAX_GAIN } from "@/lib/audio-gain";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { getDivisionMedia } from "@/lib/productos-division-media";
 import {
   getProductoBySlug,
@@ -105,7 +106,9 @@ function NavInner() {
   const ctaClasses = onWhiteNavText
     ? "inline-flex shrink-0 items-center justify-center rounded-full border border-white/55 bg-white/10 px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-none backdrop-blur-sm transition-colors hover:bg-white/18 active:scale-[0.98]"
     : "inline-flex shrink-0 items-center justify-center rounded-full bg-[#0a192f] px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-sm transition-colors hover:bg-[#0d2140] active:scale-[0.98]";
-  const logoSrc = onWhiteNavText ? "/nutriservice_logo_white.png" : "/nutriservice_logo_blue.png";
+  const logoSrc = onWhiteNavText
+    ? PUBLIC_ASSETS.brand.logoWhite
+    : PUBLIC_ASSETS.brand.logoBlue;
   const burgerBar = onWhiteNavText ? "bg-white" : "bg-[#111827]";
 
   useEffect(() => {
@@ -253,7 +256,7 @@ function NavInner() {
                 aria-hidden
               />
               <SoundWaveToggle
-                audioSrc="/First_Blossom.mp3"
+                audioSrc={PUBLIC_ASSETS.audio.ambient}
                 maxLinearGain={AMBIENT_MUSIC_MAX_GAIN}
                 autoBootstrap={false}
                 showLabel

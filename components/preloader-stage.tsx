@@ -2,12 +2,12 @@
 
 import type { ComponentPropsWithoutRef, CSSProperties } from "react";
 import { PreloaderLab } from "@/components/preloader-lab";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
 export const PRELOADER_COUNTER_MS = 2400;
 
-/** `public/preloader bg.png` */
-export const PRELOADER_BACKGROUND_IMAGE_SRC = "/preloader%20bg.png";
+export const PRELOADER_BACKGROUND_IMAGE_SRC = PUBLIC_ASSETS.preloader.background;
 
 const FOREGROUND_STYLE = {
   "--color-foreground": "#f1f5f9",
@@ -21,7 +21,7 @@ const PRELOADER_IMG_STYLE = {
 } as CSSProperties;
 
 const ISOTIPO_BG_STYLE = {
-  backgroundImage: "url(/nutriservice_isotipo.svg)",
+  backgroundImage: `url(${PUBLIC_ASSETS.brand.isotipo})`,
   backgroundPosition: "center",
   backgroundRepeat: "no-repeat",
   backgroundSize: "min(88vw, 440px)",

@@ -2,6 +2,7 @@ import {
   AVES_VIDEO_WEBM,
   MASCOTAS_VIDEO_WEBM,
 } from "@/lib/productos-division-media";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export type HeroVideoClip = {
   webm: string;
@@ -33,8 +34,8 @@ export function dispatchHeroVideoClipChange(clipIndex: number) {
 
 export const HERO_LANDING_VIDEO_SEQUENCE: HeroVideoClip[] = [
   {
-    webm: "/Salmon_sequence_optimized.webm",
-    mp4: "/Salmon_sequence_optimized.mp4",
+    webm: PUBLIC_ASSETS.hero.salmonWebm,
+    mp4: PUBLIC_ASSETS.hero.salmonMp4,
     playsBeforeAdvance: 2,
   },
   {

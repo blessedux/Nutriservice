@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 /** Deep navy band below the hero — matches former `problema` spacer. */
 export const HOME_BLUE_BG = "#030A1C";
@@ -30,7 +31,7 @@ export const HOME_INDUSTRIES_SEAM = mixHex(
 );
 
 /** Ocean-floor loop shared by stats (bottom) and industrias (top). */
-export const OCEAN_FLOOR_VIDEO_SRC = "/ocean_floor.webm";
+export const OCEAN_FLOOR_VIDEO_SRC = PUBLIC_ASSETS.homeBlueBand.oceanFloor;
 
 /** Stats band — pinned to section bottom so no gap shows above industrias. */
 export const OCEAN_FLOOR_STATS_VIDEO_CLASSES =

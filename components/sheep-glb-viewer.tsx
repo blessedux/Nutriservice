@@ -4,6 +4,7 @@ import * as React from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 type SheepGlbViewerProps = {
   /** Path under `public/` */
@@ -14,7 +15,7 @@ type SheepGlbViewerProps = {
 };
 
 export default function SheepGlbViewer({
-  src = "/sheep.glb",
+  src = PUBLIC_ASSETS.problemSection.sheepModel,
   className,
   compact = false,
 }: SheepGlbViewerProps) {

@@ -5,6 +5,7 @@ import Nav from "@/components/nav";
 import Footer from "@/components/footer";
 import SoundWidget from "@/components/sound-widget";
 import { SiteExperience } from "@/components/site-experience";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const ibmPlexSans = IBM_Plex_Sans({
   variable: "--font-ibm-sans",
@@ -28,6 +29,17 @@ export const metadata: Metadata = {
   description:
     "Sistema de nutrición animal que integra diagnóstico, formulación, implementación y optimización continua para mejorar productividad y reducir riesgo en producción animal.",
   metadataBase: new URL("https://nutriservice.cl"),
+  icons: {
+    icon: [
+      { url: PUBLIC_ASSETS.brand.favicon, sizes: "any" },
+      {
+        url: PUBLIC_ASSETS.brand.icon512,
+        sizes: "512x512",
+        type: "image/png",
+      },
+    ],
+    apple: PUBLIC_ASSETS.brand.icon512,
+  },
 };
 
 export default function RootLayout({

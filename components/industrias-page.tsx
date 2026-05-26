@@ -9,6 +9,7 @@ import {
   INDUSTRIAS_VERTICALS,
   type IndustriaVertical,
 } from "@/lib/industrias-page-data";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
 const PAGE_NAVY = "#0a192f";
@@ -37,7 +38,7 @@ function IndustriasHero() {
     <section className="relative -mt-24 w-full min-h-[100dvh] overflow-hidden text-white">
       <div className="absolute inset-0 size-full overflow-hidden" aria-hidden>
         <Image
-          src="/industrias/hero-lab.png"
+          src={PUBLIC_ASSETS.industriasPage.heroLab}
           alt=""
           fill
           priority
@@ -181,7 +182,7 @@ function IndustriasRdSection() {
     <section className="relative overflow-hidden bg-[#0a192f] px-6 py-16 text-white sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-32">
       <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 opacity-10" aria-hidden>
         <Image
-          src="/industrias/molecular-bg.png"
+          src={PUBLIC_ASSETS.industriasPage.molecularBg}
           alt=""
           fill
           className="object-cover object-right"

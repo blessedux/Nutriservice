@@ -4,6 +4,7 @@ import * as React from "react";
 import * as THREE from "three";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 function lerp(a: number, b: number, t: number) {
   return a + (b - a) * t;
@@ -110,8 +111,8 @@ export default function ProblemMorphGlbViewer({
   morphTarget,
   compact = false,
   reducedMotion = false,
-  sheepSrc = "/sheep.glb",
-  chickenSrc = "/low_poly_chicken.glb",
+  sheepSrc = PUBLIC_ASSETS.problemSection.sheepModel,
+  chickenSrc = PUBLIC_ASSETS.problemSection.chickenModel,
   className,
 }: ProblemMorphGlbViewerProps) {
   const containerRef = React.useRef<HTMLDivElement>(null);

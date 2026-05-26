@@ -5,14 +5,15 @@ import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
 import { HomeBlueBand } from "@/components/home-blue-band";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const CERTIFICATIONS = [
   {
-    src: "/certs/logo-actualizado-sgs-768x768.png",
+    src: PUBLIC_ASSETS.certifications.sgs,
     alt: "Certificación SGS",
   },
   {
-    src: "/certs/Certificacion-REP--768x768.png",
+    src: PUBLIC_ASSETS.certifications.rep,
     alt: "Certificación REP",
   },
 ] as const;

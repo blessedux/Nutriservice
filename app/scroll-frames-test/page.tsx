@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import ScrollFramePlayer from "@/components/scroll-frame-player";
 import MacroGardCover from "@/components/macrogard-cover";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export const metadata: Metadata = {
   title: "Scroll Frames Test",
@@ -24,7 +25,10 @@ export default function ScrollFramesTestPage() {
             step, progress, and source.
           </p>
           <p className="mt-3 text-xs text-neutral-500">
-            Frames: <span className="font-mono">/frames_pellet-explosion_webp</span>{" "}
+            Frames:{" "}
+            <span className="font-mono">
+              {PUBLIC_ASSETS.impactSection.pelletFramesDir}
+            </span>{" "}
             (<span className="font-mono">frame_0001.webp</span> →{" "}
             <span className="font-mono">frame_0121.webp</span>)
           </p>
@@ -32,7 +36,7 @@ export default function ScrollFramesTestPage() {
       </section>
 
       <ScrollFramePlayer
-        framesDir="/frames_pellet-explosion_webp"
+        framesDir={PUBLIC_ASSETS.impactSection.pelletFramesDir}
         frameCount={121}
         firstFrameNumber={1}
         frameStride={1}
@@ -47,7 +51,7 @@ export default function ScrollFramesTestPage() {
             row: 3,
             col: 2,
             text: "7 aminoacidos esenciales",
-            vectorSrc: "/frames_pellet-explosion_webp/vector1.svg",
+            vectorSrc: PUBLIC_ASSETS.impactSection.pelletVector1,
             vectorOffset: { xPct: 200 },
             vectorAnchor: "center",
             vectorTransform: "fixed",          
@@ -59,7 +63,7 @@ export default function ScrollFramesTestPage() {
             row: 5,
             col: 3,
             text: "omega-3 and essentiala fatty acids",
-            vectorSrc: "/frames_pellet-explosion_webp/vector2.svg",
+            vectorSrc: PUBLIC_ASSETS.impactSection.pelletVector2,
             vectorRotateDeg: 200,
             vectorOffset: { xPct: 190, yPct: -100 },
 
@@ -69,7 +73,7 @@ export default function ScrollFramesTestPage() {
             row: 2,
             col: 11,
             text: "antioxidants and prebiotics",
-            vectorSrc: "/frames_pellet-explosion_webp/vector3.svg",
+            vectorSrc: PUBLIC_ASSETS.impactSection.pelletVector3,
             vectorOffset: { xPct: -200, yPct: -100 },
             vectorAnchor: "center",
             vectorTransform: "fixed",
@@ -81,7 +85,7 @@ export default function ScrollFramesTestPage() {
             row: 6,
             col: 10,
             text: "Multivtaimins supplied in chelated form to improve bioavailability.",
-            vectorSrc: "/frames_pellet-explosion_webp/vector3.svg",
+            vectorSrc: PUBLIC_ASSETS.impactSection.pelletVector3,
             vectorOffset: { xPct: -120, yPct: 100 },
             vectorAnchor: "center",
             vectorTransform: "fixed",

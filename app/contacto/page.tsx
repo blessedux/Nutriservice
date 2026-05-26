@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import ContactForm from "@/components/contact-form";
 import { HOME_INDUSTRIES_BG } from "@/components/home-blue-band";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export const metadata: Metadata = {
   title: "Contacto — Agenda una evaluación técnica",
@@ -41,7 +42,7 @@ export default function ContactoPage() {
     >
       <div className="relative mx-auto min-h-[min(92dvh,58rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-ns-border text-white sm:min-h-[min(94dvh,62rem)] sm:rounded-[2.5rem]">
         <Image
-          src="/nutriservice_workers2.webp"
+          src={PUBLIC_ASSETS.shared.workersHero}
           alt=""
           fill
           priority

@@ -19,12 +19,7 @@ export type ScrollFramePreloadSpec = {
   concurrency?: number;
 };
 
-/** Homepage `ScrollFramePlayer` (`app/page.tsx`) — also warmed during `SiteExperience` preload. */
-export const HOMEPAGE_PELLET_FRAMES = {
-  framesDir: "/frames_pellet-explosion_webp",
-  frameCount: 121,
-  firstFrameNumber: 1,
-} as const;
+export { HOMEPAGE_PELLET_FRAMES } from "@/lib/public-assets";
 
 const preloadPromises = new Map<string, Promise<void>>();
 

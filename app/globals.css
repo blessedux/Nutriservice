@@ -143,29 +143,6 @@ body {
   }
 }
 
-/* PreloaderLab phrase: in from below, out upward */
-@keyframes preloader-phrase-enter {
-  from {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-@keyframes preloader-phrase-exit {
-  from {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  to {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-}
-
 /* Hero_SA — eyebrow slides in; accent bar sits left of label; headline / sublines slide up */
 @keyframes hero-head-line-up {
   from {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import * as React from "react";
 
 import DosageCalculator from "@/components/dosage-calculator";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const tagChip =
   "inline-flex shrink-0 cursor-default rounded border px-2 py-0.5 uppercase transition-all duration-200 outline-none hover:-translate-y-px active:scale-[0.97] focus-visible:ring-2";
@@ -45,7 +46,7 @@ type Product = {
 const MACROGARD_BASE = {
   name: "MacroGard",
   tagline: "β‑glucanos purificados (β‑1,3/1,6) para soporte inmunológico",
-  imageSrc: "/macrocard_nutriservice.webp",
+  imageSrc: PUBLIC_ASSETS.impactSection.macrocard,
   highlights: [
     {
       label: "Activo",

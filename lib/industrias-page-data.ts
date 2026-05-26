@@ -1,3 +1,5 @@
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
+
 export type IndustriaVertical = {
   slug: string;
   vertical: string;
@@ -13,7 +15,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "acuicola",
     vertical: "VERTICAL 01",
     displayName: "Acuícola",
-    image: "/industries/acuicola.webp",
+    image: PUBLIC_ASSETS.industriasPage.verticalAcuicola,
     challengeLines: ["Mortalidad por Estrés", "Térmico y Sanitario"],
     solutionLines: [
       "Protocolos inmunomoduladores",
@@ -25,7 +27,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "avicola",
     vertical: "VERTICAL 02",
     displayName: "Avícola",
-    image: "/industries/avicola.webp",
+    image: PUBLIC_ASSETS.industriasPage.verticalAvicola,
     challengeLines: ["Optimización del FCR y", "Salud Intestinal"],
     solutionLines: [
       "Ecosistema de acidificantes",
@@ -38,7 +40,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "porcina",
     vertical: "VERTICAL 03",
     displayName: "Porcina",
-    image: "/industries/porcina.webp",
+    image: PUBLIC_ASSETS.industriasPage.verticalPorcina,
     challengeLines: ["Rendimiento en Etapas de", "Destete"],
     solutionLines: [
       "Dietas de precisión para",
@@ -51,7 +53,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "mascotas",
     vertical: "VERTICAL 04",
     displayName: "Mascotas",
-    image: "/industries/mascotas.webp",
+    image: PUBLIC_ASSETS.industriasPage.verticalMascotas,
     challengeLines: ["Palatabilidad y Estabilidad", "Oxidativa"],
     solutionLines: [
       "Potenciadores de sabor PalaUp",

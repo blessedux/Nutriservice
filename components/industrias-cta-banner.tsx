@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const PAGE_NAVY = "#0a192f";
 const PAGE_CYAN = "#06b6d4";
@@ -26,7 +27,7 @@ export default function IndustriasCtaBanner({
     >
       <div className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[48px] bg-[#0a192f] px-6 py-16 text-center text-white sm:px-12 sm:py-20 lg:px-24">
         <Image
-          src="/cta_bg2.webp"
+          src={PUBLIC_ASSETS.ctaBanner.background}
           alt=""
           fill
           className="object-cover opacity-20"
