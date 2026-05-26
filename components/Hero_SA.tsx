@@ -13,6 +13,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeroCtaBar from "@/components/hero-cta-bar";
 import { HeroSalmonAmbientAudio } from "@/components/hero-salmon-ambient-audio";
+import { HeroVideoSequenceBg } from "@/components/hero-video-sequence-bg";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { useMobileExperience } from "@/hooks/use-mobile-experience";
 import { cn } from "@/lib/utils";
@@ -38,8 +39,6 @@ function HeroHeadLine({
   );
 }
 
-const AQUA_HERO_VIDEO_WEBM_SRC = "/Salmon_sequence_optimized.webm";
-const AQUA_HERO_VIDEO_MP4_SRC = "/Salmon_sequence_optimized.mp4";
 const HERO_LAST_LINE_DELAY_MS = 440;
 
 const AQUA_HERO_STATS_INTERVAL_MS = 5_000;
@@ -197,8 +196,6 @@ const AQUA_HERO_MOBILE_LOOP_OFFSET = 1;
 const AQUA_HERO_MOBILE_CARD_GAP_PX = 10;
 const AQUA_HERO_MOBILE_CARD_SHELL_MIN_PX = 148;
 const AQUA_HERO_MOBILE_TAP_SLOP_PX = 14;
-const HERO_VIDEO_PLAY_RETRY_MS = 400;
-const HERO_VIDEO_PLAY_MAX_ATTEMPTS = 14;
 
 /** Horizontal-only mask — softens side shadows without fading the card bottom. */
 const AQUA_HERO_STATS_SHADOW_SIDE_MASK =
@@ -1818,7 +1815,7 @@ export default function HeroSA() {
         style={{ y: bgParallaxY }}
         aria-hidden
       >
-        <HeroBackground playbackReady={heroRevealReady} />
+        <HeroVideoSequenceBg playbackReady={heroRevealReady} />
       </motion.div>
 
       <div className="relative z-10 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-10 pt-[calc(5.125rem+10px)] sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:overflow-visible lg:px-12 lg:pb-24">
@@ -1830,139 +1827,6 @@ export default function HeroSA() {
         </div>
       </div>
     </section>
-  );
-}
-
-function HeroBackground({
-  playbackReady,
-}: {
-  /** After preloader — content visible; iOS needs this before reliable autoplay. */
-  playbackReady: boolean;
-}) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const reduceMotion = useReducedMotion();
-  const playAttemptsRef = useRef(0);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-    const video = videoRef.current;
-    if (!video) return;
-
-    let cancelled = false;
-    let retryTimer: number | undefined;
-    let mayPlay = playbackReady;
-
-    const attemptPlay = () => {
-      if (cancelled || !mayPlay) return;
-
-      video.muted = true;
-      video.defaultMuted = true;
-      video.playsInline = true;
-
-      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
-        video.load();
-      }
-
-      void video.play().catch(() => {});
-    };
-
-    const scheduleRetry = () => {
-      if (cancelled || playAttemptsRef.current >= HERO_VIDEO_PLAY_MAX_ATTEMPTS) {
-        return;
-      }
-      playAttemptsRef.current += 1;
-      retryTimer = window.setTimeout(attemptPlay, HERO_VIDEO_PLAY_RETRY_MS);
-    };
-
-    const onReady = () => {
-      attemptPlay();
-      scheduleRetry();
-    };
-
-    const onPlaying = () => {
-      playAttemptsRef.current = HERO_VIDEO_PLAY_MAX_ATTEMPTS;
-    };
-
-    const onVisibilityChange = () => {
-      if (!document.hidden) attemptPlay();
-    };
-
-    const onPageShow = (event: PageTransitionEvent) => {
-      if (event.persisted) attemptPlay();
-    };
-
-    const unlockOnGesture = () => {
-      mayPlay = true;
-      attemptPlay();
-    };
-
-    const onContentVisible = () => {
-      mayPlay = true;
-      playAttemptsRef.current = 0;
-      attemptPlay();
-    };
-
-    if (playbackReady) {
-      mayPlay = true;
-      playAttemptsRef.current = 0;
-      attemptPlay();
-    }
-
-    video.addEventListener("loadedmetadata", onReady);
-    video.addEventListener("loadeddata", onReady);
-    video.addEventListener("canplay", onReady);
-    video.addEventListener("canplaythrough", onReady);
-    video.addEventListener("playing", onPlaying);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("pageshow", onPageShow);
-    window.addEventListener("hyperia:hero-content-visible", onContentVisible);
-    document.addEventListener("touchstart", unlockOnGesture, {
-      capture: true,
-      once: true,
-    });
-    document.addEventListener("click", unlockOnGesture, {
-      capture: true,
-      once: true,
-    });
-
-    return () => {
-      cancelled = true;
-      if (retryTimer !== undefined) window.clearTimeout(retryTimer);
-      video.removeEventListener("loadedmetadata", onReady);
-      video.removeEventListener("loadeddata", onReady);
-      video.removeEventListener("canplay", onReady);
-      video.removeEventListener("canplaythrough", onReady);
-      video.removeEventListener("playing", onPlaying);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("pageshow", onPageShow);
-      window.removeEventListener("hyperia:hero-content-visible", onContentVisible);
-      document.removeEventListener("touchstart", unlockOnGesture, true);
-      document.removeEventListener("click", unlockOnGesture, true);
-    };
-  }, [reduceMotion, playbackReady]);
-
-  return (
-    <>
-      <div className="absolute inset-0 z-0 bg-slate-950" aria-hidden />
-      <video
-        ref={videoRef}
-        className="absolute inset-0 z-0 h-full w-full object-cover motion-reduce:opacity-0"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-        aria-hidden
-      >
-        <source src={AQUA_HERO_VIDEO_MP4_SRC} type="video/mp4" />
-        <source src={AQUA_HERO_VIDEO_WEBM_SRC} type="video/webm" />
-      </video>
-      <div
-        className="absolute inset-y-0 left-0 z-[1] w-1/2 backdrop-blur-[2px]"
-        aria-hidden
-      />
-    </>
   );
 }
 

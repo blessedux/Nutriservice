@@ -127,7 +127,7 @@ function smoothstep(edge0: number, edge1: number, x: number) {
 }
 
 const FRAME_IMG_CLASS =
-  "absolute inset-0 h-full w-full object-cover [transform:translateZ(0)] motion-safe:transition-[opacity] motion-safe:duration-[90ms] motion-safe:ease-linear";
+  "absolute inset-0 h-full w-full object-cover [transform:translateZ(0)_scale(1.045)] motion-reduce:scale-100";
 
 /**
  * Keeps prior bitmap visible until `decode()` / load finishes for the next URL — avoids empty flashes.
@@ -158,9 +158,18 @@ function DecodedFrameImg({
     let cancelled = false;
     const img = new Image();
     img.src = targetSrc;
+
     const finish = () => {
       if (!cancelled) setDrawSrc(targetSrc);
     };
+
+    if (img.complete && img.naturalWidth > 0) {
+      finish();
+      return () => {
+        cancelled = true;
+      };
+    }
+
     if (typeof img.decode === "function") {
       void img.decode().then(finish).catch(finish);
     } else {
@@ -352,7 +361,7 @@ export default function ScrollFramePlayer({
         className="relative"
         style={{ height: `${Math.max(1, trackVh) * 100}vh` }}
       >
-        <div className="sticky top-16 h-[calc(100dvh-4rem)] flex items-center justify-center bg-neutral-950 overflow-hidden">
+        <div className="sticky top-16 h-[calc(100dvh-4rem)] flex items-center justify-center overflow-hidden bg-black">
           <div className="relative h-full w-full overflow-hidden">
             {useScrollBlend ? (
               blendSingleFrame ? (
@@ -366,22 +375,25 @@ export default function ScrollFramePlayer({
                 />
               ) : (
                 <>
+                  {/* Base frame stays at full opacity so the dark stage never shows through. */}
                   <DecodedFrameImg
                     framesDir={framesDir}
                     absoluteFrameNumber={blendAbs0}
-                    opacity={1 - blendW}
+                    opacity={1}
                     alt={`frame ${blendI0}`}
                     fetchPriority="high"
                     extraClassName="pointer-events-none select-none"
                   />
-                  <DecodedFrameImg
-                    framesDir={framesDir}
-                    absoluteFrameNumber={blendAbs1}
-                    opacity={blendW}
-                    ariaHidden
-                    fetchPriority="high"
-                    extraClassName="pointer-events-none select-none"
-                  />
+                  {blendW > 0 ? (
+                    <DecodedFrameImg
+                      framesDir={framesDir}
+                      absoluteFrameNumber={blendAbs1}
+                      opacity={blendW}
+                      ariaHidden
+                      fetchPriority="high"
+                      extraClassName="pointer-events-none select-none"
+                    />
+                  ) : null}
                 </>
               )
             ) : (
@@ -424,13 +436,13 @@ export default function ScrollFramePlayer({
                     <DecodedFrameImg
                       framesDir={framesDir}
                       absoluteFrameNumber={blendAbs0}
-                      opacity={1 - blendW}
+                      opacity={1}
                       ariaHidden
                       fetchPriority="low"
                       extraClassName="pointer-events-none select-none"
                       extraImgStyle={{
                         filter: `blur(${edgeBlurPx}px)`,
-                        transform: "translateZ(0) scale(1.06)",
+                        transform: "translateZ(0) scale(1.08)",
                         WebkitMaskImage: edgeBlurMask,
                         maskImage: edgeBlurMask,
                         WebkitMaskSize: "100% 100%",
@@ -441,26 +453,28 @@ export default function ScrollFramePlayer({
                         maskPosition: "center",
                       }}
                     />
-                    <DecodedFrameImg
-                      framesDir={framesDir}
-                      absoluteFrameNumber={blendAbs1}
-                      opacity={blendW}
-                      ariaHidden
-                      fetchPriority="low"
-                      extraClassName="pointer-events-none select-none"
-                      extraImgStyle={{
-                        filter: `blur(${edgeBlurPx}px)`,
-                        transform: "translateZ(0) scale(1.06)",
-                        WebkitMaskImage: edgeBlurMask,
-                        maskImage: edgeBlurMask,
-                        WebkitMaskSize: "100% 100%",
-                        maskSize: "100% 100%",
-                        WebkitMaskRepeat: "no-repeat",
-                        maskRepeat: "no-repeat",
-                        WebkitMaskPosition: "center",
-                        maskPosition: "center",
-                      }}
-                    />
+                    {blendW > 0 ? (
+                      <DecodedFrameImg
+                        framesDir={framesDir}
+                        absoluteFrameNumber={blendAbs1}
+                        opacity={blendW}
+                        ariaHidden
+                        fetchPriority="low"
+                        extraClassName="pointer-events-none select-none"
+                        extraImgStyle={{
+                          filter: `blur(${edgeBlurPx}px)`,
+                          transform: "translateZ(0) scale(1.08)",
+                          WebkitMaskImage: edgeBlurMask,
+                          maskImage: edgeBlurMask,
+                          WebkitMaskSize: "100% 100%",
+                          maskSize: "100% 100%",
+                          WebkitMaskRepeat: "no-repeat",
+                          maskRepeat: "no-repeat",
+                          WebkitMaskPosition: "center",
+                          maskPosition: "center",
+                        }}
+                      />
+                    ) : null}
                   </>
                 )
               ) : (

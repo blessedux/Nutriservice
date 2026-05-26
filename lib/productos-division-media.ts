@@ -1,7 +1,11 @@
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 
+export const MASCOTAS_VIDEO_WEBM = "/nutriservice_cat_sequence_optimized.webm";
+export const AVES_VIDEO_WEBM = "/nutriservice_chickens_light.webm";
+export const PORCINA_VIDEO_WEBM = "/nutriservice_pigs_light.webm";
+
 export type DivisionMedia = {
-  video?: { mp4: string; webm: string };
+  video?: { mp4?: string; webm: string };
   /** Static backdrop when no video is configured yet. */
   fallbackImage?: string;
   tone: "on-dark" | "on-light";
@@ -19,16 +23,20 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
     tone: "on-dark",
   },
   aves: {
-    fallbackImage: "/industries/avicola.webp",
-    tone: "on-light",
+    video: {
+      webm: AVES_VIDEO_WEBM,
+    },
+    tone: "on-dark",
   },
   cerdos: {
     fallbackImage: "/industries/porcina.webp",
     tone: "on-light",
   },
   mascotas: {
-    fallbackImage: "/industries/mascotas.webp",
-    tone: "on-light",
+    video: {
+      webm: MASCOTAS_VIDEO_WEBM,
+    },
+    tone: "on-dark",
   },
 };
 

@@ -14,7 +14,7 @@ export default function ImpactSection({
   sectionId = "impacto",
 }: ImpactSectionProps) {
   return (
-    <section id={sectionId} className="scroll-mt-24 bg-white">
+    <section id={sectionId} className="scroll-mt-24 bg-black">
       <ScrollFramePlayer
         {...HOMEPAGE_PELLET_FRAMES}
         trackVh={5}

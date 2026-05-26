@@ -7,7 +7,7 @@ const PLAY_RETRY_MS = 400;
 const PLAY_MAX_ATTEMPTS = 14;
 
 type DivisionVideoBgProps = {
-  mp4: string;
+  mp4?: string;
   webm: string;
   className?: string;
 };
@@ -91,7 +91,7 @@ export default function DivisionVideoBg({
         preload="auto"
         disablePictureInPicture
       >
-        <source src={mp4} type="video/mp4" />
+        {mp4 ? <source src={mp4} type="video/mp4" /> : null}
         <source src={webm} type="video/webm" />
       </video>
       <div className="absolute inset-0 bg-slate-950/50" />

@@ -16,17 +16,20 @@ import {
   killAudioFade,
 } from "@/lib/audio-fade";
 import { getFxMuted } from "@/lib/audio-fx-state";
+import type { HeroVideoClipChangeDetail } from "@/lib/hero-video-sequence";
 import { measureHomeFxPresence } from "@/lib/hero-fx-presence";
 import { subscribeTabAudioHidden } from "@/lib/tab-audio-visibility";
 
 const SCROLL_FX_MIN_GAIN = 0.004;
 const TAB_FX_FADE_MS = AUDIO_FADE_MS;
+const SALMON_FX_FADE_OUT_MS = 520;
 
 type FxMutedEvent = CustomEvent<{ muted: boolean }>;
+type HeroVideoClipEvent = CustomEvent<HeroVideoClipChangeDetail>;
 
 /**
- * Mar / cueva (solo `/`). SFX pleno al inicio; atenúa desde el primer scroll
- * y queda en silencio al llegar a industrias (antes de pasarla). Respeta mute FX y tab oculta.
+ * Mar / cueva (solo `/`), sincronizado con el clip de salmón del hero.
+ * Se reproduce una sola vez mientras el fishpond está activo; se apaga al cambiar de video.
  */
 export function HeroSalmonAmbientAudio({
   heroRootRef,
@@ -46,6 +49,7 @@ export function HeroSalmonAmbientAudio({
     let cancelled = false;
     let sea: HTMLAudioElement | null = null;
     let onFx: ((e: Event) => void) | null = null;
+    let onHeroClip: ((e: Event) => void) | null = null;
     let unsubscribeTab: (() => void) | null = null;
     let onScroll: (() => void) | null = null;
     let onResize: (() => void) | null = null;
@@ -57,14 +61,35 @@ export function HeroSalmonAmbientAudio({
     let fxMuted = getFxMuted();
     let tabHidden = false;
     let heroPresence = 1;
+    let salmonClipActive = true;
+    let seaStarted = false;
+    let seaFinished = false;
 
     const targetGain = () => {
-      if (fxMuted || tabHidden) return 0;
+      if (fxMuted || tabHidden || !salmonClipActive || seaFinished) return 0;
       return HERO_SEA_AMBIENT_GAIN * heroPresence;
     };
 
-    const applyScrollGain = () => {
+    const stopSea = (fadeMs = SALMON_FX_FADE_OUT_MS) => {
       if (!sea || cancelled) return;
+      killAudioFade(fadeToken);
+      fadeAudioVolume(
+        fadeToken,
+        sea,
+        sea.volume,
+        0,
+        fadeMs,
+        easeOutQuad,
+        () => {
+          if (!cancelled && sea) {
+            sea.pause();
+          }
+        },
+      );
+    };
+
+    const applyScrollGain = () => {
+      if (!sea || cancelled || !salmonClipActive || seaFinished) return;
 
       heroPresence = measureHomeFxPresence();
       const next = targetGain();
@@ -88,35 +113,32 @@ export function HeroSalmonAmbientAudio({
         return;
       }
 
+      if (!seaStarted) {
+        seaStarted = true;
+        sea.currentTime = 0;
+      }
+
       void sea.play().catch(() => {});
       sea.volume = clampGain(next);
     };
 
     const fadeToMute = () => {
-      if (!sea || cancelled) return;
-      killAudioFade(fadeToken);
-      fadeAudioVolume(
-        fadeToken,
-        sea,
-        sea.volume,
-        0,
-        TAB_FX_FADE_MS,
-        easeOutQuad,
-        () => {
-          if (!cancelled && sea && (fxMuted || tabHidden)) {
-            sea.pause();
-          }
-        },
-      );
+      stopSea(TAB_FX_FADE_MS);
     };
 
     const fadeFromMute = () => {
-      if (!sea || cancelled) return;
+      if (!sea || cancelled || seaFinished || !salmonClipActive) return;
       heroPresence = measureHomeFxPresence();
       const next = targetGain();
       if (next <= SCROLL_FX_MIN_GAIN) return;
 
       killAudioFade(fadeToken);
+
+      if (!seaStarted) {
+        seaStarted = true;
+        sea.currentTime = 0;
+      }
+
       void sea
         .play()
         .then(() => {
@@ -136,7 +158,7 @@ export function HeroSalmonAmbientAudio({
 
     syncPlayback = () => {
       if (!sea || cancelled) return;
-      if (fxMuted || tabHidden) {
+      if (fxMuted || tabHidden || !salmonClipActive || seaFinished) {
         fadeToMute();
         return;
       }
@@ -147,49 +169,78 @@ export function HeroSalmonAmbientAudio({
       if (rafScroll != null) return;
       rafScroll = requestAnimationFrame(() => {
         rafScroll = null;
-        if (fxMuted || tabHidden) return;
+        if (fxMuted || tabHidden || !salmonClipActive || seaFinished) return;
         applyScrollGain();
       });
     };
 
     const bind = () => {
-      if (cancelled) return;
+      if (cancelled) return undefined;
       const root = heroRootRef.current;
       if (!root) {
         rafBind = requestAnimationFrame(bind);
-        return;
+        return undefined;
       }
       rafBind = null;
 
       sea = new Audio(HERO_SEA_AUDIO_SRC);
-      sea.loop = true;
+      sea.loop = false;
       sea.preload = "auto";
       audioRef.current = sea;
+
+      const onSeaEnded = () => {
+        seaFinished = true;
+        sea?.pause();
+      };
+      sea.addEventListener("ended", onSeaEnded);
 
       onFx = (e: Event) => {
         const { muted } = (e as FxMutedEvent).detail ?? {};
         if (typeof muted !== "boolean") return;
         fxMuted = muted;
-        syncPlayback();
+        syncPlayback?.();
+      };
+
+      onHeroClip = (e: Event) => {
+        const { isSalmon } = (e as HeroVideoClipEvent).detail ?? {};
+        if (typeof isSalmon !== "boolean") return;
+
+        salmonClipActive = isSalmon;
+        if (!isSalmon) {
+          stopSea();
+          return;
+        }
+
+        if (!seaStarted && !seaFinished) {
+          syncPlayback?.();
+        }
       };
 
       onScroll = () => scheduleScrollUpdate();
       onResize = () => scheduleScrollUpdate();
 
       window.addEventListener("hyperia:fx-muted", onFx as EventListener);
+      window.addEventListener("hyperia:hero-video-clip", onHeroClip as EventListener);
       window.addEventListener("hyperia:start-sound", syncPlayback);
       window.addEventListener("scroll", onScroll, { passive: true });
       window.addEventListener("resize", onResize, { passive: true });
 
       unsubscribeTab = subscribeTabAudioHidden((hidden) => {
         tabHidden = hidden;
-        syncPlayback();
+        syncPlayback?.();
       });
 
-      syncPlayback();
+      syncPlayback?.();
+
+      return () => {
+        sea?.removeEventListener("ended", onSeaEnded);
+      };
     };
 
-    rafBind = requestAnimationFrame(bind);
+    let unbindSea: (() => void) | undefined;
+    rafBind = requestAnimationFrame(() => {
+      unbindSea = bind();
+    });
 
     return () => {
       cancelled = true;
@@ -197,6 +248,12 @@ export function HeroSalmonAmbientAudio({
       if (rafScroll != null) cancelAnimationFrame(rafScroll);
       if (onFx) {
         window.removeEventListener("hyperia:fx-muted", onFx as EventListener);
+      }
+      if (onHeroClip) {
+        window.removeEventListener(
+          "hyperia:hero-video-clip",
+          onHeroClip as EventListener,
+        );
       }
       if (syncPlayback) {
         window.removeEventListener("hyperia:start-sound", syncPlayback);
@@ -208,6 +265,7 @@ export function HeroSalmonAmbientAudio({
         window.removeEventListener("resize", onResize);
       }
       unsubscribeTab?.();
+      unbindSea?.();
       killAudioFade(fadeToken);
       sea?.pause();
       audioRef.current = null;

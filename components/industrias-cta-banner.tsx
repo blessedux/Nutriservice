@@ -26,7 +26,7 @@ export default function IndustriasCtaBanner({
     >
       <div className="relative mx-auto max-w-[1440px] overflow-hidden rounded-[48px] bg-[#0a192f] px-6 py-16 text-center text-white sm:px-12 sm:py-20 lg:px-24">
         <Image
-          src="/industrias/cta-texture.png"
+          src="/cta_bg2.webp"
           alt=""
           fill
           className="object-cover opacity-20"

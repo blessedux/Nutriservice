@@ -33,7 +33,7 @@ const INDUSTRIES_BG_MEDIA_SCALE = "scale-[1.22]";
 
 const CARD_META: Record<string, CardMeta> = {
   acuicola: {
-    image: "/industries/acuicola.webp",
+    image: "/hero-sa-aqua-lab.webp",
     products: ["ACTIVEMOS", "MACROGARD", "SILIMARINA 80%", "NUCLEOFORCE"],
   },
   avicola: {
@@ -46,7 +46,7 @@ const CARD_META: Record<string, CardMeta> = {
     products: ["MACROGARD", "HALOR TID", "M-PROVE", "NUCLEOFORCE"],
   },
   mascotas: {
-    image: "/industries/mascotas.webp",
+    image: "/catdog.webp",
     products: ["PALAUP CH", "MACROGARD", "TECMAX PRO"],
   },
 };
@@ -127,18 +127,30 @@ function IndustryCard({
         "relative flex min-h-[440px] w-[min(58vw,275px)] overflow-hidden rounded-[40px] border border-white/15 shadow-2xl sm:min-h-[500px] sm:w-[285px] md:min-h-[540px] md:w-[295px]",
         className,
       )}
-      aria-label={`${title}: ver industria y protocolos`}
+      aria-label={`${title}: ver fórmulas`}
       draggable={false}
     >
       <div className="absolute inset-0 overflow-hidden rounded-[40px]" aria-hidden>
-        <Image
-          src={meta.image}
-          alt=""
-          fill
-          className={cn("object-cover", !isDog && "object-[center_25%]")}
-          sizes="(max-width: 768px) 58vw, 295px"
-          priority={priority}
-        />
+        {isDog ? (
+          <Image
+            src={meta.image}
+            alt=""
+            width={960}
+            height={1200}
+            className="absolute top-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2"
+            sizes="(max-width: 768px) 58vw, 295px"
+            priority={priority}
+          />
+        ) : (
+          <Image
+            src={meta.image}
+            alt=""
+            fill
+            className="object-cover object-[center_25%]"
+            sizes="(max-width: 768px) 58vw, 295px"
+            priority={priority}
+          />
+        )}
       </div>
 
       {/* Plain div — no Framer motion wrapper needed on a static overlay */}
@@ -198,7 +210,7 @@ function IndustryCard({
                 isFront ? "opacity-100" : "opacity-80",
               )}
             >
-              Ver protocolos
+              Ver fórmulas
             </span>
             <ChevronRight
               className={cn("h-3 w-3 text-cyan-500", isFront ? "opacity-100" : "opacity-80")}
@@ -427,7 +439,7 @@ function IndustriesCarousel() {
                 type="button"
                 role="tab"
                 aria-selected={i === activeIndex}
-                aria-label={`Ver ${CARD_META[entry.industry.slug]?.title ?? entry.industry.name}`}
+                aria-label={`Ver fórmulas de ${CARD_META[entry.industry.slug]?.title ?? entry.industry.name}`}
                 onClick={() => setActive(active + (i - activeIndex))}
                 className={cn(
                   "rounded-full transition-all duration-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white/60",
@@ -690,7 +702,7 @@ export default function IndustriesSection() {
                   color: "#F5F5F5",
                 }}
               >
-                Ver productos
+                Ver fórmulas
               </Link>
             </header>
           </div>

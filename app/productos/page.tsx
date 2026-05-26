@@ -2,16 +2,20 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ProductoCard } from "@/components/producto-card";
+import ProductosPageShell from "@/components/productos-page-shell";
 import { ProductosGooeySearch } from "@/components/productos-gooey-search";
 import { PRODUCTOS_CATEGORIAS } from "@/lib/productos-categories";
 import {
   PRODUCTOS_DIVISIONES,
   type ProductoDivisionSlug,
 } from "@/lib/productos-divisions";
+import { getDivisionMedia } from "@/lib/productos-division-media";
+import { productosFilterChipClass } from "@/lib/productos-page-utils";
 import {
   getProductosFiltered,
   productosFilterHref,
 } from "@/lib/productos-inventory";
+import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
   title: "Productos",
@@ -22,12 +26,6 @@ export const metadata: Metadata = {
 type Props = {
   searchParams: Promise<{ categoria?: string; division?: string; q?: string }>;
 };
-
-function filterChipClass(active: boolean) {
-  return active
-    ? "border-ns-green bg-white text-ns-text"
-    : "border-ns-border bg-white text-ns-muted hover:border-ns-green";
-}
 
 export default async function ProductosPage({ searchParams }: Props) {
   const {
@@ -46,6 +44,9 @@ export default async function ProductosPage({ searchParams }: Props) {
   const activeDivisionSlug = activeDivision?.slug as
     | ProductoDivisionSlug
     | undefined;
+  const onDark = activeDivisionSlug
+    ? getDivisionMedia(activeDivisionSlug).tone === "on-dark"
+    : false;
 
   const filterBase = {
     categoria: categoria || undefined,
@@ -64,14 +65,19 @@ export default async function ProductosPage({ searchParams }: Props) {
   const hasFilters = Boolean(division || categoria || q);
 
   return (
-    <div className="min-h-[calc(100dvh-4rem)] bg-ns-surface px-6 py-12">
+    <ProductosPageShell activeDivisionSlug={activeDivisionSlug}>
       <div className="mx-auto max-w-5xl">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-widest text-ns-muted">
+          <p
+            className={cn(
+              "text-xs font-semibold uppercase tracking-widest",
+              onDark ? "text-cyan-400" : "text-ns-muted",
+            )}
+          >
             Nutriservice
           </p>
-          <h1 className="mt-2 text-3xl font-bold text-ns-text">Productos</h1>
-          <p className="mt-3 max-w-2xl text-ns-muted">
+          <h1 className="mt-2 text-3xl font-bold">Productos</h1>
+          <p className={cn("mt-3 max-w-2xl", onDark ? "text-white/70" : "text-ns-muted")}>
             Filtra por división animal, categoría funcional o busca por nombre
             de producto.
           </p>
@@ -79,13 +85,21 @@ export default async function ProductosPage({ searchParams }: Props) {
 
         <div className="mt-8 space-y-5">
           <div>
-            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-ns-muted">
+            <p
+              className={cn(
+                "mb-3 text-[10px] font-bold uppercase tracking-[0.18em]",
+                onDark ? "text-white/55" : "text-ns-muted",
+              )}
+            >
               División
             </p>
             <div className="flex flex-wrap items-center gap-2">
               <Link
                 href={productosFilterHref({ ...filterBase, division: undefined })}
-                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filterChipClass(!division)}`}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                  productosFilterChipClass(!division, onDark),
+                )}
               >
                 Todas
               </Link>
@@ -96,7 +110,10 @@ export default async function ProductosPage({ searchParams }: Props) {
                     ...filterBase,
                     division: d.slug,
                   })}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filterChipClass(division === d.slug)}`}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    productosFilterChipClass(division === d.slug, onDark),
+                  )}
                 >
                   {d.label}
                 </Link>
@@ -106,7 +123,12 @@ export default async function ProductosPage({ searchParams }: Props) {
 
           <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
             <div className="min-w-0 flex-1">
-              <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-ns-muted">
+              <p
+                className={cn(
+                  "mb-3 text-[10px] font-bold uppercase tracking-[0.18em]",
+                  onDark ? "text-white/55" : "text-ns-muted",
+                )}
+              >
                 Categoría funcional
               </p>
               <div className="flex flex-wrap items-center gap-2">
@@ -115,7 +137,10 @@ export default async function ProductosPage({ searchParams }: Props) {
                     ...filterBase,
                     categoria: undefined,
                   })}
-                  className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filterChipClass(!categoria)}`}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    productosFilterChipClass(!categoria, onDark),
+                  )}
                 >
                   Todas
                 </Link>
@@ -126,7 +151,10 @@ export default async function ProductosPage({ searchParams }: Props) {
                       ...filterBase,
                       categoria: c.slug,
                     })}
-                    className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${filterChipClass(categoria === c.slug)}`}
+                    className={cn(
+                      "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                      productosFilterChipClass(categoria === c.slug, onDark),
+                    )}
                   >
                     {c.label}
                   </Link>
@@ -138,12 +166,22 @@ export default async function ProductosPage({ searchParams }: Props) {
         </div>
 
         <div className="mt-10">
-          <p className="text-xs font-semibold uppercase tracking-wider text-ns-muted">
+          <p
+            className={cn(
+              "text-xs font-semibold uppercase tracking-wider",
+              onDark ? "text-white/55" : "text-ns-muted",
+            )}
+          >
             {hasFilters ? "Filtros activos" : "Catálogo"}
           </p>
-          <p className="mt-2 text-lg font-semibold text-ns-text">{heading}</p>
+          <p className="mt-2 text-lg font-semibold">{heading}</p>
           {hasFilters && (
-            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-ns-muted">
+            <div
+              className={cn(
+                "mt-2 flex flex-wrap items-center gap-3 text-sm",
+                onDark ? "text-white/65" : "text-ns-muted",
+              )}
+            >
               <span>
                 {productos.length}{" "}
                 {productos.length === 1 ? "resultado" : "resultados"}.
@@ -154,7 +192,10 @@ export default async function ProductosPage({ searchParams }: Props) {
                     categoria: filterBase.categoria,
                     division: filterBase.division,
                   })}
-                  className="font-medium text-ns-green hover:underline"
+                  className={cn(
+                    "font-medium hover:underline",
+                    onDark ? "text-cyan-400" : "text-ns-green",
+                  )}
                 >
                   Limpiar búsqueda
                 </Link>
@@ -169,17 +210,25 @@ export default async function ProductosPage({ searchParams }: Props) {
                   <ProductoCard
                     producto={producto}
                     activeDivision={activeDivisionSlug}
+                    variant={onDark ? "on-dark" : "default"}
                   />
                 </li>
               ))}
             </ul>
           ) : (
-            <div className="mt-8 rounded-xl border border-dashed border-ns-border bg-white p-10 text-center text-sm text-ns-muted">
+            <div
+              className={cn(
+                "mt-8 rounded-xl border border-dashed p-10 text-center text-sm",
+                onDark
+                  ? "border-white/20 bg-white/[0.06] text-white/65"
+                  : "border-ns-border bg-white text-ns-muted",
+              )}
+            >
               No hay productos para esta combinación de filtros.
             </div>
           )}
         </div>
       </div>
-    </div>
+    </ProductosPageShell>
   );
 }

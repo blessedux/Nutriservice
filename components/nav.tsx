@@ -14,6 +14,8 @@ import {
   getProductoBySlug,
   resolveProductoDivision,
 } from "@/lib/productos-inventory";
+import { PRODUCTOS_DIVISIONES } from "@/lib/productos-divisions";
+import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 
 /** Matches Figma Nav — https://www.figma.com/design/mnXw2naZBw8QwX0JDuqOhp/Nutriservice?node-id=316-7993 */
 const NAV_LINKS = [
@@ -53,6 +55,19 @@ function useProductDetailDarkNav(pathname: string): boolean {
   return getDivisionMedia(division).tone === "on-dark";
 }
 
+function useProductosCatalogDarkNav(pathname: string): boolean {
+  const searchParams = useSearchParams();
+  if (pathname !== "/productos") return false;
+
+  const division = searchParams.get("division")?.toLowerCase().trim();
+  if (!division) return false;
+
+  const isKnownDivision = PRODUCTOS_DIVISIONES.some((d) => d.slug === division);
+  if (!isKnownDivision) return false;
+
+  return getDivisionMedia(division as ProductoDivisionSlug).tone === "on-dark";
+}
+
 function NavInner() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
@@ -61,12 +76,18 @@ function NavInner() {
   const isMobile = useMobileExperience();
   const onHome = pathname === "/";
   const onAcuicola = pathname === "/industrias/acuicola";
-  const onProductDarkNav = useProductDetailDarkNav(pathname);
+  const onAvicola = pathname === "/industrias/avicola";
+  const onMascotas = pathname === "/industrias/mascotas";
+  const onVideoIndustryNav = onAcuicola || onAvicola || onMascotas;
+  const onProductDetailDarkNav = useProductDetailDarkNav(pathname);
+  const onProductosCatalogDarkNav = useProductosCatalogDarkNav(pathname);
+  const onProductDarkNav = onProductDetailDarkNav || onProductosCatalogDarkNav;
   const onContacto =
     pathname === "/contacto" || pathname.startsWith("/contacto/");
-  const onDarkNav = onHome || onAcuicola || onProductDarkNav;
+  const onDarkNav = onHome || onVideoIndustryNav || onProductDarkNav;
   const onLightBlueNav = onContacto;
-  const onTransparentDarkNav = onAcuicola || onProductDarkNav;
+  const onWhiteNavText = onDarkNav || onLightBlueNav;
+  const onTransparentDarkNav = onVideoIndustryNav || onProductDarkNav;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -75,17 +96,17 @@ function NavInner() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const linkMuted = onDarkNav
+  const linkMuted = onWhiteNavText
     ? "text-white/60 hover:text-white"
     : "text-[rgba(30,58,138,0.5)] hover:text-[rgba(30,58,138,0.75)]";
-  const linkActive = onDarkNav ? "text-white" : "text-[#1e3a8a]";
+  const linkActive = onWhiteNavText ? "text-white" : "text-[#1e3a8a]";
   const barDivider =
-    onDarkNav ? "bg-white/28" : "bg-[rgba(30,58,138,0.2)]";
-  const ctaClasses = onDarkNav
+    onWhiteNavText ? "bg-white/28" : "bg-[rgba(30,58,138,0.2)]";
+  const ctaClasses = onWhiteNavText
     ? "inline-flex shrink-0 items-center justify-center rounded-full border border-white/55 bg-white/10 px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-none backdrop-blur-sm transition-colors hover:bg-white/18 active:scale-[0.98]"
     : "inline-flex shrink-0 items-center justify-center rounded-full bg-[#0a192f] px-8 py-3 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[1.5px] text-white shadow-sm transition-colors hover:bg-[#0d2140] active:scale-[0.98]";
-  const logoSrc = onDarkNav ? "/nutriservice_logo_white.png" : "/nutriservice_logo_blue.png";
-  const burgerBar = onDarkNav ? "bg-white" : "bg-[#111827]";
+  const logoSrc = onWhiteNavText ? "/nutriservice_logo_white.png" : "/nutriservice_logo_blue.png";
+  const burgerBar = onWhiteNavText ? "bg-white" : "bg-[#111827]";
 
   useEffect(() => {
     if (!open || isMobile !== true) return;
@@ -105,11 +126,11 @@ function NavInner() {
 
   const headerSurface =
     open && isMobile === true
-      ? onDarkNav
-        ? "border-b border-white/10 bg-slate-950"
-        : onLightBlueNav
-          ? "border-b border-[rgba(10,25,47,0.08)] bg-[#A8C8D6]"
-          : "border-b border-[rgba(10,25,47,0.08)] bg-white"
+      ? onWhiteNavText
+        ? onLightBlueNav
+          ? "border-b border-white/15 bg-[#A8C8D6]"
+          : "border-b border-white/10 bg-slate-950"
+        : "border-b border-[rgba(10,25,47,0.08)] bg-white"
       : onTransparentDarkNav
         ? "border-b border-white/10 bg-transparent"
         : onLightBlueNav
@@ -153,7 +174,7 @@ function NavInner() {
           <span className={`h-4 w-px shrink-0 ${barDivider}`} aria-hidden />
           <Link
             href="/contacto"
-            className={`${ctaClasses} ${isLinkActive("/contacto") ? (onDarkNav ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
+            className={`${ctaClasses} ${isLinkActive("/contacto") ? (onWhiteNavText ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
           >
             Contacto
           </Link>
@@ -191,8 +212,10 @@ function NavInner() {
               ? "visible opacity-100"
               : "invisible pointer-events-none opacity-0"
           }           ${
-            onDarkNav
-              ? "bg-slate-950 text-white"
+            onWhiteNavText
+              ? onLightBlueNav
+                ? "bg-[#A8C8D6] text-white"
+                : "bg-slate-950 text-white"
               : "bg-white text-[#0a192f]"
           }`}
           aria-hidden={!open}
@@ -214,7 +237,7 @@ function NavInner() {
                 </Link>
               ))}
               <span
-                className={`h-px w-full ${onDarkNav ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
+                className={`h-px w-full ${onWhiteNavText ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
                 aria-hidden
               />
               <Link
@@ -226,7 +249,7 @@ function NavInner() {
                 Contacto
               </Link>
               <span
-                className={`h-px w-full ${onDarkNav ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
+                className={`h-px w-full ${onWhiteNavText ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
                 aria-hidden
               />
               <SoundWaveToggle
@@ -235,9 +258,9 @@ function NavInner() {
                 autoBootstrap={false}
                 showLabel
                 label="Sonido"
-                tone={onDarkNav ? "on-dark" : "on-light"}
+                tone={onWhiteNavText ? "on-dark" : "on-light"}
                 labelClassName={
-                  onDarkNav
+                  onWhiteNavText
                     ? "text-[10px] font-bold uppercase tracking-[3px] text-white/60"
                     : "text-[10px] font-bold uppercase tracking-[3px] text-[rgba(30,58,138,0.5)]"
                 }
@@ -245,9 +268,9 @@ function NavInner() {
               />
               <SoundFxToggle
                 autoEnable={false}
-                tone={onDarkNav ? "on-dark" : "on-light"}
+                tone={onWhiteNavText ? "on-dark" : "on-light"}
                 labelClassName={
-                  onDarkNav
+                  onWhiteNavText
                     ? "text-[10px] font-bold uppercase tracking-[3px] text-white/60"
                     : "text-[10px] font-bold uppercase tracking-[3px] text-[rgba(30,58,138,0.5)]"
                 }

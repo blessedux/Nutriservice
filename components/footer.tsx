@@ -102,9 +102,8 @@ export default function Footer() {
               />
             </Link>
             <p className="max-w-[320px] text-sm leading-[1.62] text-white">
-              Creemos en una nutrición inteligente, responsable y adaptada a cada
-              necesidad, porque cada especie y cada productor merece una solución
-              pensada a su medida.
+              Más de 30 años de referencia en nutrición animal y maquila, con
+              calidad e innovación en cada producto.
             </p>
             <div className="flex gap-4">
               <a

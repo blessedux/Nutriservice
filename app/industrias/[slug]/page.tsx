@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import IndustriaAcuicolaPage from "@/components/industria-acuicola-page";
+import IndustriaAvicolaPage from "@/components/industria-avicola-page";
+import IndustriaMascotasPage from "@/components/industria-mascotas-page";
 import IndustriaProductosSection from "@/components/industria-productos-section";
 import { getIndustry, industryList } from "@/lib/industries";
 import CTABanner from "@/components/cta-banner";
@@ -29,6 +31,14 @@ export default async function IndustryPage({ params }: Props) {
 
   if (slug === "acuicola") {
     return <IndustriaAcuicolaPage industry={ind} />;
+  }
+
+  if (slug === "mascotas") {
+    return <IndustriaMascotasPage industry={ind} />;
+  }
+
+  if (slug === "avicola") {
+    return <IndustriaAvicolaPage industry={ind} />;
   }
 
   return (
