@@ -19,7 +19,12 @@ const nextConfig: NextConfig = {
       },
       {
         source: "/impact",
-        destination: "/impacto",
+        destination: "/nosotros",
+        permanent: true,
+      },
+      {
+        source: "/impacto",
+        destination: "/nosotros",
         permanent: true,
       },
       {

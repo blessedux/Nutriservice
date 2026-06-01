@@ -1830,7 +1830,7 @@ export default function HeroSA() {
 
 function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
   return (
-    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col justify-end overflow-visible pb-4 pt-1 sm:pb-8 lg:justify-center">
+    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col justify-start overflow-visible pb-2 pt-1 sm:pb-8 lg:justify-center">
       <div className="max-w-xl shrink-0 overflow-visible lg:max-w-2xl xl:max-w-3xl">
         <div className="hero-tag-lr relative z-30 mb-3.5 flex items-center gap-4 sm:mb-6">
           <span className="h-px w-10 shrink-0 bg-blue-600" aria-hidden />
@@ -1862,16 +1862,16 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
             </HeroHeadLine>
           </span>
         </div>
-
-        <HeroCtaBar
-          variant="inline"
-          tone="on-dark"
-          heroRevealReady={heroRevealReady}
-          heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-          showSecondary={false}
-          className="relative z-40 mt-6 sm:mt-8"
-        />
       </div>
+
+      <HeroCtaBar
+        variant="inline"
+        tone="on-dark"
+        heroRevealReady={heroRevealReady}
+        heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
+        showSecondary={false}
+        className="relative z-40 mt-auto w-full max-lg:pb-1 lg:mt-8 lg:max-w-xl"
+      />
     </div>
   );
 }

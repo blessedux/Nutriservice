@@ -13,7 +13,6 @@ const SOLUCIONES_LINKS = [
 const COMPANIA_LINKS = [
   { href: "/nosotros", label: "Nosotros" },
   { href: "/productos", label: "Calidad" },
-  { href: "/impacto", label: "Impacto" },
   { href: "/contacto", label: "Contacto" },
 ];
 

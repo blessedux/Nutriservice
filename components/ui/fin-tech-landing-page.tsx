@@ -128,8 +128,8 @@ function Planet() {
 
 const DEMO_NAV = [
   { href: "/soluciones", label: "Soluciones" },
-  { href: "/tecnologia", label: "I+D" },
-  { href: "/impacto", label: "Impacto" },
+  { href: "/industrias/acuicola", label: "Acuícola" },
+  { href: "/nosotros", label: "Nosotros" },
 ] as const;
 
 function DemoChromeNav() {

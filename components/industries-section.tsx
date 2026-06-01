@@ -361,7 +361,7 @@ function IndustriesCarousel() {
           style={{
             cursor: reduceMotion ? "default" : "grab",
             transformStyle: "preserve-3d",
-            touchAction: "pan-y",
+            touchAction: "pan-x pinch-zoom",
           }}
           whileDrag={{ cursor: "grabbing" }}
         >

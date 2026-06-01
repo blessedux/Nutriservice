@@ -324,11 +324,24 @@ export default function MaquilaSection() {
               <h2 className="text-balance text-3xl font-light leading-tight tracking-tight text-white sm:text-4xl sm:leading-[1.2] lg:text-[48px] lg:leading-[60px]">
                 Premixes y Núcleos Diseñados para su Operación
               </h2>
-              <p className="max-w-xl text-pretty text-base leading-relaxed text-white/65 sm:text-lg sm:leading-[29.25px]">
+              <p className="hidden max-w-xl text-pretty text-base leading-relaxed text-white/65 sm:text-lg sm:leading-[29.25px] lg:block">
                 Fabricamos tus productos a medida, garantizando la confidencialidad
                 de tus fórmulas y con los más altos estándares de calidad.
               </p>
             </div>
+
+            <div className="lg:hidden">
+              <MaquilaImageGallery
+                galleryRef={galleryRef}
+                steps={MAQUILA_PROCESS_STEPS}
+                activeIndex={activeIndex}
+              />
+            </div>
+
+            <p className="max-w-xl text-pretty text-base leading-relaxed text-white/65 sm:text-lg sm:leading-[29.25px] lg:hidden">
+              Fabricamos tus productos a medida, garantizando la confidencialidad
+              de tus fórmulas y con los más altos estándares de calidad.
+            </p>
 
             <ul className="flex flex-col gap-2" role="list">
               {MAQUILA_PROCESS_STEPS.map((step, index) => {
@@ -415,7 +428,7 @@ export default function MaquilaSection() {
             </div>
           </div>
 
-          <div className="relative flex flex-col lg:min-h-full lg:self-stretch">
+          <div className="relative hidden flex-col lg:flex lg:min-h-full lg:self-stretch">
             <div
               className={cn(
                 "w-full shrink-0",

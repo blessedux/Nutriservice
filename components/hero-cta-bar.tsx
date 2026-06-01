@@ -116,7 +116,7 @@ export default function HeroCtaBar({
           "flex flex-col gap-3 transition-[opacity,transform] duration-[520ms] ease-out sm:flex-row sm:items-center sm:gap-4",
           variant === "strip"
             ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
-            : "ml-0 mr-auto mt-6 max-w-xl items-stretch justify-start sm:mt-9",
+            : "mt-auto w-full max-w-xl items-start justify-start sm:mt-9 sm:items-stretch sm:justify-start",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"
@@ -127,7 +127,7 @@ export default function HeroCtaBar({
           href={primaryHref}
           className={cn(
             "inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light",
-            variant === "inline" && "w-full sm:w-auto",
+            variant === "inline" && "w-auto max-w-full sm:w-auto",
           )}
         >
           {primaryLabel}

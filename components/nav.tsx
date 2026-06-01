@@ -18,18 +18,20 @@ import { PRODUCTOS_DIVISIONES } from "@/lib/productos-divisions";
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 
 /** Matches Figma Nav — https://www.figma.com/design/mnXw2naZBw8QwX0JDuqOhp/Nutriservice?node-id=316-7993 */
-const NAV_LINKS = [
-  { href: "/nosotros", label: "Nosotros" },
-  { href: "/impacto", label: "Impacto" },
-] as const;
-
+/** Industry shortcuts inside Soluciones dropdown. */
 const SOLUCIONES_DROPDOWN_LINKS = [
   { href: "/industrias/acuicola", label: "Acuícola" },
   { href: "/industrias/porcina", label: "Cerdos" },
   { href: "/industrias/avicola", label: "Aves" },
   { href: "/industrias/mascotas", label: "Mascotas" },
-  { href: "/soluciones/maquila", label: "Maquila" },
 ] as const;
+
+const MAQUILA_NAV_LINK = {
+  href: "/soluciones/maquila",
+  label: "Maquila",
+} as const;
+
+const NAV_LINKS = [{ href: "/nosotros", label: "Nosotros" }] as const;
 
 const linkBase =
   "font-bold text-[10px] uppercase leading-[15px] tracking-[3px] transition-colors";
@@ -286,6 +288,12 @@ function NavInner() {
             linkActive={linkActive}
             onWhiteNavText={onWhiteNavText}
           />
+          <Link
+            href={MAQUILA_NAV_LINK.href}
+            className={`${linkBase} ${isLinkActive(MAQUILA_NAV_LINK.href) ? linkActive : linkMuted}`}
+          >
+            {MAQUILA_NAV_LINK.label}
+          </Link>
           {NAV_LINKS.map((l) => (
             <Link
               key={l.href}
@@ -331,7 +339,7 @@ function NavInner() {
 
       {isMobile === true ? (
         <div
-          className={`fixed inset-0 z-40 flex flex-col md:hidden transition-[visibility,opacity] duration-300 ease-out ${
+          className={`fixed inset-0 z-40 flex flex-col overflow-hidden md:hidden transition-[visibility,opacity] duration-300 ease-out ${
             open
               ? "visible opacity-100"
               : "invisible pointer-events-none opacity-0"
@@ -345,9 +353,9 @@ function NavInner() {
           aria-hidden={!open}
           inert={open ? undefined : true}
         >
-          <div className="flex min-h-0 flex-1 flex-col justify-center px-6 pb-12 pt-28 sm:px-10">
-            <div className="mx-auto flex w-full max-w-md flex-col gap-8">
-              <div className="flex flex-col gap-4">
+          <div className="flex min-h-0 flex-1 flex-col justify-start overflow-hidden px-6 pb-10 pt-24 sm:px-10">
+            <div className="mx-auto flex w-full max-w-md flex-col gap-6">
+              <div className="flex flex-col gap-3">
                 <Link
                   href="/soluciones"
                   className={cx(
@@ -365,7 +373,7 @@ function NavInner() {
                 >
                   Soluciones
                 </Link>
-                <div className="flex flex-col gap-3 pl-4">
+                <div className="flex flex-col gap-2.5 pl-4">
                   {SOLUCIONES_DROPDOWN_LINKS.map((item) => (
                     <Link
                       key={item.href}
@@ -383,6 +391,18 @@ function NavInner() {
                   ))}
                 </div>
               </div>
+              <Link
+                href={MAQUILA_NAV_LINK.href}
+                className={cx(
+                  linkBase,
+                  "text-sm tracking-[0.35em]",
+                  isLinkActive(MAQUILA_NAV_LINK.href) ? linkActive : linkMuted,
+                )}
+                onClick={() => setOpen(false)}
+                tabIndex={open ? undefined : -1}
+              >
+                {MAQUILA_NAV_LINK.label}
+              </Link>
               {NAV_LINKS.map((l) => (
                 <Link
                   key={l.href}
