@@ -4,7 +4,6 @@ import HeroSA from "@/components/Hero_SA";
 import HomeStatsSection from "@/components/home-stats-section";
 import IndustriesSection from "@/components/industries-section";
 import MaquilaSection from "@/components/maquila-section";
-import ProcessSection from "@/components/process-section";
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
 
 export const metadata: Metadata = {
@@ -21,7 +20,6 @@ export default function HomePage() {
       <HomeStatsSection />
       <IndustriesSection />
       <MaquilaSection />
-      <ProcessSection />
       <IndustriasCtaBanner id="contacto" />
     </>
   );
