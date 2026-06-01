@@ -9,7 +9,7 @@ import {
   useState,
   useEffect,
 } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
@@ -48,8 +48,12 @@ export interface InfiniteGalleryProps {
   onTimelineComplete?: () => void;
   /** Block forward scroll (wheel down); backward scroll still works. */
   forwardScrollLocked?: boolean;
+  /** Block backward scroll (wheel up) at timeline start. */
+  backwardScrollLocked?: boolean;
   /** Normalized depth (0–1) at which an image counts as "passed". */
   passThreshold?: number;
+  /** Increment to reset timeline progress while staying interactive. */
+  sessionKey?: number;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -63,7 +67,7 @@ interface PlaneData {
 }
 
 const DEFAULT_DEPTH_RANGE = 120;
-const TIMELINE_X_OFFSET = 6.5;
+const DEFAULT_TIMELINE_X_OFFSET = 6.5;
 const TIMELINE_Y = 0;
 const BASE_PLANE_HEIGHT = 6;
 
@@ -79,7 +83,102 @@ export const HALLWAY_BLUR_SETTINGS: BlurSettings = {
   maxBlur: 3.5,
 };
 
+function getTimelineLayout(containerWidth: number): {
+  timelineXOffset: number;
+  cameraFov: number;
+  fadeSettings: FadeSettings;
+  blurSettings: BlurSettings;
+  initialDepthOffsetRatio: number;
+} {
+  if (containerWidth < 480) {
+    return {
+      timelineXOffset: 2.75,
+      cameraFov: 56,
+      fadeSettings: {
+        fadeIn: { start: 0.02, end: 0.14 },
+        fadeOut: { start: 0.45, end: 0.53 },
+      },
+      blurSettings: {
+        blurIn: { start: 0.02, end: 0.12 },
+        blurOut: { start: 0.45, end: 0.53 },
+        maxBlur: 4,
+      },
+      initialDepthOffsetRatio: 0.02,
+    };
+  }
+  if (containerWidth < 640) {
+    return {
+      timelineXOffset: 3.5,
+      cameraFov: 54,
+      fadeSettings: {
+        fadeIn: { start: 0.04, end: 0.18 },
+        fadeOut: { start: 0.44, end: 0.52 },
+      },
+      blurSettings: {
+        blurIn: { start: 0.03, end: 0.16 },
+        blurOut: { start: 0.44, end: 0.52 },
+        maxBlur: 3.75,
+      },
+      initialDepthOffsetRatio: 0.04,
+    };
+  }
+  if (containerWidth < 1024) {
+    return {
+      timelineXOffset: 5,
+      cameraFov: 50,
+      fadeSettings: {
+        fadeIn: { start: 0.1, end: 0.22 },
+        fadeOut: { start: 0.5, end: 0.6 },
+      },
+      blurSettings: {
+        blurIn: { start: 0.08, end: 0.2 },
+        blurOut: { start: 0.5, end: 0.6 },
+        maxBlur: 3.5,
+      },
+      initialDepthOffsetRatio: 0.08,
+    };
+  }
+  return {
+    timelineXOffset: DEFAULT_TIMELINE_X_OFFSET,
+    cameraFov: 48,
+    fadeSettings: HALLWAY_FADE_SETTINGS,
+    blurSettings: HALLWAY_BLUR_SETTINGS,
+    initialDepthOffsetRatio: 0.14,
+  };
+}
+
+function useContainerTimelineLayout(
+  containerRef: React.RefObject<HTMLDivElement | null>,
+) {
+  const [layout, setLayout] = useState(() =>
+    getTimelineLayout(
+      typeof window !== "undefined" ? window.innerWidth : 1024,
+    ),
+  );
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const update = () => {
+      setLayout(getTimelineLayout(el.clientWidth));
+    };
+
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [containerRef]);
+
+  return layout;
+}
+
 const DEFAULT_PASS_THRESHOLD = 0.54;
+/** Hysteresis band so passCount does not oscillate at year boundaries. */
+const PASS_FORWARD_THRESHOLD = DEFAULT_PASS_THRESHOLD;
+const PASS_BACKWARD_THRESHOLD = DEFAULT_PASS_THRESHOLD - 0.08;
+/** passCount below this = before first timeline year (1993). */
+const TIMELINE_START_PASS_COUNT = 2;
 
 function getHeroPlaneZ(
   index: number,
@@ -110,17 +209,18 @@ function computePlaneScale(
   return [height, height / aspect, 1];
 }
 
-function getTimelineX(imageIndex: number): number {
-  return (imageIndex % 2 === 0 ? -1 : 1) * TIMELINE_X_OFFSET;
+function getTimelineX(imageIndex: number, xOffset: number): number {
+  return (imageIndex % 2 === 0 ? -1 : 1) * xOffset;
 }
 
 function getInitialPlaneZ(
   index: number,
   visibleCount: number,
   depthRange: number,
+  depthOffsetRatio = 0.14,
 ): number {
   const spacing = (depthRange * 0.72) / Math.max(visibleCount, 1);
-  const offset = depthRange * 0.14;
+  const offset = depthRange * depthOffsetRatio;
   return offset + spacing * index;
 }
 
@@ -233,6 +333,19 @@ function computeBlur(
   return blur.maxBlur;
 }
 
+function CameraFovSync({ fov }: { fov: number }) {
+  const camera = useThree((state) => state.camera);
+
+  useEffect(() => {
+    if (camera instanceof THREE.PerspectiveCamera) {
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+    }
+  }, [camera, fov]);
+
+  return null;
+}
+
 function ImagePlane({
   planeIndex,
   textures,
@@ -312,6 +425,7 @@ function GalleryScene({
   visibleCount = 8,
   interactive = true,
   forwardScrollLocked = false,
+  backwardScrollLocked = false,
   containerRef,
   onUserScroll,
   onTimelineYear,
@@ -319,12 +433,18 @@ function GalleryScene({
   passThreshold = DEFAULT_PASS_THRESHOLD,
   fadeSettings = HALLWAY_FADE_SETTINGS,
   blurSettings = HALLWAY_BLUR_SETTINGS,
+  timelineXOffset = DEFAULT_TIMELINE_X_OFFSET,
+  initialDepthOffsetRatio = 0.14,
+  sessionKey = 0,
 }: Omit<InfiniteGalleryProps, "className" | "style"> & {
   containerRef: React.RefObject<HTMLDivElement | null>;
+  timelineXOffset?: number;
+  initialDepthOffsetRatio?: number;
 }) {
   const scrollVelocityRef = useRef(0);
   const interactiveRef = useRef(interactive);
   const forwardLockedRef = useRef(forwardScrollLocked);
+  const backwardLockedRef = useRef(backwardScrollLocked);
   const hasReportedScrollRef = useRef(false);
   const onUserScrollRef = useRef(onUserScroll);
   const onTimelineYearRef = useRef(onTimelineYear);
@@ -333,13 +453,23 @@ function GalleryScene({
   const lastYearIndexRef = useRef(-1);
   const hasCompletedTimelineRef = useRef(false);
   const planePassedRef = useRef<boolean[]>([]);
+  const timelineXOffsetRef = useRef(timelineXOffset);
+  const initialDepthOffsetRatioRef = useRef(initialDepthOffsetRatio);
+
+  useEffect(() => {
+    timelineXOffsetRef.current = timelineXOffset;
+  }, [timelineXOffset]);
+
+  useEffect(() => {
+    initialDepthOffsetRatioRef.current = initialDepthOffsetRatio;
+  }, [initialDepthOffsetRatio]);
 
   const emitYearForPassCount = useCallback((passCount: number) => {
-    if (passCount < 2) {
+    if (passCount < TIMELINE_START_PASS_COUNT) {
       if (lastYearIndexRef.current !== -1) {
         lastYearIndexRef.current = -1;
-        forwardLockedRef.current = false;
         hasCompletedTimelineRef.current = false;
+        forwardLockedRef.current = false;
         onTimelineYearRef.current?.(0, -1);
       }
       return;
@@ -357,19 +487,22 @@ function GalleryScene({
       NOSOTROS_TIMELINE_YEARS[yearIndex],
       yearIndex,
     );
-    if (
-      yearIndex === FINAL_TIMELINE_YEAR_INDEX &&
-      !hasCompletedTimelineRef.current
-    ) {
-      hasCompletedTimelineRef.current = true;
-      forwardLockedRef.current = true;
-      onTimelineCompleteRef.current?.();
-    }
-    if (yearIndex < FINAL_TIMELINE_YEAR_INDEX) {
+    if (yearIndex === FINAL_TIMELINE_YEAR_INDEX) {
+      if (!hasCompletedTimelineRef.current) {
+        hasCompletedTimelineRef.current = true;
+        forwardLockedRef.current = true;
+        onTimelineCompleteRef.current?.();
+      }
+    } else {
       hasCompletedTimelineRef.current = false;
       forwardLockedRef.current = false;
     }
   }, []);
+
+  const isAtTimelineHardStart = useCallback(
+    () => passCountRef.current === 0,
+    [],
+  );
 
   const normalizedImages = useMemo(
     () =>
@@ -388,15 +521,34 @@ function GalleryScene({
         index: i,
         z: frozen
           ? getHeroPlaneZ(i, visibleCount, depthRange)
-          : getInitialPlaneZ(i, visibleCount, depthRange),
+          : getInitialPlaneZ(
+              i,
+              visibleCount,
+              depthRange,
+              initialDepthOffsetRatioRef.current,
+            ),
         imageIndex: totalImages > 0 ? i % totalImages : 0,
-        x: getTimelineX(totalImages > 0 ? i % totalImages : 0),
+        x: getTimelineX(
+          totalImages > 0 ? i % totalImages : 0,
+          timelineXOffsetRef.current,
+        ),
         y: TIMELINE_Y,
       })),
     [depthRange, totalImages, visibleCount],
   );
 
   const planesRef = useRef<PlaneData[]>(buildPlanes(true));
+
+  const resetTimelineSession = useCallback(() => {
+    scrollVelocityRef.current = 0;
+    hasReportedScrollRef.current = false;
+    passCountRef.current = 0;
+    lastYearIndexRef.current = -1;
+    hasCompletedTimelineRef.current = false;
+    forwardLockedRef.current = false;
+    planePassedRef.current = Array.from({ length: visibleCount }, () => false);
+    planesRef.current = buildPlanes(!interactiveRef.current);
+  }, [buildPlanes, visibleCount]);
 
   useEffect(() => {
     onUserScrollRef.current = onUserScroll;
@@ -411,25 +563,24 @@ function GalleryScene({
   }, [onTimelineComplete]);
 
   useEffect(() => {
-    forwardLockedRef.current = forwardScrollLocked;
-  }, [forwardScrollLocked]);
+    backwardLockedRef.current = backwardScrollLocked;
+  }, [backwardScrollLocked]);
 
   useEffect(() => {
     interactiveRef.current = interactive;
     if (!interactive) {
-      scrollVelocityRef.current = 0;
-      hasReportedScrollRef.current = false;
-      passCountRef.current = 0;
-      lastYearIndexRef.current = -1;
-      hasCompletedTimelineRef.current = false;
-      forwardLockedRef.current = false;
-      planePassedRef.current = [];
+      resetTimelineSession();
       planesRef.current = buildPlanes(true);
     } else {
       planesRef.current = buildPlanes(false);
       planePassedRef.current = Array.from({ length: visibleCount }, () => false);
     }
-  }, [interactive, buildPlanes, visibleCount]);
+  }, [interactive, buildPlanes, visibleCount, resetTimelineSession]);
+
+  useEffect(() => {
+    if (!interactive || sessionKey === 0) return;
+    resetTimelineSession();
+  }, [sessionKey, interactive, resetTimelineSession]);
 
   const textures = useTexture(normalizedImages.map((img) => img.src));
 
@@ -449,8 +600,18 @@ function GalleryScene({
       if (!interactiveRef.current) return;
       event.preventDefault();
 
+      const atHardStart = isAtTimelineHardStart();
+
       if (forwardLockedRef.current && event.deltaY > 0) {
         scrollVelocityRef.current = Math.min(scrollVelocityRef.current, 0);
+        return;
+      }
+
+      if (
+        (backwardLockedRef.current || atHardStart) &&
+        event.deltaY < 0
+      ) {
+        scrollVelocityRef.current = Math.max(scrollVelocityRef.current, 0);
         return;
       }
 
@@ -461,7 +622,7 @@ function GalleryScene({
         onUserScrollRef.current?.();
       }
     },
-    [speed],
+    [speed, isAtTimelineHardStart],
   );
 
   useEffect(() => {
@@ -483,7 +644,15 @@ function GalleryScene({
       scrollVelocityRef.current = 0;
     }
 
+    if (
+      (backwardLockedRef.current || isAtTimelineHardStart()) &&
+      scrollVelocityRef.current < 0
+    ) {
+      scrollVelocityRef.current = 0;
+    }
+
     const scrollVelocity = scrollVelocityRef.current;
+    let passCountDelta = 0;
 
     materials.forEach((mat) => {
       if (mat?.uniforms) {
@@ -506,14 +675,18 @@ function GalleryScene({
           }
           planePassedRef.current[plane.index] = false;
         } else if (newZ < 0) {
-          const wraps = Math.ceil(-newZ / depthRange);
-          newZ += depthRange * wraps;
-          if (totalImages > 0) {
-            plane.imageIndex =
-              ((plane.imageIndex - wraps) % totalImages + totalImages) %
-              totalImages;
+          if (isAtTimelineHardStart()) {
+            newZ = 0;
+          } else {
+            const wraps = Math.ceil(-newZ / depthRange);
+            newZ += depthRange * wraps;
+            if (totalImages > 0) {
+              plane.imageIndex =
+                ((plane.imageIndex - wraps) % totalImages + totalImages) %
+                totalImages;
+            }
+            planePassedRef.current[plane.index] = false;
           }
-          planePassedRef.current[plane.index] = false;
         }
 
         plane.z = ((newZ % depthRange) + depthRange) % depthRange;
@@ -523,32 +696,30 @@ function GalleryScene({
         const wasPast = planePassedRef.current[plane.index] ?? false;
         const crossedForward =
           !forwardLockedRef.current &&
-          prevT < passThreshold &&
-          t >= passThreshold;
-        const crossedBackward = prevT > passThreshold && t <= passThreshold;
+          !wasPast &&
+          prevT < PASS_FORWARD_THRESHOLD &&
+          t >= PASS_FORWARD_THRESHOLD;
+        const crossedBackward =
+          wasPast &&
+          prevT > PASS_FORWARD_THRESHOLD &&
+          t <= PASS_BACKWARD_THRESHOLD;
 
-        if (crossedForward && !wasPast) {
+        if (crossedForward) {
           planePassedRef.current[plane.index] = true;
-          if (passCountRef.current < MAX_TIMELINE_PASS_COUNT) {
-            passCountRef.current += 1;
-            emitYearForPassCount(passCountRef.current);
+          if (passCountDelta < 1) {
+            passCountDelta = 1;
           }
         }
 
-        if (crossedBackward && wasPast) {
+        if (crossedBackward) {
           planePassedRef.current[plane.index] = false;
-          if (passCountRef.current > 0) {
-            passCountRef.current -= 1;
-            emitYearForPassCount(passCountRef.current);
+          if (passCountDelta > -1) {
+            passCountDelta = -1;
           }
-        }
-
-        if (t < passThreshold - 0.12) {
-          planePassedRef.current[plane.index] = false;
         }
       }
 
-      plane.x = getTimelineX(plane.imageIndex);
+      plane.x = getTimelineX(plane.imageIndex, timelineXOffsetRef.current);
       plane.y = TIMELINE_Y;
 
       const t = plane.z / depthRange;
@@ -561,6 +732,14 @@ function GalleryScene({
         mat.uniforms.blurAmount.value = blur;
       }
     });
+
+    if (passCountDelta > 0 && passCountRef.current < MAX_TIMELINE_PASS_COUNT) {
+      passCountRef.current += 1;
+      emitYearForPassCount(passCountRef.current);
+    } else if (passCountDelta < 0 && passCountRef.current > 0) {
+      passCountRef.current -= 1;
+      emitYearForPassCount(passCountRef.current);
+    }
   });
 
   if (normalizedImages.length === 0) return null;
@@ -631,17 +810,28 @@ export default function InfiniteGallery({
   visibleCount = 8,
   interactive = true,
   forwardScrollLocked = false,
+  backwardScrollLocked = false,
   onUserScroll,
   onTimelineYear,
   onTimelineComplete,
   passThreshold = DEFAULT_PASS_THRESHOLD,
+  sessionKey = 0,
   className = "h-96 w-full",
   style,
-  fadeSettings = HALLWAY_FADE_SETTINGS,
-  blurSettings = HALLWAY_BLUR_SETTINGS,
+  fadeSettings,
+  blurSettings,
 }: InfiniteGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [webglSupported, setWebglSupported] = useState(true);
+  const {
+    timelineXOffset,
+    cameraFov,
+    fadeSettings: layoutFadeSettings,
+    blurSettings: layoutBlurSettings,
+    initialDepthOffsetRatio,
+  } = useContainerTimelineLayout(containerRef);
+  const resolvedFadeSettings = fadeSettings ?? layoutFadeSettings;
+  const resolvedBlurSettings = blurSettings ?? layoutBlurSettings;
 
   useEffect(() => {
     try {
@@ -670,25 +860,30 @@ export default function InfiniteGallery({
       aria-label="Galería 3D de nuestra historia"
     >
       <Canvas
-        camera={{ position: [0, 0, 0], fov: 48 }}
+        camera={{ position: [0, 0, 0], fov: cameraFov }}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 1.75]}
         style={{ background: "transparent" }}
       >
         <Suspense fallback={null}>
+          <CameraFovSync fov={cameraFov} />
           <GalleryScene
             images={images}
             speed={speed}
             visibleCount={visibleCount}
             interactive={interactive}
             forwardScrollLocked={forwardScrollLocked}
+            backwardScrollLocked={backwardScrollLocked}
             onUserScroll={onUserScroll}
             onTimelineYear={onTimelineYear}
             onTimelineComplete={onTimelineComplete}
             passThreshold={passThreshold}
             containerRef={containerRef}
-            fadeSettings={fadeSettings}
-            blurSettings={blurSettings}
+            timelineXOffset={timelineXOffset}
+            initialDepthOffsetRatio={initialDepthOffsetRatio}
+            sessionKey={sessionKey}
+            fadeSettings={resolvedFadeSettings}
+            blurSettings={resolvedBlurSettings}
           />
         </Suspense>
       </Canvas>

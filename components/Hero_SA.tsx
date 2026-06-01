@@ -7,7 +7,7 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ReactNode, TouchEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -1824,6 +1824,38 @@ export default function HeroSA() {
           <HeroPrimaryContent heroRevealReady={heroRevealReady} />
         </div>
       </div>
+
+      <HeroCtaBar
+        variant="inline"
+        tone="on-dark"
+        heroRevealReady={heroRevealReady}
+        heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
+        primaryHref="/productos"
+        primaryLabel="Ver catálogo"
+        secondaryHref="/contacto"
+        secondaryLabel="Contacto"
+        showSecondary
+        className="absolute bottom-[calc(28dvh+0.75rem)] left-6 z-30 w-full max-w-sm sm:left-10 sm:max-w-md lg:bottom-[13dvh] lg:left-12 lg:max-w-xl"
+      />
+
+      <a
+        href="#certificaciones"
+        aria-label="Desplazarse hacia abajo"
+        className="absolute bottom-5 left-1/2 z-30 flex size-10 -translate-x-1/2 items-center justify-center rounded-full border border-white/25 bg-white/10 text-white/80 backdrop-blur-md transition-colors hover:bg-white/15 hover:text-white lg:hidden"
+      >
+        <motion.span
+          aria-hidden
+          animate={reduceMotion ? undefined : { y: [0, 5, 0] }}
+          transition={
+            reduceMotion
+              ? undefined
+              : { duration: 2.2, repeat: Infinity, ease: "easeInOut" }
+          }
+          className="flex items-center justify-center"
+        >
+          <ChevronDown className="size-5" strokeWidth={2} />
+        </motion.span>
+      </a>
     </section>
   );
 }
@@ -1863,15 +1895,6 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
           </span>
         </div>
       </div>
-
-      <HeroCtaBar
-        variant="inline"
-        tone="on-dark"
-        heroRevealReady={heroRevealReady}
-        heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-        showSecondary={false}
-        className="relative z-50 mt-auto w-full max-lg:mb-[calc(26dvh+0.5rem)] lg:mt-8 lg:mb-0 lg:max-w-xl"
-      />
     </div>
   );
 }

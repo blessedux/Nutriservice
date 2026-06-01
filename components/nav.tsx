@@ -202,7 +202,10 @@ function NavInner() {
   const onProductDarkNav = onProductDetailDarkNav || onProductosCatalogDarkNav;
   const onContacto =
     pathname === "/contacto" || pathname.startsWith("/contacto/");
-  const onDarkNav = onHome || onVideoIndustryNav || onProductDarkNav;
+  const onNosotros =
+    pathname === "/nosotros" || pathname.startsWith("/nosotros/");
+  const onDarkNav =
+    onHome || onVideoIndustryNav || onProductDarkNav || onNosotros;
   const onLightBlueNav = onContacto;
   const onWhiteNavText = onDarkNav || onLightBlueNav;
   const onTransparentDarkNav = onVideoIndustryNav || onProductDarkNav;
@@ -256,10 +259,10 @@ function NavInner() {
         : onLightBlueNav
           ? "border-b border-[rgba(10,25,47,0.08)] bg-transparent"
         : scrolled
-          ? onHome
+          ? onHome || onNosotros
             ? "border-b border-white/10 bg-slate-950/72 backdrop-blur-xl backdrop-saturate-150"
             : "border-b border-[rgba(10,25,47,0.08)] bg-white/82 backdrop-blur-xl backdrop-saturate-150"
-          : onHome
+          : onHome || onNosotros
             ? "border-b border-white/10 bg-transparent"
             : "border-b border-[rgba(10,25,47,0.08)] bg-transparent";
 

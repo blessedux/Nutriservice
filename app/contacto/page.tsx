@@ -75,7 +75,7 @@ export default function ContactoPage() {
                 Hablemos de tu operación
               </h1>
               <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
-                No es una llamada de ventas. Es una conversación técnica para
+                Escribeparanos para
                 entender tus desafíos productivos y evaluar soluciones
                 específicas.
               </p>
@@ -85,10 +85,10 @@ export default function ContactoPage() {
               className={`${GLASS_CARD} p-6 sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-2 lg:self-start xl:mt-4`}
             >
             <h2 className="mb-2 text-xl font-bold text-white">
-              Solicita una evaluación técnica
+            Contactanos
             </h2>
             <p className="mb-8 text-sm text-white/65">
-              Cuéntanos brevemente qué produces y en qué rubro necesitas apoyo.
+              Indica tu rubro y tu consulta.
             </p>
             <ContactForm variant="on-dark" />
           </div>

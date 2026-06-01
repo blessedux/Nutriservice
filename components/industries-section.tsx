@@ -16,6 +16,8 @@ type CardMeta = {
   image: string;
   products: string[];
   title?: string;
+  /** Subtle mobile carousel glow — rgba, low opacity */
+  accent?: string;
 };
 
 type WheelEntry = {
@@ -37,21 +39,27 @@ const CARD_META: Record<string, CardMeta> = {
   acuicola: {
     image: PUBLIC_ASSETS.industriesSection.cardAcuicola,
     products: ["ACTIVEMOS", "MACROGARD", "SILIMARINA 80%", "NUCLEOFORCE"],
+    accent: "rgba(34, 211, 238, 0.2)",
   },
   avicola: {
     image: PUBLIC_ASSETS.industriesSection.cardAvicola,
     title: "Aves",
     products: ["HALOR TID", "MICROACID PLUS", "M-PROVE", "S-PROVE"],
+    accent: "rgba(251, 191, 36, 0.16)",
   },
   porcina: {
     image: PUBLIC_ASSETS.industriesSection.cardPorcina,
     products: ["MACROGARD", "HALOR TID", "M-PROVE", "NUCLEOFORCE"],
+    accent: "rgba(251, 146, 60, 0.16)",
   },
   mascotas: {
     image: PUBLIC_ASSETS.industriesSection.cardMascotas,
     products: ["PALAUP CH", "MACROGARD", "TECMAX PRO"],
+    accent: "rgba(167, 139, 250, 0.16)",
   },
 };
+
+const DEFAULT_CARD_ACCENT = "rgba(6, 182, 212, 0.14)";
 
 const UNIQUE_INDUSTRIES = industryList.filter((ind) => CARD_META[ind.slug]);
 
@@ -107,6 +115,45 @@ function wrap(min: number, max: number, v: number) {
 /** Composite "swipe power" used for flick detection on drag end */
 function swipePower(offset: number, velocity: number) {
   return Math.abs(offset) * velocity;
+}
+
+/** Soft radial tint behind the card rail on mobile — replaces full-bleed ambience. */
+function IndustriesMobileCardGlow({
+  accent,
+  activeIndex,
+  reduceMotion,
+}: {
+  accent: string;
+  activeIndex: number;
+  reduceMotion: boolean | null;
+}) {
+  const transition = reduceMotion
+    ? { duration: 0 }
+    : { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const };
+
+  return (
+    <div
+      className="pointer-events-none absolute inset-x-2 top-[6%] bottom-[18%] z-0 overflow-hidden rounded-[2.75rem] lg:hidden"
+      aria-hidden
+    >
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeIndex}
+          className="absolute inset-0"
+          initial={reduceMotion ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={reduceMotion ? undefined : { opacity: 0 }}
+          transition={transition}
+          style={{
+            background: [
+              `radial-gradient(ellipse 72% 58% at 50% 44%, ${accent} 0%, transparent 68%)`,
+              `linear-gradient(to bottom, transparent 55%, ${HOME_BLUE_BG} 100%)`,
+            ].join(", "),
+          }}
+        />
+      </AnimatePresence>
+    </div>
+  );
 }
 
 function IndustryCard({
@@ -379,6 +426,8 @@ function IndustriesCarousel() {
   );
 
   const enablePointerDrag = !reduceMotion && isMobile !== true;
+  const mobileCardAccent =
+    activeMeta.accent ?? DEFAULT_CARD_ACCENT;
 
   return (
     <div
@@ -389,9 +438,9 @@ function IndustriesCarousel() {
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Ambient glow — blurred active card image behind the rail */}
+      {/* Desktop: blurred active card ambience behind the rail */}
       <div
-        className="pointer-events-none absolute -inset-8 overflow-hidden rounded-[3rem]"
+        className="pointer-events-none absolute -inset-8 hidden overflow-hidden rounded-[3rem] lg:block"
         aria-hidden
       >
         <AnimatePresence mode="popLayout">
@@ -414,12 +463,20 @@ function IndustriesCarousel() {
         </AnimatePresence>
       </div>
 
+      {isMobile !== false ? (
+        <IndustriesMobileCardGlow
+          accent={mobileCardAccent}
+          activeIndex={activeIndex}
+          reduceMotion={reduceMotion}
+        />
+      ) : null}
+
       {/* 3D card rail */}
       <div
         role="region"
         aria-roledescription="carousel"
         aria-label="Industrias — arrastra o desliza para explorar"
-        className="relative flex h-[440px] w-full items-center justify-center overflow-hidden [perspective:1200px] sm:h-[500px] md:h-[540px] lg:overflow-visible"
+        className="relative z-[1] flex h-[440px] w-full items-center justify-center overflow-hidden [perspective:1200px] sm:h-[500px] md:h-[540px] lg:overflow-visible"
       >
         {/*
          * Draggable container — dragConstraints keep it visually anchored;

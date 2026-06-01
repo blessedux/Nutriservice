@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import ImpactoHistorySection from "@/components/impacto-history-section";
+import NosotrosContactParallaxSection from "@/components/nosotros-contact-parallax-section";
 import NosotrosTeamSection from "@/components/nosotros-team-section";
 import PageBackHeader from "@/components/page-back-header";
 
@@ -12,8 +13,8 @@ export const metadata: Metadata = {
 
 export default function NosotrosPage() {
   return (
-    <>
-      <section className="bg-ns-navy px-6 py-20 text-white sm:py-24">
+    <div className="min-h-screen -mt-24 bg-ns-navy">
+      <section className="px-6 pb-12 pt-28 text-white sm:px-10 sm:pb-16 sm:pt-32 lg:px-12 lg:pt-36">
         <div className="mx-auto max-w-4xl">
           <PageBackHeader backHref="/" tone="on-dark" simple />
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-ns-emerald">
@@ -34,7 +35,10 @@ export default function NosotrosPage() {
 
       <NosotrosTeamSection />
 
-      <ImpactoHistorySection />
-    </>
+      <div className="relative bg-ns-navy">
+        <ImpactoHistorySection className="relative z-0 pb-20 sm:pb-28" />
+        <NosotrosContactParallaxSection />
+      </div>
+    </div>
   );
 }

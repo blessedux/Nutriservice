@@ -42,10 +42,6 @@ export default function ContactForm({
     ? "w-full rounded-xl bg-cyan-500 px-6 py-3.5 text-sm font-semibold text-[#0a192f] transition-colors hover:bg-cyan-400 disabled:opacity-60"
     : "w-full rounded-xl bg-ns-green px-6 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-dark disabled:opacity-60";
 
-  const footnoteClass = onDark
-    ? "text-xs text-white/45 text-center"
-    : "text-xs text-ns-subtle text-center";
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -151,11 +147,6 @@ export default function ContactForm({
       >
         {loading ? "Enviando…" : "Enviar solicitud"}
       </button>
-
-      <p className={footnoteClass}>
-        Respondemos dentro de 24 horas hábiles para coordinar una reunión
-        técnica.
-      </p>
     </form>
   );
 }

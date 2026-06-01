@@ -80,8 +80,17 @@ export default function HeroCtaBar({
   const reducedMotion = usePrefersReducedMotion();
   const [ctaVisible, setCtaVisible] = useState(false);
 
-  const secondaryBtn =
-    tone === "on-dark"
+  const isStackedInline = variant === "inline";
+
+  const primaryBtn = isStackedInline
+    ? "w-full rounded-lg bg-blue-600 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+    : "inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light";
+
+  const secondaryBtn = isStackedInline
+    ? tone === "on-dark"
+      ? "w-full rounded-lg border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/15"
+      : "w-full rounded-lg border border-blue-950/15 bg-white/60 px-7 py-3.5 text-sm font-semibold text-blue-950 backdrop-blur-md transition-colors hover:bg-white/80"
+    : tone === "on-dark"
       ? "border-white/35 bg-transparent text-white hover:bg-white/10"
       : "border-blue-950/20 bg-sky-50/80 text-blue-950 hover:bg-sky-100";
 
@@ -103,20 +112,20 @@ export default function HeroCtaBar({
   return (
     <section
       className={cn(
-        "bg-transparent backdrop-blur-[2px]",
-        variant === "strip"
-          ? "px-6 py-8 sm:py-10"
-          : "px-0 py-0",
+        "bg-transparent",
+        variant === "strip" && "backdrop-blur-[2px]",
+        variant === "strip" ? "px-6 py-8 sm:py-10" : "px-0 py-0",
         className,
       )}
       aria-label="Acciones principales"
     >
       <div
         className={cn(
-          "flex flex-col gap-3 transition-[opacity,transform] duration-[520ms] ease-out sm:flex-row sm:items-center sm:gap-4",
+          "flex flex-col gap-3 transition-[opacity,transform] duration-[520ms] ease-out",
+          !isStackedInline && "sm:flex-row sm:items-center sm:gap-4",
           variant === "strip"
             ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
-            : "w-full max-w-xl items-start justify-start sm:items-stretch sm:justify-start",
+            : "w-full max-w-sm items-stretch justify-start sm:max-w-md",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"
@@ -126,8 +135,9 @@ export default function HeroCtaBar({
         <Link
           href={primaryHref}
           className={cn(
-            "inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light",
-            variant === "inline" && "w-auto max-w-full sm:w-auto",
+            "inline-flex items-center justify-center",
+            primaryBtn,
+            !isStackedInline && "w-auto max-w-full sm:w-auto",
           )}
         >
           {primaryLabel}
@@ -141,9 +151,14 @@ export default function HeroCtaBar({
               }
             }}
             className={cn(
-              "inline-flex items-center justify-center rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
-              secondaryBtn,
-              variant === "inline" && "w-full sm:w-auto",
+              "inline-flex items-center justify-center",
+              isStackedInline
+                ? secondaryBtn
+                : cn(
+                    "rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
+                    secondaryBtn,
+                    "w-auto max-w-full sm:w-auto",
+                  ),
             )}
           >
             {secondaryLabel}

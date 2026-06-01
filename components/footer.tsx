@@ -107,7 +107,7 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://www.linkedin.com/"
+                href="https://www.linkedin.com/company/nutriservice-spa/?originalSubdomain=cl"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex size-10 items-center justify-center rounded-full border border-white/10 text-white transition-colors hover:border-white/25 hover:opacity-80"
