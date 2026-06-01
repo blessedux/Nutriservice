@@ -73,6 +73,8 @@ const WHEEL_DEBOUNCE_MS = 400;
 const WHEEL_DELTA_THRESHOLD = 20;
 /** Swipe power required to commit to next/prev card */
 const SWIPE_CONFIDENCE_THRESHOLD = 10_000;
+/** Minimum horizontal travel to commit a swipe on touch devices. */
+const TOUCH_SWIPE_THRESHOLD_PX = 48;
 
 /**
  * Base spring for positional movement (x / z / rotateY).
@@ -240,6 +242,8 @@ function IndustriesCarousel() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const lastWheelTimeRef = useRef(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const touchAxisRef = useRef<"x" | "y" | null>(null);
 
   const count = WHEEL_TOTAL;
   const activeIndex = wrap(0, count, active);
@@ -293,6 +297,74 @@ function IndustriesCarousel() {
   }, [reduceMotion, handleNext, handlePrev]);
 
   /**
+   * Mobile: horizontal swipes advance the rail; vertical swipes pass through
+   * to normal page scroll (no scroll trap on the carousel container).
+   */
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el || isMobile !== true) return;
+
+    const onTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      if (!touch) return;
+      touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+      touchAxisRef.current = null;
+    };
+
+    const onTouchMove = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      const start = touchStartRef.current;
+      if (!touch || !start) return;
+
+      const dx = touch.clientX - start.x;
+      const dy = touch.clientY - start.y;
+
+      if (!touchAxisRef.current) {
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        if (absX < 10 && absY < 10) return;
+        touchAxisRef.current = absX > absY ? "x" : "y";
+      }
+
+      // Only hijack touch when the gesture is clearly horizontal.
+      if (touchAxisRef.current === "x") {
+        e.preventDefault();
+      }
+    };
+
+    const resetTouch = () => {
+      touchStartRef.current = null;
+      touchAxisRef.current = null;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      const start = touchStartRef.current;
+      const axis = touchAxisRef.current;
+      const touch = e.changedTouches[0];
+
+      if (start && axis === "x" && touch) {
+        const dx = touch.clientX - start.x;
+        if (dx <= -TOUCH_SWIPE_THRESHOLD_PX) handleNext();
+        else if (dx >= TOUCH_SWIPE_THRESHOLD_PX) handlePrev();
+      }
+
+      resetTouch();
+    };
+
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd);
+    el.addEventListener("touchcancel", resetTouch);
+
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", resetTouch);
+    };
+  }, [isMobile, handleNext, handlePrev]);
+
+  /**
    * Drag end — uses FocusRail's swipePower formula for flick detection.
    * The draggable motion.div has dragConstraints={left:0,right:0} so it
    * snaps back elastically; this handler commits the index change.
@@ -306,10 +378,12 @@ function IndustriesCarousel() {
     [handleNext, handlePrev],
   );
 
+  const enablePointerDrag = !reduceMotion && isMobile !== true;
+
   return (
     <div
       ref={containerRef}
-      className="relative mt-4 mx-auto w-full max-w-full select-none overflow-x-hidden outline-none px-2 sm:max-w-[min(82vw,600px)] sm:px-4 md:max-w-[min(72vw,600px)] md:px-6 lg:mx-0 lg:mr-auto lg:mt-0 lg:max-w-[min(94vw,580px)] lg:overflow-visible lg:px-8"
+      className="relative mt-4 mx-auto w-full max-w-full touch-pan-y select-none overflow-hidden outline-none px-2 sm:max-w-[min(82vw,600px)] sm:px-4 md:max-w-[min(72vw,600px)] md:px-6 lg:mx-0 lg:mr-auto lg:mt-0 lg:max-w-[min(94vw,580px)] lg:touch-auto lg:overflow-visible lg:px-8"
       tabIndex={0}
       onKeyDown={onKeyDown}
       onMouseEnter={() => setIsHovering(true)}
@@ -354,16 +428,17 @@ function IndustriesCarousel() {
          */}
         <motion.div
           className="relative flex h-full w-full items-center justify-center"
-          drag={reduceMotion ? false : "x"}
+          drag={enablePointerDrag ? "x" : false}
           dragConstraints={{ left: 0, right: 0 }}
           dragElastic={0.15}
+          dragDirectionLock={enablePointerDrag}
           onDragEnd={onDragEnd}
           style={{
-            cursor: reduceMotion ? "default" : "grab",
+            cursor: enablePointerDrag ? "grab" : "default",
             transformStyle: "preserve-3d",
-            touchAction: "pan-x pinch-zoom",
+            touchAction: enablePointerDrag ? "pan-x" : undefined,
           }}
-          whileDrag={{ cursor: "grabbing" }}
+          whileDrag={enablePointerDrag ? { cursor: "grabbing" } : undefined}
         >
           {VISIBLE_OFFSETS.map((offset) => {
             const absIndex = active + offset;

@@ -1816,7 +1816,7 @@ export default function HeroSA() {
         <HeroVideoSequenceBg playbackReady={heroRevealReady} />
       </motion.div>
 
-      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-10 pt-[calc(5.125rem+10px)] sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:overflow-visible lg:px-12 lg:pb-24">
+      <div className="relative z-20 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-6 pt-[calc(5.125rem+10px)] max-lg:pb-8 sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:z-10 lg:overflow-visible lg:px-12 lg:pb-24">
         <div
           className="flex min-h-0 flex-1 flex-col justify-start overflow-visible"
           data-hero-animate={heroRevealReady ? "true" : "false"}
@@ -1870,7 +1870,7 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
         heroRevealReady={heroRevealReady}
         heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
         showSecondary={false}
-        className="relative z-40 mt-auto w-full max-lg:pb-1 lg:mt-8 lg:max-w-xl"
+        className="relative z-50 mt-auto w-full max-lg:mb-[calc(26dvh+0.5rem)] lg:mt-8 lg:mb-0 lg:max-w-xl"
       />
     </div>
   );
