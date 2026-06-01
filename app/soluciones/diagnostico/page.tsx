@@ -134,10 +134,10 @@ export default function DiagnosticoPage() {
           </p>
           <div className="mt-8 flex gap-4 justify-center flex-col sm:flex-row">
             <Link
-              href="/soluciones/formulacion"
+              href="/soluciones/maquila"
               className="inline-flex justify-center items-center rounded-lg bg-ns-green px-6 py-3 text-sm font-semibold text-white hover:bg-ns-green-dark transition-colors"
             >
-              Siguiente paso: Formulación →
+              Siguiente paso: Maquila →
             </Link>
             <Link
               href="/contacto"

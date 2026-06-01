@@ -13,13 +13,18 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/tecnologia",
+        destination: "/nosotros",
+        permanent: true,
+      },
+      {
         source: "/impact",
         destination: "/impacto",
         permanent: true,
       },
       {
-        source: "/nosotros",
-        destination: "/impacto",
+        source: "/soluciones/formulacion",
+        destination: "/soluciones/maquila",
         permanent: true,
       },
     ];

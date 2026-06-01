@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import type { ReactNode } from "react";
 
 import IndustriaFixedVideoBg from "@/components/industria-fixed-video-bg";
@@ -10,7 +9,7 @@ import PageBackHeader from "@/components/page-back-header";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { FinTechHeroGrid } from "@/components/ui/fin-tech-landing-page";
 import type { Industry } from "@/lib/industries";
-import { MASCOTAS_VIDEO_WEBM } from "@/lib/productos-division-media";
+import { PORCINA_VIDEO_WEBM } from "@/lib/productos-division-media";
 import { cn } from "@/lib/utils";
 
 const GLASS_CARD = cn(
@@ -37,18 +36,18 @@ function GlassCard({
   return <div className={cn(GLASS_CARD, className)}>{children}</div>;
 }
 
-type IndustriaMascotasPageProps = {
+type IndustriaPorcinaPageProps = {
   industry: Industry;
 };
 
-export default function IndustriaMascotasPage({
+export default function IndustriaPorcinaPage({
   industry,
-}: IndustriaMascotasPageProps) {
+}: IndustriaPorcinaPageProps) {
   const heroRevealReady = useHeroRevealReady();
 
   return (
     <div className="relative text-white">
-      <IndustriaFixedVideoBg webm={MASCOTAS_VIDEO_WEBM} />
+      <IndustriaFixedVideoBg webm={PORCINA_VIDEO_WEBM} />
 
       <div className="relative z-10">
         <section className="relative -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden">

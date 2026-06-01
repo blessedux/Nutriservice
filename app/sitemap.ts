@@ -21,12 +21,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
-      url: `${BASE}/soluciones/formulacion`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
       url: `${BASE}/soluciones/implementacion`,
       lastModified: now,
       changeFrequency: "monthly",
@@ -39,16 +33,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
     {
+      url: `${BASE}/soluciones/maquila`,
+      lastModified: now,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: `${BASE}/industrias`,
       lastModified: now,
       changeFrequency: "monthly",
       priority: 0.85,
     },
     {
-      url: `${BASE}/tecnologia`,
+      url: `${BASE}/nosotros`,
       lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.8,
+      changeFrequency: "yearly",
+      priority: 0.75,
     },
     {
       url: `${BASE}/impacto`,

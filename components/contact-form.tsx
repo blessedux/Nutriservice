@@ -5,11 +5,11 @@ import { useRouter } from "next/navigation";
 
 const RUBROS = [
   "Acuícola",
-  "Avícola",
-  "Porcina",
-  "Alimento para mascotas",
-  "Otro",
-];
+  "Cerdos",
+  "Aves",
+  "Mascotas",
+  "Maquila",
+] as const;
 
 type ContactFormProps = {
   variant?: "default" | "on-dark";

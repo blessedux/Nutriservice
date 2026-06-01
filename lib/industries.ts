@@ -41,7 +41,7 @@ export const industries: Record<string, Industry> = {
       },
     ],
     approach:
-      "Formulamos con precisión para cada especie, etapa y condición de cultivo. Analizamos cada lote de materias primas para eliminar la variabilidad antes de que llegue al estanque.",
+      "Con más de 30 años de experiencia y una operación a escala industrial, Nutriservice respalda a productores acuícolas en todo Chile. Somos representantes oficiales de marcas internacionales de los más altos estándares del sector, con formulación especializada, maquila propia y acompañamiento técnico continuo para sostener rendimiento, trazabilidad y calidad en cada ciclo.",
     steps: [
       {
         title: "Diagnóstico de situación base",
@@ -167,7 +167,7 @@ export const industries: Record<string, Industry> = {
     tagline:
       "Ganancia de peso optimizada, menor variabilidad lote a lote.",
     problem:
-      "La producción porcina enfrenta etapas de alta demanda nutricional donde un error de formulación tiene consecuencias productivas directas. La variabilidad de materias primas lo amplifica.",
+      "La producción porcina enfrenta etapas de alta demanda nutricional donde un error de formulación tiene consecuencias productivas directas.",
     problemCards: [
       {
         title: "Variabilidad de cereales y soya",

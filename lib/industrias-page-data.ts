@@ -15,7 +15,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "acuicola",
     vertical: "VERTICAL 01",
     displayName: "Acuícola",
-    image: PUBLIC_ASSETS.industriasPage.verticalAcuicola,
+    image: PUBLIC_ASSETS.industriesSection.cardAcuicola,
     challengeLines: ["Mortalidad por Estrés", "Térmico y Sanitario"],
     solutionLines: [
       "Protocolos inmunomoduladores",
@@ -27,7 +27,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "avicola",
     vertical: "VERTICAL 02",
     displayName: "Avícola",
-    image: PUBLIC_ASSETS.industriasPage.verticalAvicola,
+    image: PUBLIC_ASSETS.industriesSection.cardAvicola,
     challengeLines: ["Optimización del FCR y", "Salud Intestinal"],
     solutionLines: [
       "Ecosistema de acidificantes",
@@ -40,7 +40,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "porcina",
     vertical: "VERTICAL 03",
     displayName: "Porcina",
-    image: PUBLIC_ASSETS.industriasPage.verticalPorcina,
+    image: PUBLIC_ASSETS.industriesSection.cardPorcina,
     challengeLines: ["Rendimiento en Etapas de", "Destete"],
     solutionLines: [
       "Dietas de precisión para",
@@ -53,7 +53,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     slug: "mascotas",
     vertical: "VERTICAL 04",
     displayName: "Mascotas",
-    image: PUBLIC_ASSETS.industriasPage.verticalMascotas,
+    image: PUBLIC_ASSETS.industriesSection.cardMascotas,
     challengeLines: ["Palatabilidad y Estabilidad", "Oxidativa"],
     solutionLines: [
       "Potenciadores de sabor PalaUp",

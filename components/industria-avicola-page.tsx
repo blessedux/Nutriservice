@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import IndustriaFixedVideoBg from "@/components/industria-fixed-video-bg";
 import IndustriaProductosSection from "@/components/industria-productos-section";
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
+import PageBackHeader from "@/components/page-back-header";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { FinTechHeroGrid } from "@/components/ui/fin-tech-landing-page";
 import type { Industry } from "@/lib/industries";
@@ -52,33 +53,25 @@ export default function IndustriaAvicolaPage({
       <div className="relative z-10">
         <section className="relative -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden">
           <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col justify-center px-6 pb-14 pt-28 sm:px-10 sm:pt-32 lg:px-12">
-            <div className="mb-6 flex flex-wrap items-center gap-3 text-xs">
-              <span className="font-semibold uppercase tracking-widest text-cyan-400">
-                {industry.name}
-              </span>
-              <span className="text-white/25">·</span>
-              <Link
-                href="/industrias"
-                className="text-white/50 transition-colors hover:text-white/80"
-              >
-                Ver todas las industrias
-              </Link>
-            </div>
+            <PageBackHeader
+              backHref="/industrias"
+              crumbs={[
+                { label: "Industrias", href: "/industrias" },
+                { label: industry.name },
+              ]}
+              tone="on-dark"
+            />
             <FinTechHeroGrid
               heroRevealReady={heroRevealReady}
               tone="on-video"
+              hideSideCards
+              hideEyebrow
+              hideStats
               content={{
-                eyebrow: "Nutrición de precisión",
                 title: industry.tagline,
                 description: industry.problem,
                 ctaHref: "/contacto",
                 ctaLabel: "Agendar evaluación técnica",
-                stats: [
-                  { label: "Líneas productivas cubiertas", value: "6+" },
-                  { label: "Años de evidencia aplicada", value: "30+" },
-                ],
-                trustLine: "Protocolos validados en campo",
-                trustTags: ["Conversión", "Sanidad", "Uniformidad"],
               }}
             />
           </div>

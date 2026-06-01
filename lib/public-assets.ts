@@ -20,11 +20,12 @@ export const PUBLIC_ASSETS = {
   hero: {
     salmonMp4: "/assets/hero/salmon-sequence.mp4",
     salmonWebm: "/assets/hero/salmon-sequence.webm",
+    pigletsWebm: "/assets/hero/piglets_combined.webm",
   },
   divisionVideo: {
     mascotas: "/assets/division-video/mascotas.webm",
     aves: "/assets/division-video/aves-chickens.webm",
-    porcina: "/assets/division-video/porcina.webm",
+    porcina: "/assets/hero/piglets_combined.webm",
   },
   industriesSection: {
     backgroundVideo: "/assets/industries-section/background-video.webm",
@@ -37,10 +38,6 @@ export const PUBLIC_ASSETS = {
   industriasPage: {
     heroLab: "/assets/industrias-page/hero-lab.png",
     molecularBg: "/assets/industrias-page/molecular-bg.png",
-    verticalAcuicola: "/assets/industrias-page/vertical-acuicola.webp",
-    verticalAvicola: "/assets/industrias-page/vertical-avicola.webp",
-    verticalPorcina: "/assets/industrias-page/vertical-porcina.webp",
-    verticalMascotas: "/assets/industrias-page/vertical-mascotas.webp",
   },
   industryPages: {
     fallbackPorcina: "/assets/industry-pages/fallback-porcina.webp",

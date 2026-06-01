@@ -36,7 +36,7 @@ export const HERO_LANDING_VIDEO_SEQUENCE: HeroVideoClip[] = [
   {
     webm: PUBLIC_ASSETS.hero.salmonWebm,
     mp4: PUBLIC_ASSETS.hero.salmonMp4,
-    playsBeforeAdvance: 2,
+    playsBeforeAdvance: 1,
   },
   {
     webm: MASCOTAS_VIDEO_WEBM,

@@ -10,7 +10,6 @@ import {
 } from "react";
 
 import { AUDIO_FADE_MS } from "@/lib/audio-constants";
-import { broadcastFxMuted } from "@/lib/audio-fx-state";
 import { setAmbientMasterMuted } from "@/lib/audio-master-state";
 import { easeInQuad, easeOutQuad } from "@/lib/audio-fade";
 import { subscribeTabAudioHidden } from "@/lib/tab-audio-visibility";
@@ -460,9 +459,6 @@ export function SoundWaveToggle({
         detail: { muted: isMuted },
       }),
     );
-    if (!isMuted) {
-      broadcastFxMuted(false);
-    }
   }, [isMuted]);
 
   return (

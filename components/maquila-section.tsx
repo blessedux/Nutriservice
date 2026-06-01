@@ -12,51 +12,12 @@ import {
 } from "framer-motion";
 
 import { HOME_BLUE_BG } from "@/components/home-blue-band";
+import PartnerBrandLogos from "@/components/partner-brand-logos";
+import { MAQUILA_PROCESS_STEPS } from "@/lib/maquila-process-data";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
-type MaquilaStep = {
-  id: string;
-  number: string;
-  title: string;
-  description: string;
-  image: string;
-  imageWidth: number;
-  imageHeight: number;
-};
-
-const MAQUILA_STEPS: MaquilaStep[] = [
-  {
-    id: "formulacion",
-    number: "01",
-    title: "Formulación Técnica",
-    description:
-      "Diseño de premixes y núcleos según especie, etapa productiva y objetivos nutricionales.",
-    image: PUBLIC_ASSETS.maquilaSection.tabFormulacionHero,
-    imageWidth: 1298,
-    imageHeight: 1212,
-  },
-  {
-    id: "produccion",
-    number: "02",
-    title: "Producción Industrial",
-    description:
-      "Procesos estandarizados de mezclado, control de calidad y trazabilidad operacional.",
-    image: PUBLIC_ASSETS.shared.workersHero,
-    imageWidth: 1536,
-    imageHeight: 1024,
-  },
-  {
-    id: "optimizacion",
-    number: "03",
-    title: "Optimización Productiva",
-    description:
-      "Soluciones enfocadas en digestibilidad, conversión alimenticia y estabilidad sanitaria.",
-    image: PUBLIC_ASSETS.maquilaSection.tabProductsBg,
-    imageWidth: 1536,
-    imageHeight: 1024,
-  },
-];
+type MaquilaStep = (typeof MAQUILA_PROCESS_STEPS)[number];
 
 const IMAGE_CROSSFADE = { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const };
 
@@ -107,55 +68,8 @@ function MaquilaReveal({
   );
 }
 
-const MAQUILA_PARTNER_LOGOS = [
-  {
-    src: PUBLIC_ASSETS.maquilaSection.logos.biorigin,
-    alt: "Biorigin",
-    width: 132,
-    height: 36,
-  },
-  {
-    src: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
-    alt: "Agrifirm",
-    width: 132,
-    height: 36,
-  },
-  {
-    src: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
-    alt: "Nucienci",
-    width: 132,
-    height: 36,
-  },
-  {
-    src: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
-    alt: "Bioibérica",
-    width: 230,
-    height: 129,
-  },
-] as const;
-
 function MaquilaPartnerLogos({ className }: { className?: string }) {
-  return (
-    <ul
-      className={cn(
-        "flex flex-wrap items-center justify-end gap-2.5 sm:gap-3",
-        className,
-      )}
-      aria-label="Socios y aliados"
-    >
-      {MAQUILA_PARTNER_LOGOS.map((logo) => (
-        <li key={logo.src} className="shrink-0">
-          <Image
-            src={logo.src}
-            alt={logo.alt}
-            width={logo.width}
-            height={logo.height}
-            className="h-7 w-auto max-w-[5.5rem] object-contain object-right opacity-80 brightness-0 invert sm:h-8 sm:max-w-[6.5rem]"
-          />
-        </li>
-      ))}
-    </ul>
-  );
+  return <PartnerBrandLogos className={className} layout="end" />;
 }
 
 function MaquilaPartnerFooter({
@@ -411,15 +325,13 @@ export default function MaquilaSection() {
                 Premixes y Núcleos Diseñados para su Operación
               </h2>
               <p className="max-w-xl text-pretty text-base leading-relaxed text-white/65 sm:text-lg sm:leading-[29.25px]">
-                Colaboramos con productores y plantas de alimento para desarrollar
-                premixes, núcleos y soluciones nutricionales adaptadas a sus
-                objetivos productivos, condiciones operacionales y requerimientos
-                técnicos.
+                Fabricamos tus productos a medida, garantizando la confidencialidad
+                de tus fórmulas y con los más altos estándares de calidad.
               </p>
             </div>
 
             <ul className="flex flex-col gap-2" role="list">
-              {MAQUILA_STEPS.map((step, index) => {
+              {MAQUILA_PROCESS_STEPS.map((step, index) => {
                 const selected = index === activeIndex;
                 return (
                   <li
@@ -473,16 +385,16 @@ export default function MaquilaSection() {
               <div ref={ctaBlockRef} className="pt-2 sm:mt-6">
                 <MaquilaReveal
                   itemId="cta"
-                  delay={MAQUILA_STEPS.length * STEP_STAGGER_S + 0.08}
+                  delay={MAQUILA_PROCESS_STEPS.length * STEP_STAGGER_S + 0.08}
                   inView={inView}
                   reduceMotion={reduceMotion}
                   revealGeneration={revealGeneration}
                 >
                   <Link
-                    href="/soluciones/formulacion"
+                    href="/soluciones/maquila"
                     className="inline-flex w-fit items-center justify-center self-start rounded-full border border-white/55 bg-white/10 px-12 py-5 text-center text-xs font-bold uppercase leading-[18px] tracking-[0.2em] text-white shadow-sm backdrop-blur-sm transition-colors duration-300 hover:border-cyan-400/45 hover:bg-cyan-500/20 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-500/70"
                   >
-                    Diseñar Fórmula
+                    Ver más
                   </Link>
                 </MaquilaReveal>
               </div>
@@ -497,7 +409,7 @@ export default function MaquilaSection() {
                   inView={inView}
                   reduceMotion={reduceMotion}
                   revealGeneration={revealGeneration}
-                  stepCount={MAQUILA_STEPS.length}
+                  stepCount={MAQUILA_PROCESS_STEPS.length}
                 />
               </div>
             </div>
@@ -519,7 +431,7 @@ export default function MaquilaSection() {
               <motion.div style={{ y: imageY }} className="w-full">
                 <MaquilaImageGallery
                   galleryRef={galleryRef}
-                  steps={MAQUILA_STEPS}
+                  steps={MAQUILA_PROCESS_STEPS}
                   activeIndex={activeIndex}
                 />
               </motion.div>

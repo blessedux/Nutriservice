@@ -1,11 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ChevronRight, FlaskConical, Shield } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
+import PageBackHeader from "@/components/page-back-header";
 import {
-  INDUSTRIAS_LABS,
-  INDUSTRIAS_PILLARS,
   INDUSTRIAS_VERTICALS,
   type IndustriaVertical,
 } from "@/lib/industrias-page-data";
@@ -24,7 +23,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
         aria-hidden
       />
       <p
-        className="font-mono text-[10px] font-bold uppercase tracking-[0.35em]"
+        className="max-w-xl text-pretty font-mono text-[10px] font-bold uppercase leading-snug tracking-[0.22em] sm:tracking-[0.28em]"
         style={{ color: `${PAGE_CYAN}99` }}
       >
         {children}
@@ -52,7 +51,12 @@ function IndustriasHero() {
         aria-hidden
       />
       <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col justify-center px-6 py-28 sm:px-10 sm:py-32 lg:px-16 xl:px-32">
-        <Eyebrow>Biotech Industrial Excellence</Eyebrow>
+        <PageBackHeader
+          backHref="/"
+          crumbs={[{ label: "Industrias" }]}
+          tone="on-dark"
+        />
+        <Eyebrow>30+ años al servicio de la nutrición funcional animal en Chile</Eyebrow>
         <h1 className="mt-6 max-w-[800px] text-balance text-4xl font-semibold leading-[1.15] tracking-tight sm:text-5xl lg:text-[3rem] lg:leading-[1.2]">
           Excelencia Nutricional
           <br />
@@ -177,97 +181,11 @@ function IndustriasGrid() {
   );
 }
 
-function IndustriasRdSection() {
-  return (
-    <section className="relative overflow-hidden bg-[#0a192f] px-6 py-16 text-white sm:px-10 sm:py-20 lg:px-16 lg:py-24 xl:px-32">
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-1/2 opacity-10" aria-hidden>
-        <Image
-          src={PUBLIC_ASSETS.industriasPage.molecularBg}
-          alt=""
-          fill
-          className="object-cover object-right"
-          sizes="50vw"
-        />
-      </div>
-
-      <div className="relative mx-auto grid max-w-[1440px] grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-12">
-        <div className="flex flex-col gap-6">
-          <Eyebrow>Infraestructura de I+D</Eyebrow>
-          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-tight sm:text-[2rem] sm:leading-[1.35]">
-            Especialización de
-            <br />
-            Clase Mundial.
-          </h2>
-          <p className="max-w-xl text-base leading-relaxed text-white/60">
-            Contamos con laboratorios especializados para cada vertical, donde
-            simulamos condiciones productivas reales para validar cada fórmula
-            antes de su implementación industrial.
-          </p>
-
-          <div className="mt-2 flex flex-col gap-6">
-            {INDUSTRIAS_LABS.map((lab) => (
-              <div
-                key={lab.title}
-                className="flex items-center gap-6 rounded-2xl border border-white/10 bg-white/5 p-4"
-              >
-                <div
-                  className={cn(
-                    "flex size-12 shrink-0 items-center justify-center rounded-xl",
-                    lab.accent === "cyan" ? "bg-cyan-500" : "bg-[#1e3a8a]",
-                  )}
-                >
-                  {lab.icon === "flask" ? (
-                    <FlaskConical className="size-6 text-[#0a192f]" aria-hidden />
-                  ) : (
-                    <Shield className="size-6 text-white" aria-hidden />
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-lg font-bold tracking-tight">{lab.title}</h3>
-                  <p className="text-sm text-white/40">{lab.detail}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {INDUSTRIAS_PILLARS.map((pillar) => (
-            <div
-              key={pillar.number}
-              className={cn(
-                "flex flex-col justify-between rounded-[32px] border p-8 backdrop-blur-sm",
-                pillar.variant === "wide" && "sm:col-span-2",
-                pillar.variant === "highlight"
-                  ? "border-cyan-500/20 bg-[#1e3a8a]/20"
-                  : "border-white/10 bg-white/5",
-              )}
-            >
-              <p className="font-mono text-2xl text-cyan-500">{pillar.number}</p>
-              <div className="mt-8 flex flex-col gap-2">
-                <h3 className="text-lg font-bold leading-snug">{pillar.title}</h3>
-                <p className="text-sm leading-relaxed text-white/40">
-                  {pillar.detail.map((line) => (
-                    <span key={line} className="block">
-                      {line}
-                    </span>
-                  ))}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function IndustriasPageContent() {
   return (
     <>
       <IndustriasHero />
       <IndustriasGrid />
-      <IndustriasRdSection />
       <IndustriasCtaBanner />
     </>
   );

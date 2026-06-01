@@ -12,7 +12,6 @@ import type { ReactNode, TouchEvent } from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 import HeroCtaBar from "@/components/hero-cta-bar";
-import { HeroSalmonAmbientAudio } from "@/components/hero-salmon-ambient-audio";
 import { HeroVideoSequenceBg } from "@/components/hero-video-sequence-bg";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { useMobileExperience } from "@/hooks/use-mobile-experience";
@@ -1809,7 +1808,6 @@ export default function HeroSA() {
       id="inicio"
       className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white max-lg:overflow-visible lg:min-h-screen"
     >
-      <HeroSalmonAmbientAudio heroRootRef={sectionRef} />
       <motion.div
         className="pointer-events-none absolute inset-0 z-0 scale-[1.14] will-change-transform"
         style={{ y: bgParallaxY }}
@@ -1836,8 +1834,8 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
       <div className="max-w-xl shrink-0 overflow-visible lg:max-w-2xl xl:max-w-3xl">
         <div className="hero-tag-lr relative z-30 mb-3.5 flex items-center gap-4 sm:mb-6">
           <span className="h-px w-10 shrink-0 bg-blue-600" aria-hidden />
-          <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-white">
-            Excelencia industrial desde 1993
+          <p className="max-w-xl text-[10px] font-bold uppercase leading-snug tracking-[0.22em] text-white sm:max-w-2xl sm:tracking-[0.28em]">
+            30+ años al servicio de la nutrición funcional animal en Chile
           </p>
         </div>
 
@@ -1849,18 +1847,18 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
         <div className="mt-4 max-w-lg text-sm leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
           <span className="lg:hidden">
             <HeroHeadLine delayMs={340}>
-              Transformamos ciencia compleja en rendimiento
+              Soluciones funcionales para una
             </HeroHeadLine>
             <HeroHeadLine delayMs={440}>
-              confiable para operaciones productivas de gran escala.
+              alimentación y producción responsables
             </HeroHeadLine>
           </span>
           <span className="hidden lg:inline">
             <HeroHeadLine delayMs={340}>
-              Transformamos ciencia compleja en rendimiento confiable
+              Soluciones funcionales para una alimentación y
             </HeroHeadLine>
             <HeroHeadLine delayMs={440}>
-              para operaciones productivas de gran escala.
+              producción responsables
             </HeroHeadLine>
           </span>
         </div>
@@ -1870,8 +1868,7 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
           tone="on-dark"
           heroRevealReady={heroRevealReady}
           heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-          secondaryHref="/#proceso"
-          secondaryLabel="Ver el proceso ↓"
+          showSecondary={false}
           className="relative z-40 mt-6 sm:mt-8"
         />
       </div>

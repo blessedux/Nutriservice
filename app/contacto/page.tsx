@@ -4,6 +4,7 @@ import Image from "next/image";
 
 import ContactForm from "@/components/contact-form";
 import { HOME_INDUSTRIES_BG } from "@/components/home-blue-band";
+import PageBackHeader from "@/components/page-back-header";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export const metadata: Metadata = {
@@ -37,50 +38,57 @@ const GLASS_CARD =
 export default function ContactoPage() {
   return (
     <div
-      className="min-h-screen -mt-24 pt-24 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8"
+      className="min-h-screen -mt-24 px-4 pb-4 pt-28 sm:px-6 sm:pb-6 sm:pt-32 lg:px-8 lg:pb-8 lg:pt-36"
       style={{ backgroundColor: HOME_INDUSTRIES_BG }}
     >
-      <div className="relative mx-auto min-h-[min(92dvh,58rem)] max-w-7xl overflow-hidden rounded-[2rem] border border-ns-border text-white sm:min-h-[min(94dvh,62rem)] sm:rounded-[2.5rem]">
-        <Image
-          src={PUBLIC_ASSETS.shared.workersHero}
-          alt=""
-          fill
-          priority
-          sizes="(max-width: 1280px) 100vw, 1280px"
-          className="object-cover object-center"
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ns-dark via-ns-dark/80 to-ns-dark/35"
-          aria-hidden
-        />
-        <div
-          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ns-dark/85 via-ns-dark/55 to-ns-dark/20"
-          aria-hidden
-        />
-
-        <div className="relative z-10 flex min-h-[min(92dvh,58rem)] flex-col gap-8 p-6 sm:min-h-[min(94dvh,62rem)] sm:gap-10 sm:p-10 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10 lg:gap-y-8 lg:p-12 xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
-          <div className="max-w-2xl lg:col-start-1 lg:row-start-1">
-            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-ns-emerald">
-              Contacto
-            </p>
-            <h1 className="mb-5 text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
-              Hablemos de tu operación
-            </h1>
-            <p className="text-lg leading-relaxed text-white/70">
-              No es una llamada de ventas. Es una conversación técnica para
-              entender tu situación productiva y evaluar si hay un margen de
-              mejora real.
-            </p>
-          </div>
-
+      <div className="mx-auto max-w-7xl">
+        <div className="relative min-h-[min(92dvh,58rem)] overflow-hidden rounded-[2rem] border border-ns-border text-white sm:min-h-[min(94dvh,62rem)] sm:rounded-[2.5rem]">
+          <Image
+            src={PUBLIC_ASSETS.shared.workersHero}
+            alt=""
+            fill
+            priority
+            sizes="(max-width: 1280px) 100vw, 1280px"
+            className="object-cover object-center"
+          />
           <div
-            className={`${GLASS_CARD} p-6 sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:self-start`}
-          >
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ns-dark via-ns-dark/80 to-ns-dark/35"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ns-dark/85 via-ns-dark/55 to-ns-dark/20"
+            aria-hidden
+          />
+
+          <div className="relative z-10 flex min-h-[min(92dvh,58rem)] flex-col gap-8 p-6 pt-10 sm:min-h-[min(94dvh,62rem)] sm:gap-10 sm:p-10 sm:pt-12 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:grid-rows-[auto_1fr] lg:items-start lg:gap-x-10 lg:gap-y-8 lg:p-12 lg:pt-14 xl:grid-cols-[minmax(0,1fr)_minmax(0,28rem)]">
+            <PageBackHeader
+              backHref="/"
+              tone="on-dark"
+              simple
+              className="absolute left-6 top-10 z-20 mb-0 sm:left-10 sm:top-12 lg:left-12"
+            />
+            <div className="max-w-2xl pt-10 sm:pt-12 lg:col-start-1 lg:row-start-1">
+              <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-ns-emerald">
+                Contacto
+              </p>
+              <h1 className="text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
+                Hablemos de tu operación
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/70 sm:text-lg">
+                No es una llamada de ventas. Es una conversación técnica para
+                entender tus desafíos productivos y evaluar soluciones
+                específicas.
+              </p>
+            </div>
+
+            <div
+              className={`${GLASS_CARD} p-6 sm:p-8 lg:col-start-2 lg:row-span-2 lg:row-start-1 lg:mt-2 lg:self-start xl:mt-4`}
+            >
             <h2 className="mb-2 text-xl font-bold text-white">
               Solicita una evaluación técnica
             </h2>
             <p className="mb-8 text-sm text-white/65">
-              Cuéntanos brevemente qué produces y qué estás buscando mejorar.
+              Cuéntanos brevemente qué produces y en qué rubro necesitas apoyo.
             </p>
             <ContactForm variant="on-dark" />
           </div>
@@ -149,6 +157,7 @@ export default function ContactoPage() {
               </div>
             </div>
           </section>
+          </div>
         </div>
       </div>
     </div>

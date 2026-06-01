@@ -479,46 +479,44 @@ function ProblemTrustStatColumn({
   );
 }
 
+function ProblemTrustMessageColumn({
+  headline,
+  borderLeft,
+}: {
+  headline: string;
+  borderLeft: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "flex min-w-0 flex-1 flex-col items-center justify-center text-center sm:px-3 lg:px-6",
+        borderLeft ? "lg:border-l lg:border-white/12" : "",
+      ].join(" ")}
+    >
+      <p className="max-w-[14rem] text-balance font-mono text-xl font-semibold leading-snug tracking-tight text-white sm:max-w-[16rem] sm:text-2xl lg:text-[1.65rem]">
+        {headline}
+      </p>
+    </div>
+  );
+}
+
 export function ProblemTrustStatsBar() {
   const reducedMotion = usePrefersReducedMotion();
   const { ref, inView } = useStatsBarInView<HTMLDivElement>(0.18);
 
-  const columns = [
-    {
-      key: "years",
-      target: 30,
-      durationMs: 1250,
-      startDelayMs: 80,
-      variant: "years" as const,
-      tag: ["años de experiencia", "en la industria"],
-    },
-    {
-      key: "tons",
-      target: 5000,
-      durationMs: 1600,
-      startDelayMs: 200,
-      variant: "tonsPerYear" as const,
-      tag: ["toneladas de premezclas", "formuladas al año"],
-    },
-    {
-      key: "productivity",
-      target: 6,
-      durationMs: 1300,
-      startDelayMs: 320,
-      variant: "productivity" as const,
-      tag: [
-        "kilos adicionales producidos",
-        "por tonelada de alimento",
-      ],
-    },
-    {
-      key: "cost",
-      target: 8,
-      durationMs: 1300,
-      startDelayMs: 440,
-      variant: "costPerKg" as const,
-      tag: ["reducción en el costo", "por kilo producido"],
-    },
+  const statColumn = {
+    key: "years",
+    target: 30,
+    durationMs: 1250,
+    startDelayMs: 80,
+    variant: "years" as const,
+    tag: ["años de experiencia", "en la industria"] as const,
+  };
+
+  const messageColumns = [
+    { key: "sustainability", headline: "Sustentabilidad" },
+    { key: "autonomy", headline: "Autonomía" },
+    { key: "productive-real", headline: "productiva real" },
   ] as const;
 
   return (
@@ -528,17 +526,22 @@ export function ProblemTrustStatsBar() {
       role="group"
       aria-label="Trayectoria Nutriservice"
     >
-      {columns.map((col, i) => (
-        <ProblemTrustStatColumn
+      <ProblemTrustStatColumn
+        key={statColumn.key}
+        animateInView={inView}
+        reducedMotion={reducedMotion}
+        target={statColumn.target}
+        durationMs={statColumn.durationMs}
+        startDelayMs={statColumn.startDelayMs}
+        tag={statColumn.tag}
+        variant={statColumn.variant}
+        borderLeft={false}
+      />
+      {messageColumns.map((col) => (
+        <ProblemTrustMessageColumn
           key={col.key}
-          animateInView={inView}
-          reducedMotion={reducedMotion}
-          target={col.target}
-          durationMs={col.durationMs}
-          startDelayMs={col.startDelayMs}
-          tag={col.tag}
-          variant={col.variant}
-          borderLeft={i > 0}
+          headline={col.headline}
+          borderLeft
         />
       ))}
     </div>

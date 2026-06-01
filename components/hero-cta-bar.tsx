@@ -32,6 +32,8 @@ type HeroCtaBarProps = {
    * Hero SA uses CSS line masks (~780ms). Framer-based heroes can pass `0`.
    */
   heroIntroAnimMs?: number;
+  /** When false, only the primary CTA is shown. */
+  showSecondary?: boolean;
 };
 
 function usePrefersReducedMotion(): boolean {
@@ -73,6 +75,7 @@ export default function HeroCtaBar({
   heroRevealReady = true,
   heroLastLineDelayMs = 440,
   heroIntroAnimMs = DEFAULT_HERO_INTRO_ANIM_MS,
+  showSecondary = true,
 }: HeroCtaBarProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [ctaVisible, setCtaVisible] = useState(false);
@@ -129,21 +132,23 @@ export default function HeroCtaBar({
         >
           {primaryLabel}
         </Link>
-        <Link
-          href={secondaryHref}
-          onClick={(event) => {
-            if (scrollToHashTarget(secondaryHref)) {
-              event.preventDefault();
-            }
-          }}
-          className={cn(
-            "inline-flex items-center justify-center rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
-            secondaryBtn,
-            variant === "inline" && "w-full sm:w-auto",
-          )}
-        >
-          {secondaryLabel}
-        </Link>
+        {showSecondary ? (
+          <Link
+            href={secondaryHref}
+            onClick={(event) => {
+              if (scrollToHashTarget(secondaryHref)) {
+                event.preventDefault();
+              }
+            }}
+            className={cn(
+              "inline-flex items-center justify-center rounded-lg border px-7 py-3.5 text-sm font-semibold transition-colors",
+              secondaryBtn,
+              variant === "inline" && "w-full sm:w-auto",
+            )}
+          >
+            {secondaryLabel}
+          </Link>
+        ) : null}
       </div>
     </section>
   );

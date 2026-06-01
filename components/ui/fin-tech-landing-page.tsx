@@ -182,7 +182,7 @@ function DemoChromeNav() {
 }
 
 export type FinTechHeroContent = {
-  eyebrow: string;
+  eyebrow?: string;
   title: ReactNode;
   description: ReactNode;
   ctaHref?: string;
@@ -198,6 +198,12 @@ export type FinTechHeroGridProps = {
   /** `on-video` — white copy and glass metric card over a fixed hero video. */
   tone?: "light" | "on-video";
   content?: FinTechHeroContent;
+  /** Hides the demo placeholder cards on the right column. */
+  hideSideCards?: boolean;
+  /** Hides the small eyebrow line above the title. */
+  hideEyebrow?: boolean;
+  /** Hides stat blocks and trust line under the CTA. */
+  hideStats?: boolean;
 };
 
 const DEFAULT_HERO_CONTENT: FinTechHeroContent = {
@@ -233,6 +239,9 @@ export function FinTechHeroGrid({
   heroRevealReady = true,
   tone = "light",
   content: contentProp,
+  hideSideCards = false,
+  hideEyebrow = false,
+  hideStats = false,
 }: FinTechHeroGridProps) {
   const reduce = useReducedMotion();
   const motionOn = heroRevealReady && !reduce;
@@ -242,24 +251,31 @@ export function FinTechHeroGrid({
   const trustTags = content.trustTags ?? DEFAULT_HERO_CONTENT.trustTags!;
 
   return (
-    <div className="mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 pb-14 md:grid-cols-2">
+    <div
+      className={cn(
+        "mx-auto grid w-full max-w-[1180px] grid-cols-1 gap-6 pb-14",
+        hideSideCards ? "md:grid-cols-1" : "md:grid-cols-2",
+      )}
+    >
       <div className="flex flex-col justify-center space-y-8 pr-2">
         <div>
-          <p
-            className={cn(
-              "mb-4 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.35em]",
-              onVideo ? "text-white/55" : "text-ns-muted",
-            )}
-          >
-            <span
+          {!hideEyebrow ? (
+            <p
               className={cn(
-                "h-px w-8 shrink-0",
-                onVideo ? "bg-cyan-400" : "bg-ns-green",
+                "mb-4 flex items-center gap-3 text-[10px] font-bold uppercase tracking-[0.35em]",
+                onVideo ? "text-white/55" : "text-ns-muted",
               )}
-              aria-hidden
-            />
-            {content.eyebrow}
-          </p>
+            >
+              <span
+                className={cn(
+                  "h-px w-8 shrink-0",
+                  onVideo ? "bg-cyan-400" : "bg-ns-green",
+                )}
+                aria-hidden
+              />
+              {content.eyebrow}
+            </p>
+          ) : null}
           <motion.h1
             className={cn(
               "text-balance text-5xl font-semibold leading-[1.05] tracking-tight md:text-6xl",
@@ -304,47 +320,52 @@ export function FinTechHeroGrid({
           </Link>
         </motion.div>
 
-        <div className="grid grid-cols-2 gap-8 pt-2 md:max-w-sm">
-          {stats.map((stat) => (
-            <Stat
-              key={stat.label}
-              label={stat.label}
-              value={stat.value}
-              onVideo={onVideo}
-            />
-          ))}
-        </div>
+        {!hideStats ? (
+          <>
+            <div className="grid grid-cols-2 gap-8 pt-2 md:max-w-sm">
+              {stats.map((stat) => (
+                <Stat
+                  key={stat.label}
+                  label={stat.label}
+                  value={stat.value}
+                  onVideo={onVideo}
+                />
+              ))}
+            </div>
 
-        <div className="mt-6 flex flex-col gap-4 opacity-90 sm:flex-row sm:items-center sm:gap-8">
-          <span
-            className={cn(
-              "text-[10px] font-bold uppercase tracking-[0.2em]",
-              onVideo ? "text-white/45" : "text-ns-subtle",
-            )}
-          >
-            {content.trustLine ?? DEFAULT_HERO_CONTENT.trustLine}
-          </span>
-          <div
-            className={cn(
-              "flex flex-wrap items-center gap-4 sm:gap-6",
-              onVideo ? "text-white/50" : "text-ns-subtle",
-            )}
-          >
-            {trustTags.map((tag) => (
+            <div className="mt-6 flex flex-col gap-4 opacity-90 sm:flex-row sm:items-center sm:gap-8">
               <span
-                key={tag}
                 className={cn(
-                  "text-xs font-semibold",
-                  onVideo ? "text-white/65" : "text-ns-muted",
+                  "text-[10px] font-bold uppercase tracking-[0.2em]",
+                  onVideo ? "text-white/45" : "text-ns-subtle",
                 )}
               >
-                {tag}
+                {content.trustLine ?? DEFAULT_HERO_CONTENT.trustLine}
               </span>
-            ))}
-          </div>
-        </div>
+              <div
+                className={cn(
+                  "flex flex-wrap items-center gap-4 sm:gap-6",
+                  onVideo ? "text-white/50" : "text-ns-subtle",
+                )}
+              >
+                {trustTags.map((tag) => (
+                  <span
+                    key={tag}
+                    className={cn(
+                      "text-xs font-semibold",
+                      onVideo ? "text-white/65" : "text-ns-muted",
+                    )}
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : null}
       </div>
 
+      {!hideSideCards ? (
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <motion.div
           initial={reduce ? false : { opacity: 0, y: 20 }}
@@ -454,6 +475,7 @@ export function FinTechHeroGrid({
 
         <div className="hidden md:block" aria-hidden />
       </div>
+      ) : null}
     </div>
   );
 }

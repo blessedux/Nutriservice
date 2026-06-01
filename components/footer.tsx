@@ -11,7 +11,7 @@ const SOLUCIONES_LINKS = [
 ];
 
 const COMPANIA_LINKS = [
-  { href: "/tecnologia", label: "I+D Lab" },
+  { href: "/nosotros", label: "Nosotros" },
   { href: "/productos", label: "Calidad" },
   { href: "/impacto", label: "Impacto" },
   { href: "/contacto", label: "Contacto" },
@@ -103,8 +103,8 @@ export default function Footer() {
               />
             </Link>
             <p className="max-w-[320px] text-sm leading-[1.62] text-white">
-              Más de 30 años de referencia en nutrición animal y maquila, con
-              calidad e innovación en cada producto.
+              Más de 30 años al servicio de la nutrición animal. Calidad e
+              innovación en cada solución funcional.
             </p>
             <div className="flex gap-4">
               <a

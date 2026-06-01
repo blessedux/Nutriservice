@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import IndustriaAcuicolaPage from "@/components/industria-acuicola-page";
 import IndustriaAvicolaPage from "@/components/industria-avicola-page";
 import IndustriaMascotasPage from "@/components/industria-mascotas-page";
+import IndustriaPorcinaPage from "@/components/industria-porcina-page";
 import IndustriaProductosSection from "@/components/industria-productos-section";
+import PageBackHeader from "@/components/page-back-header";
 import { getIndustry, industryList } from "@/lib/industries";
 import CTABanner from "@/components/cta-banner";
 
@@ -41,23 +42,23 @@ export default async function IndustryPage({ params }: Props) {
     return <IndustriaAvicolaPage industry={ind} />;
   }
 
+  if (slug === "porcina") {
+    return <IndustriaPorcinaPage industry={ind} />;
+  }
+
   return (
     <>
       {/* Hero */}
       <section className="bg-ns-dark text-white py-20 px-6">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <span className="text-xs font-semibold uppercase tracking-widest text-ns-emerald">
-              {ind.name}
-            </span>
-            <span className="text-white/25">·</span>
-            <Link
-              href="/industrias"
-              className="text-xs text-white/40 hover:text-white/70 transition-colors"
-            >
-              Ver todas las industrias
-            </Link>
-          </div>
+          <PageBackHeader
+            backHref="/industrias"
+            crumbs={[
+              { label: "Industrias", href: "/industrias" },
+              { label: ind.name },
+            ]}
+            tone="on-dark"
+          />
           <h1 className="text-4xl sm:text-5xl font-bold leading-tight mb-5">
             {ind.tagline}
           </h1>

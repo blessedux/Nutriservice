@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import ImpactSection from "@/components/impact-section";
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
+import PageBackHeader from "@/components/page-back-header";
 import { ProductosCarousel } from "@/components/productos-carousel";
 import {
   PRODUCTOS_INVENTORY,
@@ -39,6 +40,12 @@ export default function SolucionesPage() {
             aria-hidden
           />
           <div className="relative z-10 flex min-h-[min(100dvh,52rem)] w-full flex-col justify-end px-6 pb-12 pt-24 sm:px-10 sm:pb-16 sm:pt-28 lg:px-12 lg:pb-20">
+            <PageBackHeader
+              backHref="/"
+              tone="on-dark"
+              simple
+              className="absolute left-6 top-24 mb-0 sm:left-10 lg:left-12"
+            />
             <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-ns-emerald">
               Soluciones
             </p>
@@ -88,7 +95,13 @@ export default function SolucionesPage() {
 
       <ImpactSection withCover={false} />
 
-      <IndustriasCtaBanner id="contacto" />
+      <IndustriasCtaBanner
+        id="contacto"
+        heading="Hable con nuestro equipo técnico-comercial"
+        subtext="Lo acompañamos en la búsqueda de soluciones nutricionales funcionales adaptadas a los desafíos de cada especie y sistema productivo."
+        primaryLabel="Agendar reunión"
+        showSecondary={false}
+      />
     </>
   );
 }

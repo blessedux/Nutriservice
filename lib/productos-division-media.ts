@@ -30,8 +30,11 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
     tone: "on-dark",
   },
   cerdos: {
+    video: {
+      webm: PORCINA_VIDEO_WEBM,
+    },
     fallbackImage: PUBLIC_ASSETS.industryPages.fallbackPorcina,
-    tone: "on-light",
+    tone: "on-dark",
   },
   mascotas: {
     video: {

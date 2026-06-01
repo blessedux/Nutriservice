@@ -1,7 +1,7 @@
 import Link from "next/link";
 
-import ImpactoHistorySection from "@/components/impacto-history-section";
 import { IMPACTO_OUTCOMES } from "@/lib/impacto-page-data";
+import PageBackHeader from "@/components/page-back-header";
 
 function Eyebrow({ children }: { children: React.ReactNode }) {
   return (
@@ -16,6 +16,7 @@ export default function ImpactoPageContent() {
     <>
       <section className="bg-ns-dark px-6 py-20 text-white sm:py-24">
         <div className="mx-auto max-w-4xl">
+          <PageBackHeader backHref="/" tone="on-dark" simple />
           <Eyebrow>Impacto</Eyebrow>
           <h1 className="mt-4 text-balance text-4xl font-bold leading-tight sm:text-5xl">
             Soluciones nutricionales que elevan el rendimiento de la industria
@@ -83,8 +84,6 @@ export default function ImpactoPageContent() {
           ))}
         </div>
       </section>
-
-      <ImpactoHistorySection />
     </>
   );
 }

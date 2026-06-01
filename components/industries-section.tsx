@@ -691,12 +691,15 @@ export default function IndustriesSection() {
                 className="mt-4 text-pretty text-sm leading-relaxed sm:mt-5 sm:text-base sm:leading-7"
                 style={{ color: HOME_BLUE_BG, opacity: 0.78 }}
               >
-                Desarrollamos soluciones funcionales adaptadas a las necesidades
-                específicas de cada sistema productivo, optimizando rendimiento,
-                estabilidad y eficiencia operacional.
+                Nutrición inteligente para una producción más eficiente: creemos
+                en una nutrición inteligente y responsable, adaptada a las
+                necesidades de cada especie y cada sistema productivo,
+                promoviendo salud animal,{" "}
+                <br className="hidden lg:block" />
+                eficiencia nutricional y productividad.
               </p>
               <Link
-                href="/productos"
+                href="/soluciones"
                 className="mt-6 inline-flex w-1/2 min-w-[9.5rem] items-center justify-center self-end rounded-full border px-5 py-2.5 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.12em] shadow-sm transition-colors active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a192f]/40 sm:mt-7"
                 style={{
                   borderColor: HOME_BLUE_BG,
@@ -704,7 +707,7 @@ export default function IndustriesSection() {
                   color: "#F5F5F5",
                 }}
               >
-                Ver fórmulas
+                Ver soluciones nutricionales
               </Link>
             </header>
           </div>
