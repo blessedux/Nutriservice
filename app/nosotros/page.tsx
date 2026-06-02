@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 
 import ImpactoHistorySection from "@/components/impacto-history-section";
-import NosotrosContactParallaxSection from "@/components/nosotros-contact-parallax-section";
 import NosotrosTeamSection from "@/components/nosotros-team-section";
 import PageBackHeader from "@/components/page-back-header";
 
@@ -35,10 +34,7 @@ export default function NosotrosPage() {
 
       <NosotrosTeamSection />
 
-      <div className="relative bg-ns-navy">
-        <ImpactoHistorySection className="relative z-0 pb-20 sm:pb-28" />
-        <NosotrosContactParallaxSection />
-      </div>
+      <ImpactoHistorySection className="pb-20 sm:pb-28" />
     </div>
   );
 }
