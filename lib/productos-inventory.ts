@@ -1,5 +1,10 @@
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 import { divisionHasVideo } from "@/lib/productos-division-media";
+import { getProductoManufacturer } from "@/lib/productos-manufacturers";
+import { getProductoStockImagePath } from "@/lib/productos-images";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
+
+export { getProductoManufacturer } from "@/lib/productos-manufacturers";
 
 export type Producto = {
   slug: string;
@@ -14,7 +19,7 @@ export type Producto = {
   divisionSlugs: readonly ProductoDivisionSlug[];
   /** Optional copy when a division needs a distinct one-liner on cards. */
   divisionSummaries?: Partial<Record<ProductoDivisionSlug, string>>;
-  /** Pack shot override — defaults to `/productos/{slug}.webp`. */
+  /** Override stock image (`pellet2` / `powder3` by default). */
   imageSrc?: string;
 };
 
@@ -49,6 +54,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
       mascotas:
         "Extracto de levaduras rico en betaglucanos. Inmunomodulador que ayuda a combatir enfermedades en etapas de estrés.",
     },
+    imageSrc: PUBLIC_ASSETS.shared.macrogard,
   },
   {
     slug: "silimarina",
@@ -358,7 +364,7 @@ export function getProductoBySlug(slug: string): Producto | undefined {
 }
 
 export function getProductoImagePath(producto: Producto): string {
-  return producto.imageSrc ?? `/productos/${producto.slug}.webp`;
+  return producto.imageSrc ?? getProductoStockImagePath(producto.slug);
 }
 
 export function productoDetailHref(
@@ -400,11 +406,13 @@ function productMatchesQuery(producto: Producto, query: string): boolean {
   const normalized = query.trim().toLowerCase();
   if (!normalized) return true;
 
+  const manufacturer = getProductoManufacturer(producto);
   const haystack = [
     producto.name,
     producto.altName,
     producto.slug,
     producto.summary,
+    manufacturer ?? "",
     ...producto.tags,
   ].map((value) => value.toLowerCase());
 

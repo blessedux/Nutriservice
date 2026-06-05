@@ -46,6 +46,27 @@
   position: relative;
 }
 
+/* Open: contents keeps pill + icon as direct layout children of .gooey-search-inner (goo). */
+.gooey-search-pill-group {
+  position: relative;
+  display: contents;
+}
+
+.gooey-search-pill-group--collapsing {
+  display: inline-block;
+  overflow: hidden;
+  border-radius: 9999px;
+  vertical-align: middle;
+}
+
+.gooey-search-pill-group--collapsing .gooey-search-btn {
+  overflow: hidden;
+}
+
+.gooey-search-pill-group--collapsing .gooey-search-icon-slot {
+  pointer-events: none;
+}
+
 .gooey-search-results {
   position: relative;
   z-index: -1;

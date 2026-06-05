@@ -450,7 +450,7 @@ function ProblemTrustStatColumn({
     "min-h-[2.5rem] font-mono text-[36px] font-semibold leading-none tracking-tight text-white tabular-nums sm:min-h-[2.75rem] sm:text-[42px] lg:min-h-[3rem] lg:text-[2.75rem]";
 
   const tagClass =
-    "mt-3 max-w-[15rem] text-balance text-[11px] font-medium uppercase leading-snug tracking-[0.1em] text-white/55 sm:max-w-[17rem] sm:text-xs sm:leading-snug";
+    "mt-2.5 max-w-[15rem] text-balance text-[11px] leading-snug text-white sm:mt-3 sm:max-w-[17rem] sm:text-xs sm:leading-relaxed lg:max-w-[12.5rem] xl:max-w-[14rem]";
 
   let valueNode: React.ReactNode;
   if (variant === "years") {
@@ -480,21 +480,26 @@ function ProblemTrustStatColumn({
 }
 
 function ProblemTrustMessageColumn({
-  headline,
+  title,
+  subtitle,
   borderLeft,
 }: {
-  headline: string;
+  title: string;
+  subtitle: string;
   borderLeft: boolean;
 }) {
   return (
     <div
       className={[
-        "flex min-w-0 flex-1 flex-col items-center justify-center text-center sm:px-3 lg:px-6",
+        "flex min-w-0 flex-1 flex-col items-center justify-center text-center sm:px-3 lg:px-4 xl:px-6",
         borderLeft ? "lg:border-l lg:border-white/12" : "",
       ].join(" ")}
     >
-      <p className="max-w-[14rem] text-balance font-mono text-xl font-semibold leading-snug tracking-tight text-white sm:max-w-[16rem] sm:text-2xl lg:text-[1.65rem]">
-        {headline}
+      <p className="max-w-[15rem] text-balance font-mono text-xl font-semibold leading-snug tracking-tight text-white sm:max-w-[17rem] sm:text-2xl lg:max-w-[12.5rem] lg:text-[1.35rem] xl:max-w-[14rem] xl:text-[1.65rem]">
+        {title}
+      </p>
+      <p className="mt-2.5 max-w-[15rem] text-balance text-[11px] leading-snug text-white sm:mt-3 sm:max-w-[17rem] sm:text-xs sm:leading-relaxed lg:max-w-[12.5rem] xl:max-w-[14rem]">
+        {subtitle}
       </p>
     </div>
   );
@@ -514,9 +519,22 @@ export function ProblemTrustStatsBar() {
   };
 
   const messageColumns = [
-    { key: "sustainability", headline: "Sustentabilidad" },
-    { key: "autonomy", headline: "Autonomía" },
-    { key: "productive-real", headline: "productiva real" },
+    {
+      key: "autonomy",
+      title: "Autonomía productiva",
+      subtitle: "Producimos y almacenamos con infraestructura propia",
+    },
+    {
+      key: "sustainability",
+      title: "Sustentabilidad",
+      subtitle:
+        "Compromiso con la sustentabilidad y nutrición animal responsable",
+    },
+    {
+      key: "maquila",
+      title: "Servicio de maquila",
+      subtitle: "Control, trazabilidad y confidencialidad",
+    },
   ] as const;
 
   return (
@@ -540,7 +558,8 @@ export function ProblemTrustStatsBar() {
       {messageColumns.map((col) => (
         <ProblemTrustMessageColumn
           key={col.key}
-          headline={col.headline}
+          title={col.title}
+          subtitle={col.subtitle}
           borderLeft
         />
       ))}

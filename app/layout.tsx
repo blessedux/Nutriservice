@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import Nav from "@/components/nav";
-import Footer from "@/components/footer";
-import SoundWidget from "@/components/sound-widget";
+import { CtaFooterParallaxProvider } from "@/components/cta-footer-parallax-provider";
+import SiteFooter from "@/components/site-footer";
 import { SiteExperience } from "@/components/site-experience";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
@@ -51,12 +51,13 @@ export default function RootLayout({
       className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
-        <SoundWidget />
-        <SiteExperience className="flex-1">
-          <Nav />
-          <main className="flex-1 pt-24">{children}</main>
-          <Footer />
-        </SiteExperience>
+        <CtaFooterParallaxProvider>
+          <SiteExperience className="flex-1">
+            <Nav />
+            <main className="flex-1 pt-24">{children}</main>
+            <SiteFooter />
+          </SiteExperience>
+        </CtaFooterParallaxProvider>
       </body>
     </html>
   );

@@ -84,26 +84,6 @@ export default function IndustriaMascotasPage({
         />
 
         <section className="px-6 py-20 sm:px-10 lg:px-12">
-          <div className="mx-auto max-w-5xl">
-            <SectionEyebrow>Los desafíos específicos</SectionEyebrow>
-            <h2 className="mt-4 text-2xl font-bold text-white sm:text-3xl">
-              Qué enfrenta la producción {industry.name.toLowerCase()}
-            </h2>
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {industry.problemCards.map((card) => (
-                <GlassCard key={card.title}>
-                  <div className="mb-4 h-0.5 w-6 bg-cyan-400" />
-                  <h3 className="font-semibold text-white">{card.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/70">
-                    {card.detail}
-                  </p>
-                </GlassCard>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 py-20 sm:px-10 lg:px-12">
           <div className="mx-auto max-w-4xl">
             <GlassCard>
               <SectionEyebrow>Nuestro enfoque</SectionEyebrow>

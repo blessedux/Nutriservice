@@ -30,10 +30,10 @@ export const PUBLIC_ASSETS = {
   industriesSection: {
     backgroundVideo: "/assets/industries-section/background-video.webm",
     backgroundImage: "/assets/industries-section/background-image.webp",
-    cardAcuicola: "/assets/industries-section/card-acuicola.webp",
-    cardAvicola: "/assets/industries-section/card-avicola.webp",
-    cardPorcina: "/assets/industries-section/card-porcina.webp",
-    cardMascotas: "/assets/industries-section/card-mascotas.webp",
+    cardAcuicola: "/assets/industries-section/card-acuicola-v2.webp",
+    cardAvicola: "/assets/industries-section/card-avicola-v2.webp",
+    cardPorcina: "/assets/industries-section/card-porcina-v2.webp",
+    cardMascotas: "/assets/industries-section/card-mascotas-v2.webp",
   },
   industriasPage: {
     heroLab: "/assets/industrias-page/hero-lab.png",
@@ -43,7 +43,7 @@ export const PUBLIC_ASSETS = {
     fallbackPorcina: "/assets/industry-pages/fallback-porcina.webp",
   },
   footer: {
-    background: "/assets/footer/background.webp",
+    background: "/assets/footer/footer_bg_2.webp",
   },
   ctaBanner: {
     background: "/assets/cta-banner/background.webp",

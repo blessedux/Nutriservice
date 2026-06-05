@@ -1832,10 +1832,8 @@ export default function HeroSA() {
         heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
         primaryHref="/productos"
         primaryLabel="Ver catálogo"
-        secondaryHref="/contacto"
-        secondaryLabel="Contacto"
-        showSecondary
-        className="absolute bottom-[calc(28dvh+0.75rem)] left-6 z-30 w-full max-w-sm sm:left-10 sm:max-w-md lg:bottom-[13dvh] lg:left-12 lg:max-w-xl"
+        showSecondary={false}
+        className="absolute bottom-[calc(32dvh+1.5rem)] left-1/2 z-30 mb-2 w-[min(100%-3rem,20rem)] -translate-x-1/2 sm:w-[min(100%-5rem,28rem)] lg:bottom-[18dvh] lg:left-12 lg:w-auto lg:max-w-xl lg:translate-x-0"
       />
 
       <a

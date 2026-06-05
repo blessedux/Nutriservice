@@ -73,9 +73,12 @@ export default function Footer() {
   const year = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden bg-[#0a192f] text-white">
+    <footer
+      data-site-footer
+      className="relative overflow-x-hidden bg-[#0a192f] text-white lg:min-h-150"
+    >
       <div
-        className="pointer-events-none absolute inset-0 bg-[length:auto_100%] bg-[position:calc(100%+2rem)_center] bg-no-repeat sm:bg-cover sm:bg-[position:right_center]"
+        className="pointer-events-none absolute inset-0 bg-[length:auto_100%] bg-[position:calc(100%+2rem)_center] bg-no-repeat sm:bg-cover sm:bg-[position:right_bottom]"
         style={{ backgroundImage: `url(${PUBLIC_ASSETS.footer.background})` }}
         aria-hidden
       />
@@ -88,8 +91,8 @@ export default function Footer() {
         }}
       />
 
-      <div className="relative mx-auto max-w-[1280px] px-6 py-16 md:px-12 md:py-24 lg:py-32">
-        <div className="grid grid-cols-1 gap-12 border-b border-white/[0.05] pb-16 lg:grid-cols-12 lg:gap-x-10 lg:gap-y-16 lg:pb-24">
+      <div className="relative mx-auto flex min-h-full max-w-[1280px] flex-col px-6 py-16 md:px-12 md:py-24 lg:min-h-150 lg:py-32">
+        <div className="grid flex-1 grid-cols-1 gap-8 border-b border-white/[0.05] pb-12 lg:grid-cols-12 lg:items-start lg:gap-x-10 lg:gap-y-16 lg:pb-24">
           {/* Brand */}
           <div className="flex flex-col gap-6 lg:col-span-4">
             <Link href="/" className="inline-block w-[203px] max-w-full">
@@ -136,65 +139,67 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Soluciones */}
-          <nav
-            className="flex flex-col items-end gap-6 text-right lg:col-span-3 lg:col-start-5 lg:mt-auto lg:items-start lg:text-left"
-            aria-label="Soluciones"
-          >
-            <FooterColumnTitle>Soluciones</FooterColumnTitle>
-            <ul className="flex flex-col gap-4">
-              {SOLUCIONES_LINKS.map((item) => (
-                <li key={item.href + item.label}>
-                  <Link
-                    href={item.href}
-                    className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="grid grid-cols-2 gap-x-8 gap-y-0 sm:gap-x-12 lg:contents">
+            {/* Soluciones */}
+            <nav
+              className="mt-0 flex flex-col items-start gap-6 text-left lg:col-span-3 lg:col-start-5 lg:self-start"
+              aria-label="Soluciones"
+            >
+              <FooterColumnTitle>Soluciones</FooterColumnTitle>
+              <ul className="flex flex-col gap-4">
+                {SOLUCIONES_LINKS.map((item) => (
+                  <li key={item.href + item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
 
-          {/* Compañía */}
-          <nav
-            className="flex flex-col items-end gap-6 text-right lg:col-span-4 lg:mt-auto lg:items-start lg:text-left"
-            aria-label="Compañía"
-          >
-            <FooterColumnTitle>Compañía</FooterColumnTitle>
-            <ul className="flex flex-col gap-4">
-              {COMPANIA_LINKS.map((item) => (
-                <li key={item.label}>
-                  <Link
-                    href={item.href}
-                    className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
+            {/* Compañía */}
+            <nav
+              className="mt-0 flex flex-col items-start gap-6 text-left lg:col-span-4 lg:self-start"
+              aria-label="Compañía"
+            >
+              <FooterColumnTitle>Compañía</FooterColumnTitle>
+              <ul className="flex flex-col gap-4">
+                {COMPANIA_LINKS.map((item) => (
+                  <li key={item.label}>
+                    <Link
+                      href={item.href}
+                      className="text-xs leading-4 text-white transition-colors hover:opacity-80 sm:text-sm"
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
         </div>
 
-        <div className="flex flex-col items-center gap-8 pt-12 text-center">
-          <p className="text-[9px] font-bold uppercase tracking-[0.28em] text-white">
-            © {year} Nutriservice SPA • V 1.1
-          </p>
+        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-8 lg:pt-12">
           <nav
-            className="flex flex-wrap justify-center gap-x-10 gap-y-3 md:gap-x-12"
+            className="flex flex-wrap gap-x-6 gap-y-2 sm:gap-x-10 md:gap-x-12"
             aria-label="Legal"
           >
             {LEGAL_LINKS.map((item) => (
               <Link
                 key={item.href + item.label}
                 href={item.href}
-                className="text-[9px] font-bold uppercase tracking-[0.28em] text-white transition-colors hover:opacity-80"
+                className="text-[9px] font-bold uppercase tracking-[0.2em] text-white transition-colors hover:opacity-80 sm:tracking-[0.28em]"
               >
                 {item.label}
               </Link>
             ))}
           </nav>
+          <p className="shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-white sm:tracking-[0.28em]">
+            © {year} Nutriservice SPA • V 1.1
+          </p>
         </div>
       </div>
     </footer>

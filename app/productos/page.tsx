@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import { ProductoCard } from "@/components/producto-card";
 import ProductosPageShell from "@/components/productos-page-shell";
@@ -65,7 +66,17 @@ export default async function ProductosPage({ searchParams }: Props) {
   const hasFilters = Boolean(division || categoria || q);
 
   return (
-    <ProductosPageShell activeDivisionSlug={activeDivisionSlug}>
+    <Suspense
+      fallback={
+        <div className="relative min-h-[calc(100dvh-4rem)] bg-ns-surface px-6 py-12 text-ns-text">
+          <div className="mx-auto max-w-5xl animate-pulse">
+            <div className="h-8 w-48 rounded bg-ns-border" />
+            <div className="mt-4 h-4 max-w-md rounded bg-ns-border/80" />
+          </div>
+        </div>
+      }
+    >
+      <ProductosPageShell>
       <div className="mx-auto max-w-5xl">
         <div>
           <p
@@ -229,6 +240,7 @@ export default async function ProductosPage({ searchParams }: Props) {
           )}
         </div>
       </div>
-    </ProductosPageShell>
+      </ProductosPageShell>
+    </Suspense>
   );
 }

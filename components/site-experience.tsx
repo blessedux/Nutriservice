@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { PreloaderStage, PRELOADER_COUNTER_MS } from "@/components/preloader-stage";
 import { HeroRevealProvider } from "@/components/site-reveal-context";
+import { preloadDivisionVideos } from "@/lib/division-video-preload";
 import {
   HOMEPAGE_PELLET_FRAMES,
   preloadScrollFrames,
@@ -76,6 +77,8 @@ export function SiteExperience({
     preloadScrollFrames({ ...HOMEPAGE_PELLET_FRAMES, concurrency: 14 }).catch(
       () => {},
     );
+
+    preloadDivisionVideos().catch(() => {});
 
     const heroVideoPreload = document.createElement("link");
     heroVideoPreload.rel = "preload";

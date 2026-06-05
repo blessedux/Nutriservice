@@ -61,6 +61,15 @@ const CARD_META: Record<string, CardMeta> = {
 
 const DEFAULT_CARD_ACCENT = "rgba(6, 182, 212, 0.14)";
 
+/** Landscape acuícola art — height-fill + translate pans inside the clipped card. */
+const ACUICOLA_CARD_IMAGE = {
+  width: 1535,
+  height: 1024,
+  /** Positive translateX shifts the visible crop left inside the portrait frame. */
+  panX: "34%",
+  focalY: "-6%",
+} as const;
+
 const UNIQUE_INDUSTRIES = industryList.filter((ind) => CARD_META[ind.slug]);
 
 /** One slot per industry — no repeats, always cycles the four options */
@@ -170,6 +179,7 @@ function IndustryCard({
   const meta = CARD_META[ind.slug]!;
   const title = meta.title ?? ind.name;
   const isDog = ind.slug === "mascotas";
+  const isAcuicola = ind.slug === "acuicola";
 
   return (
     <Link
@@ -184,19 +194,39 @@ function IndustryCard({
       <div className="absolute inset-0 overflow-hidden rounded-[40px]" aria-hidden>
         {isDog ? (
           <Image
+            key={meta.image}
             src={meta.image}
             alt=""
             width={960}
             height={1200}
+            unoptimized
             className="absolute top-0 left-1/2 h-full w-auto max-w-none -translate-x-1/2"
+            sizes="(max-width: 768px) 58vw, 295px"
+            priority={priority}
+          />
+        ) : isAcuicola ? (
+          <Image
+            key={meta.image}
+            src={meta.image}
+            alt=""
+            width={ACUICOLA_CARD_IMAGE.width}
+            height={ACUICOLA_CARD_IMAGE.height}
+            unoptimized
+            className="absolute left-0 h-full w-auto max-w-none"
+            style={{
+              top: ACUICOLA_CARD_IMAGE.focalY,
+              transform: `translateX(${ACUICOLA_CARD_IMAGE.panX})`,
+            }}
             sizes="(max-width: 768px) 58vw, 295px"
             priority={priority}
           />
         ) : (
           <Image
+            key={meta.image}
             src={meta.image}
             alt=""
             fill
+            unoptimized
             className="object-cover object-[center_25%]"
             sizes="(max-width: 768px) 58vw, 295px"
             priority={priority}
@@ -453,9 +483,11 @@ function IndustriesCarousel() {
             transition={{ duration: 0.9, ease: "easeOut" }}
           >
             <Image
+              key={activeMeta.image}
               src={activeMeta.image}
               alt=""
               fill
+              unoptimized
               className="object-cover blur-[48px] saturate-150"
               sizes="640px"
             />
@@ -817,14 +849,13 @@ export default function IndustriesSection() {
                 className="text-balance text-2xl font-light leading-tight tracking-tight sm:text-3xl md:text-4xl"
                 style={{ color: HOME_BLUE_BG }}
               >
-                Inteligencia Nutricional para Cada Industria
+                Nutrición inteligente para una producción más eficiente
               </h2>
               <p
                 className="mt-4 text-pretty text-sm leading-relaxed sm:mt-5 sm:text-base sm:leading-7"
                 style={{ color: HOME_BLUE_BG, opacity: 0.78 }}
               >
-                Nutrición inteligente para una producción más eficiente: creemos
-                en una nutrición inteligente y responsable, adaptada a las
+                Creemos en una nutrición inteligente y responsable, adaptada a las
                 necesidades de cada especie y cada sistema productivo,
                 promoviendo salud animal,{" "}
                 <br className="hidden lg:block" />

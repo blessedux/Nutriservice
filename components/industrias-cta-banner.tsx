@@ -12,7 +12,7 @@ type IndustriasCtaBannerProps = {
   id?: string;
   className?: string;
   heading?: ReactNode;
-  subtext?: string;
+  subtext?: ReactNode;
   primaryLabel?: string;
   showSecondary?: boolean;
   secondaryLabel?: string;

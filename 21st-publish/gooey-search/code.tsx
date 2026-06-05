@@ -244,6 +244,21 @@ function InfoIcon({ index }: { index: number }) {
   );
 }
 
+const GOOEY_EXPAND_TRANSITION = {
+  duration: 0.75,
+  type: "spring" as const,
+  bounce: 0.15,
+};
+
+const GOOEY_COLLAPSE_TRANSITION = {
+  duration: 0.4,
+  type: "spring" as const,
+  bounce: 0.02,
+};
+
+/** Fallback if spring onAnimationComplete does not fire. */
+const GOOEY_COLLAPSE_MS = 440;
+
 function createButtonVariants(expandedWidth: number) {
   return {
     initial: { x: 0, width: 100 },
@@ -255,6 +270,8 @@ function createButtonVariants(expandedWidth: number) {
 const iconVariants = {
   hidden: { x: -50, opacity: 0 },
   visible: { x: 16, opacity: 1 },
+  /** Pulls the icon circle into the pill while the bar shrinks. */
+  collapsing: { x: -20, opacity: 1, scale: 0.94 },
 };
 
 function getResultItemVariants(index: number, isUnsupported: boolean) {
@@ -325,8 +342,11 @@ export function GooeySearch({
 
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const collapseFinishTimerRef = useRef<number | null>(null);
+  const collapseFinishedRef = useRef(false);
 
   const [step, setStep] = useState<1 | 2>(1);
+  const [isCollapsing, setIsCollapsing] = useState(false);
   const [searchData, setSearchData] = useState<string[]>([]);
   const [searchText, setSearchText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -337,17 +357,75 @@ export function GooeySearch({
     () => createButtonVariants(expandedWidth),
     [expandedWidth],
   );
+  const isExpanded = step === 2 && !isCollapsing;
+  const morphVariant = isExpanded ? "step2" : "step1";
 
-  const closeSearch = useCallback(() => {
+  const finishClose = useCallback(() => {
+    collapseFinishedRef.current = false;
+    setIsCollapsing(false);
     setSearchText("");
     setSearchData([]);
     setIsLoading(false);
     setStep(1);
   }, []);
 
+  const closeSearch = useCallback(() => {
+    if (step === 1) {
+      finishClose();
+      return;
+    }
+    setSearchData([]);
+    setIsLoading(false);
+    setIsCollapsing(true);
+  }, [finishClose, step]);
+
   const handleOpen = useCallback(() => {
+    setIsCollapsing(false);
     setStep(2);
   }, []);
+
+  const completeCollapse = useCallback(() => {
+    if (collapseFinishedRef.current) return;
+    collapseFinishedRef.current = true;
+    if (collapseFinishTimerRef.current !== null) {
+      window.clearTimeout(collapseFinishTimerRef.current);
+      collapseFinishTimerRef.current = null;
+    }
+    finishClose();
+  }, [finishClose]);
+
+  const handleButtonAnimationComplete = useCallback(
+    (definition: string) => {
+      if (!isCollapsing || definition !== "step1") return;
+      completeCollapse();
+    },
+    [completeCollapse, isCollapsing],
+  );
+
+  useEffect(() => {
+    if (!isCollapsing) {
+      collapseFinishedRef.current = false;
+      return;
+    }
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (reduceMotion) {
+      completeCollapse();
+      return;
+    }
+
+    collapseFinishTimerRef.current = window.setTimeout(completeCollapse, GOOEY_COLLAPSE_MS);
+
+    return () => {
+      if (collapseFinishTimerRef.current !== null) {
+        window.clearTimeout(collapseFinishTimerRef.current);
+        collapseFinishTimerRef.current = null;
+      }
+    };
+  }, [completeCollapse, isCollapsing]);
 
   useEffect(() => {
     if (step !== 2) return;
@@ -499,70 +577,87 @@ export function GooeySearch({
             </motion.div>
           </AnimatePresence>
 
-          <motion.div
-            variants={buttonVariants}
-            initial="initial"
-            animate={step === 1 ? "step1" : "step2"}
-            transition={{ duration: 0.75, type: "spring", bounce: 0.15 }}
-            onClick={handleOpen}
-            whileHover={{ scale: step === 2 ? 1 : 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="gooey-search-btn"
-            role="button"
-            tabIndex={0}
-            aria-expanded={step === 2}
-            onKeyDown={(e) => {
-              if (e.key !== "Enter" && e.key !== " ") return;
-              e.preventDefault();
-              handleOpen();
-            }}
+          <div
+            className={clsx(
+              "gooey-search-pill-group",
+              isCollapsing && "gooey-search-pill-group--collapsing",
+            )}
           >
-            {step === 1 ? (
-              <span className="gooey-search-text">{buttonLabel}</span>
-            ) : (
-              <input
-                ref={inputRef}
-                type="text"
-                className="gooey-search-input"
-                placeholder={placeholder}
-                aria-label={inputAriaLabel}
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key !== "Enter") return;
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleSubmit();
-                }}
-                onClick={(e) => e.stopPropagation()}
-              />
-            )}
-          </motion.div>
+            <motion.div
+              variants={buttonVariants}
+              initial="initial"
+              animate={morphVariant}
+              transition={
+                isCollapsing ? GOOEY_COLLAPSE_TRANSITION : GOOEY_EXPAND_TRANSITION
+              }
+              onAnimationComplete={handleButtonAnimationComplete}
+              whileHover={
+                isCollapsing
+                  ? undefined
+                  : { scale: isExpanded ? 1 : 1.05 }
+              }
+              whileTap={isCollapsing ? undefined : { scale: 0.95 }}
+              className="gooey-search-btn"
+              role="button"
+              tabIndex={0}
+              aria-expanded={step === 2}
+              onClick={handleOpen}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter" && e.key !== " ") return;
+                e.preventDefault();
+                handleOpen();
+              }}
+            >
+              {step === 1 && !isCollapsing ? (
+                <span className="gooey-search-text">{buttonLabel}</span>
+              ) : (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  className="gooey-search-input"
+                  placeholder={placeholder}
+                  aria-label={inputAriaLabel}
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key !== "Enter") return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSubmit();
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              )}
+            </motion.div>
 
-          <AnimatePresence mode="wait">
-            {step === 2 && (
-              <motion.div
-                key="icon"
-                className="gooey-search-icon-slot"
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                variants={iconVariants}
-                transition={{
-                  delay: 0.1,
-                  duration: 0.85,
-                  type: "spring",
-                  bounce: 0.15,
-                }}
-              >
-                {!isLoading ? (
-                  <SearchIcon isUnsupported={isUnsupported} />
-                ) : (
-                  <LoadingIcon />
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+            <AnimatePresence mode="wait" initial={false}>
+              {(step === 2 || isCollapsing) && (
+                <motion.div
+                  key="icon"
+                  className="gooey-search-icon-slot"
+                  initial="hidden"
+                  animate={isCollapsing ? "collapsing" : "visible"}
+                  variants={iconVariants}
+                  transition={
+                    isCollapsing
+                      ? GOOEY_COLLAPSE_TRANSITION
+                      : {
+                          delay: 0.1,
+                          duration: 0.85,
+                          type: "spring",
+                          bounce: 0.15,
+                        }
+                  }
+                >
+                  {!isLoading ? (
+                    <SearchIcon isUnsupported={isUnsupported} />
+                  ) : (
+                    <LoadingIcon />
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   motion,
   useInView,
@@ -13,11 +13,14 @@ import {
 
 import { HOME_BLUE_BG } from "@/components/home-blue-band";
 import PartnerBrandLogos from "@/components/partner-brand-logos";
-import { MAQUILA_PROCESS_STEPS } from "@/lib/maquila-process-data";
+import { MAQUILA_LANDING_HIGHLIGHTS } from "@/lib/maquila-process-data";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
-type MaquilaStep = (typeof MAQUILA_PROCESS_STEPS)[number];
+type MaquilaStep = (typeof MAQUILA_LANDING_HIGHLIGHTS)[number];
+
+const MAQUILA_SLIDES = MAQUILA_LANDING_HIGHLIGHTS;
+const AUTO_ADVANCE_MS = 3000;
 
 const IMAGE_CROSSFADE = { duration: 0.55, ease: [0.22, 1, 0.36, 1] as const };
 
@@ -94,10 +97,8 @@ function MaquilaPartnerFooter({
       revealGeneration={revealGeneration}
     >
       <div className="flex w-full flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
-        <p className="max-w-[11.5rem] shrink-0 self-start text-left text-[10px] font-medium leading-snug tracking-wide text-white/60 sm:max-w-[12.5rem] lg:max-w-[13rem]">
-          Proveedor oficial de
-          <br />
-          líderes de la industria
+        <p className="max-w-[11.5rem] shrink-0 self-start text-left text-[14px] font-medium leading-snug tracking-wide text-white/60 sm:max-w-[12.5rem] lg:max-w-[13rem]">
+          Proveedores  <br/> oficiales
         </p>
         <MaquilaPartnerLogos className="shrink-0 self-end sm:self-auto" />
       </div>
@@ -185,6 +186,7 @@ function MaquilaImageGallery({
 /** Maquila — premixes y núcleos personalizados (Figma 725:1172, navy band). */
 export default function MaquilaSection() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [stepsHovered, setStepsHovered] = useState(false);
   const [revealGeneration, setRevealGeneration] = useState(0);
   const [imageStartOffset, setImageStartOffset] = useState(0);
   const [imageTravelPx, setImageTravelPx] = useState(IMAGE_TRAVEL_FALLBACK_PX);
@@ -199,6 +201,7 @@ export default function MaquilaSection() {
   const ctaBlockRef = useRef<HTMLDivElement>(null);
   const partnerFooterRef = useRef<HTMLDivElement>(null);
   const wasInViewRef = useRef(false);
+  const autoAdvanceRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const reduceMotion = useReducedMotion();
   const inView = useInView(sectionRef, {
     once: false,
@@ -212,6 +215,30 @@ export default function MaquilaSection() {
     }
     wasInViewRef.current = inView;
   }, [inView]);
+
+  const advanceSlide = useCallback(() => {
+    setActiveIndex((index) => (index + 1) % MAQUILA_SLIDES.length);
+  }, []);
+
+  const restartAutoAdvance = useCallback(() => {
+    if (autoAdvanceRef.current) {
+      clearInterval(autoAdvanceRef.current);
+      autoAdvanceRef.current = null;
+    }
+    if (reduceMotion || !inView || stepsHovered) return;
+
+    autoAdvanceRef.current = setInterval(advanceSlide, AUTO_ADVANCE_MS);
+  }, [advanceSlide, inView, reduceMotion, stepsHovered]);
+
+  useEffect(() => {
+    restartAutoAdvance();
+    return () => {
+      if (autoAdvanceRef.current) {
+        clearInterval(autoAdvanceRef.current);
+        autoAdvanceRef.current = null;
+      }
+    };
+  }, [restartAutoAdvance]);
 
   useLayoutEffect(() => {
     const measure = () => {
@@ -333,7 +360,7 @@ export default function MaquilaSection() {
             <div className="lg:hidden">
               <MaquilaImageGallery
                 galleryRef={galleryRef}
-                steps={MAQUILA_PROCESS_STEPS}
+                steps={MAQUILA_SLIDES}
                 activeIndex={activeIndex}
               />
             </div>
@@ -343,8 +370,14 @@ export default function MaquilaSection() {
               de tus fórmulas y con los más altos estándares de calidad.
             </p>
 
-            <ul className="flex flex-col gap-2" role="list">
-              {MAQUILA_PROCESS_STEPS.map((step, index) => {
+            <ul
+              className="flex flex-col gap-2"
+              role="list"
+              aria-label="Pilares de maquila"
+              onMouseEnter={() => setStepsHovered(true)}
+              onMouseLeave={() => setStepsHovered(false)}
+            >
+              {MAQUILA_SLIDES.map((step, index) => {
                 const selected = index === activeIndex;
                 return (
                   <li
@@ -360,7 +393,10 @@ export default function MaquilaSection() {
                     >
                     <button
                       type="button"
-                      onClick={() => setActiveIndex(index)}
+                      onClick={() => {
+                        setActiveIndex(index);
+                        restartAutoAdvance();
+                      }}
                       aria-current={selected ? "step" : undefined}
                       className={cn(
                         "flex w-full gap-6 rounded-lg px-2 py-4 text-left transition-colors duration-300",
@@ -383,7 +419,15 @@ export default function MaquilaSection() {
                         >
                           {step.title}
                         </h3>
-                        <p className="text-sm leading-5 text-white/50">
+                        <p
+                          className={cn(
+                            "text-sm leading-relaxed transition-colors duration-300",
+                            selected
+                              ? "text-white/65"
+                              : "line-clamp-2 text-white/50",
+                          )}
+                          aria-live={selected ? "polite" : "off"}
+                        >
                           {step.description}
                         </p>
                       </div>
@@ -398,7 +442,7 @@ export default function MaquilaSection() {
               <div ref={ctaBlockRef} className="pt-2 sm:mt-6">
                 <MaquilaReveal
                   itemId="cta"
-                  delay={MAQUILA_PROCESS_STEPS.length * STEP_STAGGER_S + 0.08}
+                  delay={MAQUILA_SLIDES.length * STEP_STAGGER_S + 0.08}
                   inView={inView}
                   reduceMotion={reduceMotion}
                   revealGeneration={revealGeneration}
@@ -422,7 +466,7 @@ export default function MaquilaSection() {
                   inView={inView}
                   reduceMotion={reduceMotion}
                   revealGeneration={revealGeneration}
-                  stepCount={MAQUILA_PROCESS_STEPS.length}
+                  stepCount={MAQUILA_SLIDES.length}
                 />
               </div>
             </div>
@@ -444,7 +488,7 @@ export default function MaquilaSection() {
               <motion.div style={{ y: imageY }} className="w-full">
                 <MaquilaImageGallery
                   galleryRef={galleryRef}
-                  steps={MAQUILA_PROCESS_STEPS}
+                  steps={MAQUILA_SLIDES}
                   activeIndex={activeIndex}
                 />
               </motion.div>

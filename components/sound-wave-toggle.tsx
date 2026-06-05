@@ -8,6 +8,7 @@ import {
   useState,
   type MutableRefObject,
 } from "react";
+import { Volume2, VolumeX } from "lucide-react";
 
 import { AUDIO_FADE_MS } from "@/lib/audio-constants";
 import { setAmbientMasterMuted } from "@/lib/audio-master-state";
@@ -466,10 +467,10 @@ export function SoundWaveToggle({
       <button
         type="button"
         aria-pressed={isMuted}
-        aria-label={isMuted ? "Unmute sound" : "Mute sound"}
+        aria-label={isMuted ? "Activar sonido" : "Silenciar sonido"}
         onClick={toggleMute}
         className={cx(
-          "inline-flex items-center gap-3 border-0 bg-transparent p-0 text-base font-medium text-zinc-100 shadow-none outline-none transition-opacity",
+          "inline-flex items-center gap-2 border-0 bg-transparent p-0 text-base font-medium text-zinc-100 shadow-none outline-none transition-opacity sm:gap-2.5",
           "hover:opacity-90 active:opacity-80",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-0",
           "disabled:pointer-events-none disabled:opacity-50",
@@ -480,6 +481,11 @@ export function SoundWaveToggle({
         {showLabel ? (
           <span className={cx("select-none", labelClassName)}>{label}</span>
         ) : null}
+        {isMuted ? (
+          <VolumeX className="size-5 shrink-0" strokeWidth={2} aria-hidden />
+        ) : (
+          <Volume2 className="size-5 shrink-0" strokeWidth={2} aria-hidden />
+        )}
         <canvas
           ref={canvasRef}
           className="block shrink-0"

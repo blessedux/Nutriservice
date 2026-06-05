@@ -271,49 +271,59 @@ function NavInner() {
       <div className="relative z-50 mx-auto flex h-auto min-h-16 max-w-[1280px] items-center justify-between px-6 py-5 sm:px-10 lg:px-12">
         <Link
           href="/"
-          className="relative flex h-9 w-[152px] shrink-0 items-center md:h-10 md:w-[168px]"
+          className="relative flex h-[43px] w-[182px] shrink-0 items-center md:h-12 md:w-[202px]"
           onClick={() => setOpen(false)}
         >
           <Image
             src={logoSrc}
             alt="Nutriservice"
-            width={168}
-            height={40}
-            className="h-9 w-auto object-contain object-left md:h-10"
+            width={202}
+            height={48}
+            className="h-[43px] w-auto object-contain object-left md:h-12"
             priority
           />
         </Link>
 
-        <nav className="hidden items-center gap-10 md:flex" aria-label="Principal">
-          <SolucionesNavDropdown
-            isLinkActive={isLinkActive}
-            linkMuted={linkMuted}
-            linkActive={linkActive}
-            onWhiteNavText={onWhiteNavText}
-          />
-          <Link
-            href={MAQUILA_NAV_LINK.href}
-            className={`${linkBase} ${isLinkActive(MAQUILA_NAV_LINK.href) ? linkActive : linkMuted}`}
-          >
-            {MAQUILA_NAV_LINK.label}
-          </Link>
-          {NAV_LINKS.map((l) => (
+        <div className="flex items-center gap-3">
+          <nav className="hidden items-center gap-10 md:flex" aria-label="Principal">
+            <SolucionesNavDropdown
+              isLinkActive={isLinkActive}
+              linkMuted={linkMuted}
+              linkActive={linkActive}
+              onWhiteNavText={onWhiteNavText}
+            />
             <Link
-              key={l.href}
-              href={l.href}
-              className={`${linkBase} ${isLinkActive(l.href) ? linkActive : linkMuted}`}
+              href={MAQUILA_NAV_LINK.href}
+              className={`${linkBase} ${isLinkActive(MAQUILA_NAV_LINK.href) ? linkActive : linkMuted}`}
             >
-              {l.label}
+              {MAQUILA_NAV_LINK.label}
             </Link>
-          ))}
-          <span className={`h-4 w-px shrink-0 ${barDivider}`} aria-hidden />
-          <Link
-            href="/contacto"
-            className={`${ctaClasses} ${isLinkActive("/contacto") ? (onWhiteNavText ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
-          >
-            Contacto
-          </Link>
-        </nav>
+            {NAV_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className={`${linkBase} ${isLinkActive(l.href) ? linkActive : linkMuted}`}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <span className={`h-4 w-px shrink-0 ${barDivider}`} aria-hidden />
+            <Link
+              href="/contacto"
+              className={`${ctaClasses} ${isLinkActive("/contacto") ? (onWhiteNavText ? "ring-2 ring-white/35 ring-offset-2 ring-offset-transparent" : "ring-2 ring-[#1e3a8a]/25 ring-offset-2 ring-offset-transparent") : ""}`}
+            >
+              Contacto
+            </Link>
+          </nav>
+
+          <SoundWaveToggle
+            audioSrc={PUBLIC_ASSETS.audio.ambient}
+            maxLinearGain={AMBIENT_MUSIC_MAX_GAIN}
+            showLabel={false}
+            tone={onWhiteNavText ? "on-dark" : "on-light"}
+            buttonClassName="p-1"
+          />
+        </div>
 
         <button
           type="button"
@@ -431,24 +441,6 @@ function NavInner() {
               >
                 Contacto
               </Link>
-              <span
-                className={`h-px w-full ${onWhiteNavText ? "bg-white/18" : "bg-[rgba(30,58,138,0.15)]"}`}
-                aria-hidden
-              />
-              <SoundWaveToggle
-                audioSrc={PUBLIC_ASSETS.audio.ambient}
-                maxLinearGain={AMBIENT_MUSIC_MAX_GAIN}
-                autoBootstrap={false}
-                showLabel
-                label="Sonido"
-                tone={onWhiteNavText ? "on-dark" : "on-light"}
-                labelClassName={
-                  onWhiteNavText
-                    ? "text-[10px] font-bold uppercase tracking-[3px] text-white/60"
-                    : "text-[10px] font-bold uppercase tracking-[3px] text-[rgba(30,58,138,0.5)]"
-                }
-                buttonClassName="w-full justify-between py-1"
-              />
             </div>
           </div>
         </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import ContactForm from "@/components/contact-form";
-import DivisionVideoBg from "@/components/division-video-bg";
+import DivisionVideosBg from "@/components/division-videos-bg";
 import { ProductoImage } from "@/components/producto-image";
 import { HOME_INDUSTRIES_BG } from "@/components/home-blue-band";
 import { PRODUCTOS_CATEGORIAS } from "@/lib/productos-categories";
@@ -20,6 +20,7 @@ import {
 } from "@/lib/productos-division-media";
 import {
   getProductoImagePath,
+  getProductoManufacturer,
   getProductoSummary,
   productoDetailHref,
   productosFilterHref,
@@ -58,13 +59,13 @@ type ProductoDetailPageProps = {
 
 function DivisionBackdrop({
   media,
+  division,
 }: {
   media: DivisionMedia;
+  division: ProductoDivisionSlug;
 }) {
   if (media.video) {
-    return (
-      <DivisionVideoBg mp4={media.video.mp4} webm={media.video.webm} />
-    );
+    return <DivisionVideosBg activeSlug={division} />;
   }
 
   if (media.fallbackImage) {
@@ -100,6 +101,7 @@ export default function ProductoDetailPageView({
   const media = getDivisionMedia(division);
   const onDark = media.tone === "on-dark";
   const summary = getProductoSummary(producto, division);
+  const manufacturer = getProductoManufacturer(producto);
   const imagePath = getProductoImagePath(producto);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
   const inquiryRef = useRef<HTMLDivElement>(null);
@@ -118,7 +120,7 @@ export default function ProductoDetailPageView({
         onDark ? "text-white" : "text-ns-text",
       )}
     >
-      <DivisionBackdrop media={media} />
+      <DivisionBackdrop media={media} division={division} />
 
       <div className="relative z-10 -mt-24 px-4 pb-12 pt-24 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
@@ -162,7 +164,7 @@ export default function ProductoDetailPageView({
             <div className="grid gap-8 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:items-start">
               <div
                 className={cn(
-                  "overflow-hidden rounded-[1.5rem] border",
+                  "w-full overflow-hidden rounded-[1.5rem] border",
                   onDark
                     ? "border-white/15 bg-white/[0.04]"
                     : "border-ns-border bg-ns-surface-alt",
@@ -223,6 +225,25 @@ export default function ProductoDetailPageView({
                     {producto.altName}
                   </span>
                 </h1>
+
+                {manufacturer ? (
+                  <p
+                    className={cn(
+                      "mt-3 text-sm font-medium",
+                      onDark ? "text-white/65" : "text-ns-muted",
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "text-[10px] font-bold uppercase tracking-[0.16em]",
+                        onDark ? "text-white/45" : "text-ns-muted/80",
+                      )}
+                    >
+                      Fabricante{" "}
+                    </span>
+                    {manufacturer}
+                  </p>
+                ) : null}
 
                 <p
                   className={cn(

@@ -1,21 +1,27 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
 
-import DivisionVideoBg from "@/components/division-video-bg";
-import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
+import DivisionVideosBg from "@/components/division-videos-bg";
+import {
+  PRODUCTOS_DIVISIONES,
+  type ProductoDivisionSlug,
+} from "@/lib/productos-divisions";
 import { getDivisionMedia } from "@/lib/productos-division-media";
 import { cn } from "@/lib/utils";
 
 type ProductosPageShellProps = {
-  activeDivisionSlug?: ProductoDivisionSlug;
   children: ReactNode;
 };
 
-export default function ProductosPageShell({
-  activeDivisionSlug,
-  children,
-}: ProductosPageShellProps) {
+export default function ProductosPageShell({ children }: ProductosPageShellProps) {
+  const searchParams = useSearchParams();
+  const divisionParam = searchParams.get("division")?.toLowerCase().trim() ?? "";
+  const activeDivisionSlug = PRODUCTOS_DIVISIONES.find(
+    (d) => d.slug === divisionParam,
+  )?.slug as ProductoDivisionSlug | undefined;
+
   const media = activeDivisionSlug
     ? getDivisionMedia(activeDivisionSlug)
     : null;
@@ -28,9 +34,7 @@ export default function ProductosPageShell({
         onDark ? "text-white" : "text-ns-text",
       )}
     >
-      {media?.video ? (
-        <DivisionVideoBg mp4={media.video.mp4} webm={media.video.webm} />
-      ) : null}
+      <DivisionVideosBg activeSlug={activeDivisionSlug} />
       <div
         className={cn(
           "relative z-10 px-6 py-12",

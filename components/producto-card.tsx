@@ -6,6 +6,7 @@ import {
   type ProductoDivisionSlug,
 } from "@/lib/productos-divisions";
 import {
+  getProductoManufacturer,
   getProductoSummary,
   productoDetailHref,
   type Producto,
@@ -24,6 +25,7 @@ export function ProductoCard({
   variant = "default",
 }: ProductoCardProps) {
   const summary = getProductoSummary(producto, activeDivision);
+  const manufacturer = getProductoManufacturer(producto);
   const divisionsToShow = activeDivision
     ? [activeDivision]
     : producto.divisionSlugs;
@@ -91,6 +93,24 @@ export function ProductoCard({
           ({producto.altName})
         </span>
       </h2>
+      {manufacturer ? (
+        <p
+          className={cn(
+            "mt-2 text-sm font-medium",
+            onDark ? "text-white/60" : "text-ns-muted",
+          )}
+        >
+          <span
+            className={cn(
+              "text-[10px] font-bold uppercase tracking-[0.16em]",
+              onDark ? "text-white/45" : "text-ns-muted/80",
+            )}
+          >
+            Fabricante{" "}
+          </span>
+          {manufacturer}
+        </p>
+      ) : null}
       <p
         className={cn(
           "mt-2 flex-1 text-sm leading-relaxed",

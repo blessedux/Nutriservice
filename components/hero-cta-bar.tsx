@@ -83,13 +83,13 @@ export default function HeroCtaBar({
   const isStackedInline = variant === "inline";
 
   const primaryBtn = isStackedInline
-    ? "w-full rounded-lg bg-blue-600 px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-blue-500"
+    ? "w-full min-w-0 rounded-lg bg-blue-600 px-5 py-3.5 text-center text-sm font-semibold text-white transition-colors hover:bg-blue-500 sm:px-7"
     : "inline-flex items-center justify-center rounded-lg bg-ns-green px-7 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-ns-green-light";
 
   const secondaryBtn = isStackedInline
     ? tone === "on-dark"
-      ? "w-full rounded-lg border border-white/25 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/15"
-      : "w-full rounded-lg border border-blue-950/15 bg-white/60 px-7 py-3.5 text-sm font-semibold text-blue-950 backdrop-blur-md transition-colors hover:bg-white/80"
+      ? "w-full min-w-0 rounded-lg border border-white/25 bg-white/10 px-5 py-3.5 text-center text-sm font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/15 sm:px-7"
+      : "w-full min-w-0 rounded-lg border border-blue-950/15 bg-white/60 px-5 py-3.5 text-center text-sm font-semibold text-blue-950 backdrop-blur-md transition-colors hover:bg-white/80 sm:px-7"
     : tone === "on-dark"
       ? "border-white/35 bg-transparent text-white hover:bg-white/10"
       : "border-blue-950/20 bg-sky-50/80 text-blue-950 hover:bg-sky-100";
@@ -125,7 +125,7 @@ export default function HeroCtaBar({
           !isStackedInline && "sm:flex-row sm:items-center sm:gap-4",
           variant === "strip"
             ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
-            : "w-full max-w-sm items-stretch justify-start sm:max-w-md",
+            : "w-full items-center justify-center lg:max-w-xl lg:items-stretch lg:justify-start",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"

@@ -98,7 +98,14 @@ export default function SolucionesPage() {
       <IndustriasCtaBanner
         id="contacto"
         heading="Hable con nuestro equipo técnico-comercial"
-        subtext="Lo acompañamos en la búsqueda de soluciones nutricionales funcionales adaptadas a los desafíos de cada especie y sistema productivo."
+        subtext={
+          <>
+            Lo acompañamos en la búsqueda de soluciones nutricionales
+            funcionales
+            <br />
+            adaptadas a los desafíos de cada especie y sistema productivo.
+          </>
+        }
         primaryLabel="Agendar reunión"
         showSecondary={false}
       />

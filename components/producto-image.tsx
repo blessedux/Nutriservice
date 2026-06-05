@@ -27,7 +27,7 @@ export function ProductoImage({
     return (
       <div
         className={cn(
-          "flex h-full min-h-[220px] w-full flex-col items-center justify-center p-6 text-center",
+          "flex aspect-square w-full flex-col items-center justify-center p-6 text-center",
           onDark ? "bg-white/[0.06]" : "bg-ns-surface-alt",
           className,
         )}
@@ -63,13 +63,13 @@ export function ProductoImage({
   }
 
   return (
-    <div className={cn("relative h-full min-h-[220px] w-full", className)}>
+    <div className={cn("relative aspect-square w-full", className)}>
       <Image
         src={src}
         alt={alt}
         fill
         sizes="(max-width: 1024px) 100vw, 280px"
-        className="object-contain p-6"
+        className="object-cover object-center"
         onError={() => setFailed(true)}
       />
     </div>

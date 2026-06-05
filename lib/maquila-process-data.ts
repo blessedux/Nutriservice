@@ -11,6 +11,46 @@ export type MaquilaProcessStep = {
   imageHeight: number;
 };
 
+/** Landing page maquila band — auto-slider highlights (images reused from process steps). */
+export const MAQUILA_LANDING_HIGHLIGHTS: MaquilaProcessStep[] = [
+  {
+    id: "trazabilidad",
+    number: "01",
+    title: "Trazabilidad completa",
+    description:
+      "Control de materias primas, lotes y procesos, garantizando transparencia y seguimiento desde el origen de los insumos hasta el producto final.",
+    detail:
+      "Control de materias primas, lotes y procesos, garantizando transparencia y seguimiento desde el origen de los insumos hasta el producto final.",
+    image: PUBLIC_ASSETS.maquilaSection.tabProductsBg,
+    imageWidth: 1536,
+    imageHeight: 1024,
+  },
+  {
+    id: "calidad",
+    number: "02",
+    title: "Calidad certificada",
+    description:
+      "Procesos auditados bajo estándares GMP y REP, que respaldan la inocuidad, precisión y cumplimiento normativo requeridos por marcas que buscan excelencia.",
+    detail:
+      "Procesos auditados bajo estándares GMP y REP, que respaldan la inocuidad, precisión y cumplimiento normativo requeridos por marcas que buscan excelencia.",
+    image: PUBLIC_ASSETS.shared.workersHero,
+    imageWidth: 1536,
+    imageHeight: 1024,
+  },
+  {
+    id: "tecnologia",
+    number: "03",
+    title: "Tecnología y especialización",
+    description:
+      "Equipos modernos, formulación especializada y sistemas avanzados que permiten desarrollar productos eficientes, estables y competitivos para los distintos desafíos de la nutrición animal.",
+    detail:
+      "Equipos modernos, formulación especializada y sistemas avanzados que permiten desarrollar productos eficientes, estables y competitivos para los distintos desafíos de la nutrición animal.",
+    image: PUBLIC_ASSETS.maquilaSection.tabFormulacionHero,
+    imageWidth: 1298,
+    imageHeight: 1212,
+  },
+];
+
 export const MAQUILA_PROCESS_STEPS: MaquilaProcessStep[] = [
   {
     id: "formulacion",
