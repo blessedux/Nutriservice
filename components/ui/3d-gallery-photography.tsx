@@ -63,6 +63,8 @@ export interface InfiniteGalleryProps {
   sessionKey?: number;
   className?: string;
   style?: React.CSSProperties;
+  /** Reduce rendering quality for low-end devices (dpr=1, antialias off). */
+  lowPerformance?: boolean;
 }
 
 interface PlaneData {
@@ -567,7 +569,8 @@ function ImagePlane({
       onPointerEnter={allowHover ? () => setIsHovered(true) : undefined}
       onPointerLeave={allowHover ? () => setIsHovered(false) : undefined}
     >
-      <planeGeometry args={[1, 1, 32, 32]} />
+      {/* 2×2 subdivision is enough for the cloth/ripple effect; 32×32 wastes ~120× the vertices */}
+      <planeGeometry args={[1, 1, 2, 2]} />
     </mesh>
   );
 }
@@ -591,12 +594,28 @@ function GalleryScene({
   timelineXOffset = DEFAULT_TIMELINE_X_OFFSET,
   initialDepthOffsetRatio = 0.14,
   sessionKey = 0,
+  invalidateRef,
+  isVisible = true,
 }: Omit<InfiniteGalleryProps, "className" | "style"> & {
   containerRef: React.RefObject<HTMLDivElement | null>;
   timelineXOffset?: number;
   initialDepthOffsetRatio?: number;
   hallwayVisibility?: HallwayVisibilityConfig;
+  /** Ref populated with the R3F invalidate function so the wheel handler can trigger renders. */
+  invalidateRef: React.MutableRefObject<(() => void) | null>;
+  /** False when the section is scrolled offscreen — prevents unnecessary demand renders. */
+  isVisible?: boolean;
 }) {
+  const { invalidate } = useThree();
+
+  // Populate the shared ref so the DOM wheel handler (outside R3F context) can
+  // request a render on demand when the canvas is using frameloop="demand".
+  useEffect(() => {
+    invalidateRef.current = invalidate;
+    // Trigger one initial render to paint the frozen intro frame.
+    invalidate();
+  }, [invalidate, invalidateRef]);
+
   const scrollVelocityRef = useRef(0);
   const interactiveRef = useRef(interactive);
   const forwardLockedRef = useRef(forwardScrollLocked);
@@ -751,7 +770,9 @@ function GalleryScene({
     layoutTimelinePlanes(0);
     applyPassCount(0);
     onTimelineScrollRef.current?.(0);
-  }, [applyPassCount, buildPlanes, layoutTimelinePlanes]);
+    // Trigger one render to paint the restored initial frame.
+    invalidateRef.current?.();
+  }, [applyPassCount, buildPlanes, layoutTimelinePlanes, invalidateRef]);
 
   useEffect(() => {
     onUserScrollRef.current = onUserScroll;
@@ -788,15 +809,32 @@ function GalleryScene({
     resetTimelineSession();
   }, [sessionKey, interactive, resetTimelineSession]);
 
-  const textures = useTexture(normalizedImages.map((img) => img.src));
+  // Deduplicate URLs so a shared image (e.g. 2026imgB appears in intro + finale)
+  // only occupies one GPU texture slot rather than being uploaded twice.
+  const imageSrcs = useMemo(
+    () => normalizedImages.map((img) => img.src),
+    [normalizedImages],
+  );
+  const uniqueUrls = useMemo(() => [...new Set(imageSrcs)], [imageSrcs]);
+  const uniqueTextures = useTexture(uniqueUrls);
+  const textureByUrl = useMemo(
+    () => new Map(uniqueUrls.map((url, i) => [url, uniqueTextures[i]])),
+    [uniqueUrls, uniqueTextures],
+  );
+  const textures = useMemo(
+    () => imageSrcs.map((src) => textureByUrl.get(src)!),
+    [imageSrcs, textureByUrl],
+  );
 
   useEffect(() => {
-    textures.forEach((tex) => {
+    uniqueTextures.forEach((tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.minFilter = THREE.LinearFilter;
       tex.magFilter = THREE.LinearFilter;
     });
-  }, [textures]);
+    // Trigger a re-render now that textures are configured.
+    invalidate();
+  }, [uniqueTextures, invalidate]);
 
   const materials = useMemo(
     () => Array.from({ length: totalImages }, () => createClothMaterial()),
@@ -830,8 +868,11 @@ function GalleryScene({
         hasReportedScrollRef.current = true;
         onUserScrollRef.current?.();
       }
+
+      // Wake up the demand render loop.
+      invalidateRef.current?.();
     },
-    [speed, isAtTimelineHardStart, isTimelineAtEnd],
+    [speed, isAtTimelineHardStart, isTimelineAtEnd, invalidateRef],
   );
 
   useEffect(() => {
@@ -844,6 +885,9 @@ function GalleryScene({
   }, [interactive, containerRef, handleWheel]);
 
   useFrame((state, delta) => {
+    // Skip entirely when the section is scrolled out of view.
+    if (!isVisible) return;
+
     const isInteractive = interactiveRef.current;
     const time = state.clock.getElapsedTime();
 
@@ -967,6 +1011,12 @@ function GalleryScene({
         mat.uniforms.opacity.value = opacity;
       }
     });
+
+    // Keep requesting frames while scroll is decelerating. Once velocity reaches
+    // zero the loop naturally stops (frameloop="demand").
+    if (scrollVelocityRef.current !== 0) {
+      state.invalidate();
+    }
   });
 
   if (normalizedImages.length === 0) return null;
@@ -1035,9 +1085,15 @@ export default function InfiniteGallery({
   style,
   fadeSettings,
   blurSettings,
+  lowPerformance = false,
 }: InfiniteGalleryProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [webglSupported, setWebglSupported] = useState(true);
+  const [isVisible, setIsVisible] = useState(true);
+  // Shared ref populated by GalleryScene so the DOM wheel handler can wake up the
+  // demand render loop without needing access to the R3F context.
+  const invalidateRef = useRef<(() => void) | null>(null);
+
   const {
     timelineXOffset,
     cameraFov,
@@ -1060,6 +1116,24 @@ export default function InfiniteGallery({
     }
   }, []);
 
+  // Pause demand renders when the section leaves the viewport.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+        // Re-paint the frozen frame when scrolling back into view.
+        if (entry.isIntersecting) invalidateRef.current?.();
+      },
+      { threshold: 0 },
+    );
+
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
   if (!webglSupported) {
     return (
       <div className={className} style={style}>
@@ -1077,14 +1151,15 @@ export default function InfiniteGallery({
     >
       <Canvas
         camera={{ position: [0, 0, 0], fov: cameraFov }}
+        frameloop="demand"
         gl={{
-          antialias: true,
+          antialias: !lowPerformance,
           alpha: true,
-          powerPreference: "high-performance",
+          powerPreference: lowPerformance ? "default" : "high-performance",
           toneMapping: THREE.NoToneMapping,
           outputColorSpace: THREE.SRGBColorSpace,
         }}
-        dpr={[1, 1.75]}
+        dpr={lowPerformance ? 1 : [1, 1.75]}
         style={{ background: "transparent" }}
       >
         <Suspense fallback={null}>
@@ -1108,6 +1183,8 @@ export default function InfiniteGallery({
             fadeSettings={resolvedFadeSettings}
             blurSettings={resolvedBlurSettings}
             hallwayVisibility={hallwayVisibility}
+            invalidateRef={invalidateRef}
+            isVisible={isVisible}
           />
         </Suspense>
       </Canvas>

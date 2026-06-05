@@ -111,6 +111,20 @@ export function getMaxTimelineScrollDistance(
 
 export const TIMELINE_IMAGE_COUNT = NOSOTROS_TIMELINE_IMAGES.length;
 
+/** One representative slide per chronological year — used by the CSS fallback timeline. */
+export type TimelineYearSlide = {
+  year: number;
+  src: string;
+  alt: string;
+};
+
+export const TIMELINE_YEAR_SLIDES: TimelineYearSlide[] =
+  TIMELINE_YEAR_ENTRIES.map(({ year, frames }) => ({
+    year,
+    src: frames[0],
+    alt: `Nutriservice, ${year}`,
+  }));
+
 /** @deprecated Most years use 2 frames; 2026 uses 1. Prefer TIMELINE_FRAMES_PER_YEAR. */
 export const IMAGES_PER_TIMELINE_YEAR = 2;
 
