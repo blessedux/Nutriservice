@@ -14,9 +14,14 @@ import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 
 import {
-  FINAL_TIMELINE_YEAR_INDEX,
+  TIMELINE_INTRO_IMAGE_COUNT,
+  getMaxTimelineScrollDistance,
+  getTimelineXForImageIndex,
+} from "@/lib/nosotros-timeline-images";
+import {
   MAX_TIMELINE_PASS_COUNT,
   NOSOTROS_TIMELINE_YEARS,
+  yearIndexForPassCount,
 } from "@/lib/nosotros-timeline-years";
 
 type ImageItem = string | { src: string; alt?: string };
@@ -42,6 +47,8 @@ export interface InfiniteGalleryProps {
   interactive?: boolean;
   /** Fired once on first user scroll while interactive. */
   onUserScroll?: () => void;
+  /** Continuous hallway scroll offset while interactive (for title fade, etc.). */
+  onTimelineScroll?: (scrollOffset: number) => void;
   /** Fired when timeline year changes (every 2 image passes through focal point). */
   onTimelineYear?: (year: number, yearIndex: number) => void;
   /** Fired once when the final timeline year (2026) is reached. */
@@ -59,9 +66,8 @@ export interface InfiniteGalleryProps {
 }
 
 interface PlaneData {
-  index: number;
-  z: number;
   imageIndex: number;
+  z: number;
   x: number;
   y: number;
 }
@@ -69,7 +75,15 @@ interface PlaneData {
 const DEFAULT_DEPTH_RANGE = 120;
 const DEFAULT_TIMELINE_X_OFFSET = 6.5;
 const TIMELINE_Y = 0;
-const BASE_PLANE_HEIGHT = 6;
+const BASE_PLANE_HEIGHT = 8;
+/** Stop momentum and lock frames below this velocity. */
+const SCROLL_IDLE_VELOCITY = 0.045;
+/** Camera crossing — full size is reached here (after extra scroll within each frame). */
+const CAMERA_CROSS_RELATIVE = 1.18;
+/** Depth (plane.z) where the frame first appears — lower = farther / smaller. */
+const HALLWAY_ENTRY_Z_RATIO = 0.045;
+/** Ease-in for depth travel — higher = slower / smaller at the start of each frame. */
+const HALLWAY_APPROACH_EASE = 1.75;
 
 /** Wider band — two frames (left + right) visible while passing through. */
 export const HALLWAY_FADE_SETTINGS: FadeSettings = {
@@ -78,9 +92,9 @@ export const HALLWAY_FADE_SETTINGS: FadeSettings = {
 };
 
 export const HALLWAY_BLUR_SETTINGS: BlurSettings = {
-  blurIn: { start: 0.12, end: 0.24 },
-  blurOut: { start: 0.58, end: 0.72 },
-  maxBlur: 3.5,
+  blurIn: { start: 0.1, end: 0.2 },
+  blurOut: { start: 0.62, end: 0.78 },
+  maxBlur: 1.75,
 };
 
 function getTimelineLayout(containerWidth: number): {
@@ -89,7 +103,10 @@ function getTimelineLayout(containerWidth: number): {
   fadeSettings: FadeSettings;
   blurSettings: BlurSettings;
   initialDepthOffsetRatio: number;
+  hallwayVisibility: HallwayVisibilityConfig;
 } {
+  const hallwayVisibility = getHallwayVisibilityConfig(containerWidth);
+
   if (containerWidth < 480) {
     return {
       timelineXOffset: 2.75,
@@ -101,9 +118,10 @@ function getTimelineLayout(containerWidth: number): {
       blurSettings: {
         blurIn: { start: 0.02, end: 0.12 },
         blurOut: { start: 0.45, end: 0.53 },
-        maxBlur: 4,
+        maxBlur: 2,
       },
       initialDepthOffsetRatio: 0.02,
+      hallwayVisibility,
     };
   }
   if (containerWidth < 640) {
@@ -117,9 +135,10 @@ function getTimelineLayout(containerWidth: number): {
       blurSettings: {
         blurIn: { start: 0.03, end: 0.16 },
         blurOut: { start: 0.44, end: 0.52 },
-        maxBlur: 3.75,
+        maxBlur: 2,
       },
       initialDepthOffsetRatio: 0.04,
+      hallwayVisibility,
     };
   }
   if (containerWidth < 1024) {
@@ -133,9 +152,10 @@ function getTimelineLayout(containerWidth: number): {
       blurSettings: {
         blurIn: { start: 0.08, end: 0.2 },
         blurOut: { start: 0.5, end: 0.6 },
-        maxBlur: 3.5,
+        maxBlur: 1.85,
       },
       initialDepthOffsetRatio: 0.08,
+      hallwayVisibility,
     };
   }
   return {
@@ -144,6 +164,7 @@ function getTimelineLayout(containerWidth: number): {
     fadeSettings: HALLWAY_FADE_SETTINGS,
     blurSettings: HALLWAY_BLUR_SETTINGS,
     initialDepthOffsetRatio: 0.14,
+    hallwayVisibility,
   };
 }
 
@@ -174,20 +195,192 @@ function useContainerTimelineLayout(
 }
 
 const DEFAULT_PASS_THRESHOLD = 0.54;
-/** Hysteresis band so passCount does not oscillate at year boundaries. */
-const PASS_FORWARD_THRESHOLD = DEFAULT_PASS_THRESHOLD;
-const PASS_BACKWARD_THRESHOLD = DEFAULT_PASS_THRESHOLD - 0.08;
-/** passCount below this = before first timeline year (1993). */
-const TIMELINE_START_PASS_COUNT = 2;
 
-function getHeroPlaneZ(
-  index: number,
+/** Equal depth gap between consecutive frames in the timeline hallway. */
+function getTimelinePlaneSpacing(
+  depthRange: number,
   visibleCount: number,
+): number {
+  return depthRange / Math.max(visibleCount, 1);
+}
+
+/** How many frames stay in the hallway ahead of the focal image. */
+const HALLWAY_AHEAD_COUNT = 3.25;
+/** How far a passed frame may linger before hiding. */
+const HALLWAY_BEHIND_COUNT = 0.35;
+const HALLWAY_FADE_IN_SPAN = 0.28;
+
+type HallwayVisibilityConfig = {
+  aheadCount: number;
+  cameraCrossRelative: number;
+  behindCount: number;
+  fadeInSpan: number;
+  /** Pre-camera fade — opacity reaches 0 before the camera cross line. */
+  fadeOutStart?: number;
+  fadeOutEnd?: number;
+};
+
+const DEFAULT_HALLWAY_VISIBILITY: HallwayVisibilityConfig = {
+  aheadCount: HALLWAY_AHEAD_COUNT,
+  cameraCrossRelative: CAMERA_CROSS_RELATIVE,
+  behindCount: HALLWAY_BEHIND_COUNT,
+  fadeInSpan: HALLWAY_FADE_IN_SPAN,
+};
+
+function getHallwayVisibilityConfig(containerWidth: number): HallwayVisibilityConfig {
+  if (containerWidth < 480) {
+    return {
+      ...DEFAULT_HALLWAY_VISIBILITY,
+      behindCount: 0.04,
+      fadeOutStart: 0.74,
+      fadeOutEnd: 0.98,
+    };
+  }
+  if (containerWidth < 640) {
+    return {
+      ...DEFAULT_HALLWAY_VISIBILITY,
+      behindCount: 0.06,
+      fadeOutStart: 0.78,
+      fadeOutEnd: 1.02,
+    };
+  }
+  if (containerWidth < 1024) {
+    return {
+      ...DEFAULT_HALLWAY_VISIBILITY,
+      behindCount: 0.12,
+      fadeOutStart: 0.86,
+      fadeOutEnd: 1.08,
+    };
+  }
+  return DEFAULT_HALLWAY_VISIBILITY;
+}
+
+function getPlaneZForImageIndex(
+  imageIndex: number,
+  scrollOffset: number,
+  spacing: number,
   depthRange: number,
 ): number {
-  const spacing = (depthRange * 0.72) / Math.max(visibleCount, 1);
-  const focalZ = depthRange * 0.34;
-  return (focalZ + index * spacing) % depthRange;
+  const relative = scrollOffset / spacing - imageIndex;
+  const cameraZ = depthRange * 0.5;
+  const entryZ = depthRange * HALLWAY_ENTRY_Z_RATIO;
+  const enterAt = -HALLWAY_AHEAD_COUNT;
+
+  if (relative <= CAMERA_CROSS_RELATIVE) {
+    const tLinear = THREE.MathUtils.clamp(
+      (relative - enterAt) / (CAMERA_CROSS_RELATIVE - enterAt),
+      0,
+      1,
+    );
+    const t = Math.pow(tLinear, HALLWAY_APPROACH_EASE);
+    return THREE.MathUtils.lerp(entryZ, cameraZ, t);
+  }
+
+  const pastT = relative - CAMERA_CROSS_RELATIVE;
+  return cameraZ + pastT * spacing * 0.9;
+}
+
+function computeHallwayOpacity(
+  relative: number,
+  config: HallwayVisibilityConfig = DEFAULT_HALLWAY_VISIBILITY,
+): number {
+  const enterAt = -config.aheadCount;
+  const fadeInEnd = enterAt + config.fadeInSpan;
+
+  if (relative < enterAt) return 0;
+  if (relative < fadeInEnd) {
+    return (relative - enterAt) / (fadeInEnd - enterAt);
+  }
+
+  if (config.fadeOutStart !== undefined && config.fadeOutEnd !== undefined) {
+    if (relative >= config.fadeOutEnd) return 0;
+    if (relative >= config.fadeOutStart) {
+      return (
+        1 -
+        (relative - config.fadeOutStart) /
+          (config.fadeOutEnd - config.fadeOutStart)
+      );
+    }
+    return 1;
+  }
+
+  if (relative <= config.cameraCrossRelative) return 1;
+
+  const fadeOutEnd = config.cameraCrossRelative + config.behindCount;
+  if (relative >= fadeOutEnd) return 0;
+  return (
+    1 -
+    (relative - config.cameraCrossRelative) /
+      (fadeOutEnd - config.cameraCrossRelative)
+  );
+}
+
+function computeHallwayBlur(
+  relative: number,
+  maxBlur: number,
+  config: HallwayVisibilityConfig = DEFAULT_HALLWAY_VISIBILITY,
+): number {
+  const enterAt = -config.aheadCount;
+  const sharpAt = 0.42;
+
+  if (relative < enterAt) return maxBlur;
+  if (relative < sharpAt) {
+    const t = (relative - enterAt) / (sharpAt - enterAt);
+    return maxBlur * (1 - t);
+  }
+
+  if (config.fadeOutStart !== undefined && config.fadeOutEnd !== undefined) {
+    if (relative >= config.fadeOutEnd) return maxBlur;
+    if (relative >= config.fadeOutStart) {
+      const t =
+        (relative - config.fadeOutStart) /
+        (config.fadeOutEnd - config.fadeOutStart);
+      return maxBlur * t;
+    }
+    return 0;
+  }
+
+  if (relative <= config.cameraCrossRelative) return 0;
+
+  const fadeOutEnd = config.cameraCrossRelative + config.behindCount;
+  if (relative >= fadeOutEnd) return maxBlur;
+  const t =
+    (relative - config.cameraCrossRelative) /
+    (fadeOutEnd - config.cameraCrossRelative);
+  return maxBlur * t;
+}
+
+function getHallwayRelative(
+  imageIndex: number,
+  scrollOffset: number,
+  spacing: number,
+): number {
+  return scrollOffset / spacing - imageIndex;
+}
+
+function isImageInHallway(
+  relative: number,
+  config: HallwayVisibilityConfig = DEFAULT_HALLWAY_VISIBILITY,
+): boolean {
+  const exitAt =
+    config.fadeOutEnd ??
+    config.cameraCrossRelative + config.behindCount;
+
+  return relative >= -config.aheadCount && relative <= exitAt;
+}
+
+function getFocalIndexFromScroll(
+  scrollOffset: number,
+  spacing: number,
+  maxIndex: number,
+): number {
+  if (spacing <= 0) return 0;
+  return Math.min(Math.max(0, Math.floor(scrollOffset / spacing)), maxIndex);
+}
+
+function getPlaneCloseness(planeZ: number, depthRange: number): number {
+  const worldZ = planeZ - depthRange / 2;
+  return THREE.MathUtils.smoothstep(worldZ, -56, 2);
 }
 
 /** Scale grows as the plane approaches the camera (worldZ → 0). */
@@ -195,12 +388,10 @@ function computePlaneScale(
   planeZ: number,
   depthRange: number,
   aspect: number,
-  isInteractive: boolean,
 ): [number, number, number] {
-  const worldZ = planeZ - depthRange / 2;
-  const closeness = THREE.MathUtils.smoothstep(worldZ, -58, -2);
-  const minH = isInteractive ? 0.45 : 1.1;
-  const maxH = isInteractive ? BASE_PLANE_HEIGHT : 4.2;
+  const closeness = getPlaneCloseness(planeZ, depthRange);
+  const minH = 0.68;
+  const maxH = BASE_PLANE_HEIGHT;
   const height = THREE.MathUtils.lerp(minH, maxH, closeness);
 
   if (aspect > 1) {
@@ -210,28 +401,17 @@ function computePlaneScale(
 }
 
 function getTimelineX(imageIndex: number, xOffset: number): number {
-  return (imageIndex % 2 === 0 ? -1 : 1) * xOffset;
-}
-
-function getInitialPlaneZ(
-  index: number,
-  visibleCount: number,
-  depthRange: number,
-  depthOffsetRatio = 0.14,
-): number {
-  const spacing = (depthRange * 0.72) / Math.max(visibleCount, 1);
-  const offset = depthRange * depthOffsetRatio;
-  return offset + spacing * index;
+  return getTimelineXForImageIndex(imageIndex, xOffset);
 }
 
 const createClothMaterial = () =>
   new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
+    toneMapped: false,
     uniforms: {
       map: { value: null },
       opacity: { value: 1.0 },
-      blurAmount: { value: 0.0 },
       scrollForce: { value: 0.0 },
       time: { value: 0.0 },
       isHovered: { value: 0.0 },
@@ -266,29 +446,11 @@ const createClothMaterial = () =>
     fragmentShader: `
       uniform sampler2D map;
       uniform float opacity;
-      uniform float blurAmount;
       varying vec2 vUv;
 
       void main() {
         vec4 color = texture2D(map, vUv);
-        if (blurAmount > 0.0) {
-          vec2 texSize = vec2(textureSize(map, 0));
-          if (texSize.x > 0.0 && texSize.y > 0.0) {
-            vec2 texelSize = 1.0 / texSize;
-            vec4 blurred = vec4(0.0);
-            float total = 0.0;
-            for (float x = -2.0; x <= 2.0; x += 1.0) {
-              for (float y = -2.0; y <= 2.0; y += 1.0) {
-                vec2 offset = vec2(x, y) * texelSize * blurAmount;
-                float weight = 1.0 / (1.0 + length(vec2(x, y)));
-                blurred += texture2D(map, vUv + offset) * weight;
-                total += weight;
-              }
-            }
-            color = blurred / total;
-          }
-        }
-        gl_FragColor = vec4(color.rgb, color.a * opacity);
+        gl_FragColor = vec4(color.rgb, opacity);
       }
     `,
   });
@@ -347,64 +509,55 @@ function CameraFovSync({ fov }: { fov: number }) {
 }
 
 function ImagePlane({
-  planeIndex,
-  textures,
+  imageIndex,
+  texture,
   material,
   planesRef,
   depthRange,
-  initialScale,
   allowHover,
-  interactiveRef,
 }: {
-  planeIndex: number;
-  textures: THREE.Texture[];
+  imageIndex: number;
+  texture: THREE.Texture;
   material: THREE.ShaderMaterial;
   planesRef: React.RefObject<PlaneData[]>;
   depthRange: number;
-  initialScale: [number, number, number];
   allowHover: boolean;
-  interactiveRef: React.RefObject<boolean>;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [isHovered, setIsHovered] = useState(false);
-  const lastImageIndex = useRef(-1);
   const aspectRef = useRef(1);
 
   useEffect(() => {
     if (material?.uniforms) {
-      material.uniforms.isHovered.value =
-        allowHover && isHovered ? 1.0 : 0.0;
+      material.uniforms.map.value = texture;
+      material.uniforms.isHovered.value = allowHover && isHovered ? 1.0 : 0.0;
+      const image = texture.image as HTMLImageElement | undefined;
+      if (image?.width && image.height) {
+        aspectRef.current = image.width / image.height;
+      }
     }
-  }, [allowHover, isHovered, material]);
+  }, [allowHover, isHovered, material, texture]);
 
   useFrame(() => {
-    const plane = planesRef.current?.[planeIndex];
+    const plane = planesRef.current?.[imageIndex];
     const mesh = meshRef.current;
     if (!plane || !mesh) return;
 
     mesh.position.set(plane.x, plane.y, plane.z - depthRange / 2);
 
-    if (plane.imageIndex !== lastImageIndex.current) {
-      const texture = textures[plane.imageIndex];
-      if (texture && material?.uniforms) {
-        material.uniforms.map.value = texture;
-        const image = texture.image as HTMLImageElement | undefined;
-        if (image?.width && image.height) {
-          aspectRef.current = image.width / image.height;
-        }
-      }
-      lastImageIndex.current = plane.imageIndex;
-    }
-
-    const isInteractive = interactiveRef.current ?? false;
     const [sx, sy, sz] = computePlaneScale(
       plane.z,
       depthRange,
       aspectRef.current,
-      isInteractive,
     );
     mesh.scale.set(sx, sy, sz);
   });
+
+  const image = texture.image as HTMLImageElement | undefined;
+  const aspect =
+    image?.width && image.height ? image.width / image.height : 1;
+  const initialScale: [number, number, number] =
+    aspect > 1 ? [2 * aspect, 2, 1] : [2, 2 / aspect, 1];
 
   return (
     <mesh
@@ -428,11 +581,13 @@ function GalleryScene({
   backwardScrollLocked = false,
   containerRef,
   onUserScroll,
+  onTimelineScroll,
   onTimelineYear,
   onTimelineComplete,
   passThreshold = DEFAULT_PASS_THRESHOLD,
   fadeSettings = HALLWAY_FADE_SETTINGS,
   blurSettings = HALLWAY_BLUR_SETTINGS,
+  hallwayVisibility = DEFAULT_HALLWAY_VISIBILITY,
   timelineXOffset = DEFAULT_TIMELINE_X_OFFSET,
   initialDepthOffsetRatio = 0.14,
   sessionKey = 0,
@@ -440,6 +595,7 @@ function GalleryScene({
   containerRef: React.RefObject<HTMLDivElement | null>;
   timelineXOffset?: number;
   initialDepthOffsetRatio?: number;
+  hallwayVisibility?: HallwayVisibilityConfig;
 }) {
   const scrollVelocityRef = useRef(0);
   const interactiveRef = useRef(interactive);
@@ -447,60 +603,47 @@ function GalleryScene({
   const backwardLockedRef = useRef(backwardScrollLocked);
   const hasReportedScrollRef = useRef(false);
   const onUserScrollRef = useRef(onUserScroll);
+  const onTimelineScrollRef = useRef(onTimelineScroll);
   const onTimelineYearRef = useRef(onTimelineYear);
   const onTimelineCompleteRef = useRef(onTimelineComplete);
+  /** Focal image index in NOSOTROS_TIMELINE_IMAGES (0 = first frame). */
   const passCountRef = useRef(0);
-  const lastYearIndexRef = useRef(-1);
+  /** Continuous scroll offset along the hallway (one spacing unit = one image). */
+  const timelineScrollRef = useRef(0);
   const hasCompletedTimelineRef = useRef(false);
-  const planePassedRef = useRef<boolean[]>([]);
+  const lastReportedYearIndexRef = useRef<number | undefined>(undefined);
   const timelineXOffsetRef = useRef(timelineXOffset);
-  const initialDepthOffsetRatioRef = useRef(initialDepthOffsetRatio);
+  const hallwayVisibilityRef = useRef(hallwayVisibility);
 
   useEffect(() => {
     timelineXOffsetRef.current = timelineXOffset;
   }, [timelineXOffset]);
 
   useEffect(() => {
-    initialDepthOffsetRatioRef.current = initialDepthOffsetRatio;
-  }, [initialDepthOffsetRatio]);
+    hallwayVisibilityRef.current = hallwayVisibility;
+  }, [hallwayVisibility]);
 
-  const emitYearForPassCount = useCallback((passCount: number) => {
-    if (passCount < TIMELINE_START_PASS_COUNT) {
-      if (lastYearIndexRef.current !== -1) {
-        lastYearIndexRef.current = -1;
-        hasCompletedTimelineRef.current = false;
-        forwardLockedRef.current = false;
-        onTimelineYearRef.current?.(0, -1);
-      }
-      return;
-    }
-    const yearIndex = Math.floor(passCount / 2) - 1;
-    if (
-      yearIndex < 0 ||
-      yearIndex >= NOSOTROS_TIMELINE_YEARS.length ||
-      yearIndex === lastYearIndexRef.current
-    ) {
-      return;
-    }
-    lastYearIndexRef.current = yearIndex;
-    onTimelineYearRef.current?.(
-      NOSOTROS_TIMELINE_YEARS[yearIndex],
-      yearIndex,
-    );
-    if (yearIndex === FINAL_TIMELINE_YEAR_INDEX) {
-      if (!hasCompletedTimelineRef.current) {
-        hasCompletedTimelineRef.current = true;
-        forwardLockedRef.current = true;
-        onTimelineCompleteRef.current?.();
-      }
-    } else {
-      hasCompletedTimelineRef.current = false;
-      forwardLockedRef.current = false;
-    }
-  }, []);
+  const maxTimelineScroll = getMaxTimelineScrollDistance(
+    visibleCount,
+    DEFAULT_DEPTH_RANGE,
+  );
+
+  const isTimelineAtEnd = useCallback(() => {
+    if (hasCompletedTimelineRef.current) return true;
+    return timelineScrollRef.current >= maxTimelineScroll - 0.5;
+  }, [maxTimelineScroll]);
+
+  const tryCompleteTimeline = useCallback((scrollOffset: number) => {
+    if (hasCompletedTimelineRef.current) return;
+    if (scrollOffset < maxTimelineScroll - 0.5) return;
+
+    hasCompletedTimelineRef.current = true;
+    forwardLockedRef.current = true;
+    onTimelineCompleteRef.current?.();
+  }, [maxTimelineScroll]);
 
   const isAtTimelineHardStart = useCallback(
-    () => passCountRef.current === 0,
+    () => timelineScrollRef.current <= 0.001,
     [],
   );
 
@@ -514,45 +657,109 @@ function GalleryScene({
 
   const totalImages = normalizedImages.length;
   const depthRange = DEFAULT_DEPTH_RANGE;
+  const planeSpacing = getTimelinePlaneSpacing(depthRange, visibleCount);
 
-  const buildPlanes = useCallback(
-    (frozen: boolean): PlaneData[] =>
-      Array.from({ length: visibleCount }, (_, i) => ({
-        index: i,
-        z: frozen
-          ? getHeroPlaneZ(i, visibleCount, depthRange)
-          : getInitialPlaneZ(
-              i,
-              visibleCount,
-              depthRange,
-              initialDepthOffsetRatioRef.current,
-            ),
-        imageIndex: totalImages > 0 ? i % totalImages : 0,
-        x: getTimelineX(
-          totalImages > 0 ? i % totalImages : 0,
+  const layoutTimelinePlanes = useCallback(
+    (scrollOffset: number) => {
+      if (totalImages === 0) return 0;
+
+      const focalIndex = getFocalIndexFromScroll(
+        scrollOffset,
+        planeSpacing,
+        MAX_TIMELINE_PASS_COUNT,
+      );
+
+      planesRef.current.forEach((plane) => {
+        plane.z = getPlaneZForImageIndex(
+          plane.imageIndex,
+          scrollOffset,
+          planeSpacing,
+          depthRange,
+        );
+        plane.x = getTimelineX(
+          plane.imageIndex,
           timelineXOffsetRef.current,
-        ),
-        y: TIMELINE_Y,
-      })),
-    [depthRange, totalImages, visibleCount],
+        );
+      });
+
+      return focalIndex;
+    },
+    [depthRange, planeSpacing, totalImages],
   );
 
-  const planesRef = useRef<PlaneData[]>(buildPlanes(true));
+  const applyPassCount = useCallback(
+    (rawPassCount: number) => {
+      const passCount = Math.max(
+        0,
+        Math.min(rawPassCount, MAX_TIMELINE_PASS_COUNT),
+      );
+      passCountRef.current = passCount;
+
+      if (passCount < TIMELINE_INTRO_IMAGE_COUNT) {
+        hasCompletedTimelineRef.current = false;
+        forwardLockedRef.current = false;
+        if (lastReportedYearIndexRef.current !== -1) {
+          lastReportedYearIndexRef.current = -1;
+          onTimelineYearRef.current?.(0, -1);
+        }
+        return;
+      }
+
+      const yearIndex = yearIndexForPassCount(passCount);
+      if (yearIndex === null) {
+        return;
+      }
+
+      if (lastReportedYearIndexRef.current !== yearIndex) {
+        lastReportedYearIndexRef.current = yearIndex;
+        onTimelineYearRef.current?.(
+          NOSOTROS_TIMELINE_YEARS[yearIndex],
+          yearIndex,
+        );
+      }
+
+      if (passCount < MAX_TIMELINE_PASS_COUNT) {
+        hasCompletedTimelineRef.current = false;
+        forwardLockedRef.current = false;
+      }
+    },
+    [],
+  );
+
+  const buildPlanes = useCallback(
+    (): PlaneData[] =>
+      Array.from({ length: totalImages }, (_, imageIndex) => ({
+        imageIndex,
+        z: getPlaneZForImageIndex(imageIndex, 0, planeSpacing, depthRange),
+        x: getTimelineX(imageIndex, timelineXOffsetRef.current),
+        y: TIMELINE_Y,
+      })),
+    [depthRange, planeSpacing, totalImages],
+  );
+
+  const planesRef = useRef<PlaneData[]>(buildPlanes());
 
   const resetTimelineSession = useCallback(() => {
     scrollVelocityRef.current = 0;
+    timelineScrollRef.current = 0;
     hasReportedScrollRef.current = false;
     passCountRef.current = 0;
-    lastYearIndexRef.current = -1;
     hasCompletedTimelineRef.current = false;
+    lastReportedYearIndexRef.current = undefined;
     forwardLockedRef.current = false;
-    planePassedRef.current = Array.from({ length: visibleCount }, () => false);
-    planesRef.current = buildPlanes(!interactiveRef.current);
-  }, [buildPlanes, visibleCount]);
+    planesRef.current = buildPlanes();
+    layoutTimelinePlanes(0);
+    applyPassCount(0);
+    onTimelineScrollRef.current?.(0);
+  }, [applyPassCount, buildPlanes, layoutTimelinePlanes]);
 
   useEffect(() => {
     onUserScrollRef.current = onUserScroll;
   }, [onUserScroll]);
+
+  useEffect(() => {
+    onTimelineScrollRef.current = onTimelineScroll;
+  }, [onTimelineScroll]);
 
   useEffect(() => {
     onTimelineYearRef.current = onTimelineYear;
@@ -568,14 +775,13 @@ function GalleryScene({
 
   useEffect(() => {
     interactiveRef.current = interactive;
+  }, [interactive]);
+
+  useEffect(() => {
     if (!interactive) {
       resetTimelineSession();
-      planesRef.current = buildPlanes(true);
-    } else {
-      planesRef.current = buildPlanes(false);
-      planePassedRef.current = Array.from({ length: visibleCount }, () => false);
     }
-  }, [interactive, buildPlanes, visibleCount, resetTimelineSession]);
+  }, [interactive, resetTimelineSession]);
 
   useEffect(() => {
     if (!interactive || sessionKey === 0) return;
@@ -587,12 +793,14 @@ function GalleryScene({
   useEffect(() => {
     textures.forEach((tex) => {
       tex.colorSpace = THREE.SRGBColorSpace;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
     });
   }, [textures]);
 
   const materials = useMemo(
-    () => Array.from({ length: visibleCount }, () => createClothMaterial()),
-    [visibleCount],
+    () => Array.from({ length: totalImages }, () => createClothMaterial()),
+    [totalImages],
   );
 
   const handleWheel = useCallback(
@@ -601,8 +809,9 @@ function GalleryScene({
       event.preventDefault();
 
       const atHardStart = isAtTimelineHardStart();
+      const atEnd = isTimelineAtEnd();
 
-      if (forwardLockedRef.current && event.deltaY > 0) {
+      if ((forwardLockedRef.current || atEnd) && event.deltaY > 0) {
         scrollVelocityRef.current = Math.min(scrollVelocityRef.current, 0);
         return;
       }
@@ -622,7 +831,7 @@ function GalleryScene({
         onUserScrollRef.current?.();
       }
     },
-    [speed, isAtTimelineHardStart],
+    [speed, isAtTimelineHardStart, isTimelineAtEnd],
   );
 
   useEffect(() => {
@@ -638,9 +847,17 @@ function GalleryScene({
     const isInteractive = interactiveRef.current;
     const time = state.clock.getElapsedTime();
 
-    scrollVelocityRef.current *= isInteractive ? 0.92 : 0;
+    if (isInteractive && Math.abs(scrollVelocityRef.current) < SCROLL_IDLE_VELOCITY) {
+      scrollVelocityRef.current = 0;
+    } else if (isInteractive) {
+      scrollVelocityRef.current *= 0.9;
+    } else {
+      scrollVelocityRef.current = 0;
+    }
 
-    if (forwardLockedRef.current && scrollVelocityRef.current > 0) {
+    const atEnd = isTimelineAtEnd();
+
+    if ((forwardLockedRef.current || atEnd) && scrollVelocityRef.current > 0) {
       scrollVelocityRef.current = 0;
     }
 
@@ -652,127 +869,124 @@ function GalleryScene({
     }
 
     const scrollVelocity = scrollVelocityRef.current;
-    let passCountDelta = 0;
+    const scrollIdle = scrollVelocity === 0;
 
     materials.forEach((mat) => {
       if (mat?.uniforms) {
         mat.uniforms.time.value = time;
-        mat.uniforms.scrollForce.value = scrollVelocity;
+        mat.uniforms.scrollForce.value = scrollIdle ? 0 : -scrollVelocity;
       }
     });
+
+    if (isInteractive && totalImages > 0) {
+      const prevScroll = timelineScrollRef.current;
+      let nextScroll = scrollIdle
+        ? prevScroll
+        : prevScroll + scrollVelocity * delta * 12;
+
+      if (atEnd || forwardLockedRef.current) {
+        nextScroll = Math.min(nextScroll, maxTimelineScroll);
+      }
+      if (isAtTimelineHardStart() || backwardLockedRef.current) {
+        nextScroll = Math.max(nextScroll, 0);
+      }
+
+      nextScroll = THREE.MathUtils.clamp(nextScroll, 0, maxTimelineScroll);
+      timelineScrollRef.current = nextScroll;
+
+      onTimelineScrollRef.current?.(timelineScrollRef.current);
+
+      layoutTimelinePlanes(timelineScrollRef.current);
+
+      const scrollFocal = getFocalIndexFromScroll(
+        timelineScrollRef.current,
+        planeSpacing,
+        MAX_TIMELINE_PASS_COUNT,
+      );
+
+      if (scrollFocal !== passCountRef.current) {
+        applyPassCount(scrollFocal);
+      }
+
+      tryCompleteTimeline(timelineScrollRef.current);
+    } else if (!isInteractive) {
+      layoutTimelinePlanes(0);
+      onTimelineScrollRef.current?.(0);
+    }
+
+    let dominantImageIndex = getFocalIndexFromScroll(
+      timelineScrollRef.current,
+      planeSpacing,
+      MAX_TIMELINE_PASS_COUNT,
+    );
+    let bestCloseness = -1;
+    const visibility = hallwayVisibilityRef.current;
+    planesRef.current.forEach((plane) => {
+      const relative = getHallwayRelative(
+        plane.imageIndex,
+        timelineScrollRef.current,
+        planeSpacing,
+      );
+      if (!isImageInHallway(relative, visibility)) return;
+      const closeness = getPlaneCloseness(plane.z, depthRange);
+      if (closeness > bestCloseness) {
+        bestCloseness = closeness;
+        dominantImageIndex = plane.imageIndex;
+      }
+    });
+
+    const scrollProgress = timelineScrollRef.current / planeSpacing;
 
     planesRef.current.forEach((plane) => {
-      if (isInteractive) {
-        const prevZ = plane.z;
-        let newZ = plane.z + scrollVelocity * delta * 12;
-        let wrapsForward = 0;
-
-        if (newZ >= depthRange) {
-          wrapsForward = Math.floor(newZ / depthRange);
-          newZ -= depthRange * wrapsForward;
-          if (totalImages > 0) {
-            plane.imageIndex = (plane.imageIndex + wrapsForward) % totalImages;
-          }
-          planePassedRef.current[plane.index] = false;
-        } else if (newZ < 0) {
-          if (isAtTimelineHardStart()) {
-            newZ = 0;
-          } else {
-            const wraps = Math.ceil(-newZ / depthRange);
-            newZ += depthRange * wraps;
-            if (totalImages > 0) {
-              plane.imageIndex =
-                ((plane.imageIndex - wraps) % totalImages + totalImages) %
-                totalImages;
-            }
-            planePassedRef.current[plane.index] = false;
-          }
-        }
-
-        plane.z = ((newZ % depthRange) + depthRange) % depthRange;
-
-        const prevT = prevZ / depthRange;
-        const t = plane.z / depthRange;
-        const wasPast = planePassedRef.current[plane.index] ?? false;
-        const crossedForward =
-          !forwardLockedRef.current &&
-          !wasPast &&
-          prevT < PASS_FORWARD_THRESHOLD &&
-          t >= PASS_FORWARD_THRESHOLD;
-        const crossedBackward =
-          wasPast &&
-          prevT > PASS_FORWARD_THRESHOLD &&
-          t <= PASS_BACKWARD_THRESHOLD;
-
-        if (crossedForward) {
-          planePassedRef.current[plane.index] = true;
-          if (passCountDelta < 1) {
-            passCountDelta = 1;
-          }
-        }
-
-        if (crossedBackward) {
-          planePassedRef.current[plane.index] = false;
-          if (passCountDelta > -1) {
-            passCountDelta = -1;
-          }
-        }
-      }
-
-      plane.x = getTimelineX(plane.imageIndex, timelineXOffsetRef.current);
       plane.y = TIMELINE_Y;
 
-      const t = plane.z / depthRange;
-      const opacity = isInteractive ? computeOpacity(t, fadeSettings) : 1;
-      const blur = isInteractive ? computeBlur(t, blurSettings) : 0;
+      const relative = scrollProgress - plane.imageIndex;
+      const inHallway = isImageInHallway(relative, visibility);
+      const isDominantFrame = plane.imageIndex === dominantImageIndex;
+      const inPreCameraFade =
+        visibility.fadeOutStart !== undefined &&
+        relative >= visibility.fadeOutStart;
 
-      const mat = materials[plane.index];
+      if (!inHallway) {
+        const mat = materials[plane.imageIndex];
+        if (mat?.uniforms) {
+          mat.uniforms.opacity.value = 0;
+        }
+        return;
+      }
+
+      const baseOpacity = computeHallwayOpacity(relative, visibility);
+      let opacity = baseOpacity;
+
+      if (isDominantFrame && !inPreCameraFade) {
+        opacity = Math.max(opacity, 1);
+      }
+
+      const mat = materials[plane.imageIndex];
       if (mat?.uniforms) {
         mat.uniforms.opacity.value = opacity;
-        mat.uniforms.blurAmount.value = blur;
       }
     });
-
-    if (passCountDelta > 0 && passCountRef.current < MAX_TIMELINE_PASS_COUNT) {
-      passCountRef.current += 1;
-      emitYearForPassCount(passCountRef.current);
-    } else if (passCountDelta < 0 && passCountRef.current > 0) {
-      passCountRef.current -= 1;
-      emitYearForPassCount(passCountRef.current);
-    }
   });
 
   if (normalizedImages.length === 0) return null;
 
   return (
     <>
-      {Array.from({ length: visibleCount }, (_, i) => {
-        const plane = planesRef.current[i];
-        const material = materials[i];
-        const texture = textures[plane?.imageIndex ?? i % totalImages];
-        if (!plane || !material || !texture) return null;
-
-        const image = texture.image as HTMLImageElement | undefined;
-        const aspect =
-          image?.width && image.height ? image.width / image.height : 1;
-        const initialScale: [number, number, number] =
-          aspect > 1 ? [2 * aspect, 2, 1] : [2, 2 / aspect, 1];
-
-        if (material.uniforms.map.value !== texture) {
-          material.uniforms.map.value = texture;
-        }
+      {normalizedImages.map((_, imageIndex) => {
+        const material = materials[imageIndex];
+        const texture = textures[imageIndex];
+        if (!material || !texture) return null;
 
         return (
           <ImagePlane
-            key={plane.index}
-            planeIndex={i}
-            textures={textures}
+            key={`timeline-image-${imageIndex}`}
+            imageIndex={imageIndex}
+            texture={texture}
             material={material}
             planesRef={planesRef}
             depthRange={depthRange}
-            initialScale={initialScale}
             allowHover={interactive}
-            interactiveRef={interactiveRef}
           />
         );
       })}
@@ -812,6 +1026,7 @@ export default function InfiniteGallery({
   forwardScrollLocked = false,
   backwardScrollLocked = false,
   onUserScroll,
+  onTimelineScroll,
   onTimelineYear,
   onTimelineComplete,
   passThreshold = DEFAULT_PASS_THRESHOLD,
@@ -829,6 +1044,7 @@ export default function InfiniteGallery({
     fadeSettings: layoutFadeSettings,
     blurSettings: layoutBlurSettings,
     initialDepthOffsetRatio,
+    hallwayVisibility,
   } = useContainerTimelineLayout(containerRef);
   const resolvedFadeSettings = fadeSettings ?? layoutFadeSettings;
   const resolvedBlurSettings = blurSettings ?? layoutBlurSettings;
@@ -861,7 +1077,13 @@ export default function InfiniteGallery({
     >
       <Canvas
         camera={{ position: [0, 0, 0], fov: cameraFov }}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+        gl={{
+          antialias: true,
+          alpha: true,
+          powerPreference: "high-performance",
+          toneMapping: THREE.NoToneMapping,
+          outputColorSpace: THREE.SRGBColorSpace,
+        }}
         dpr={[1, 1.75]}
         style={{ background: "transparent" }}
       >
@@ -875,6 +1097,7 @@ export default function InfiniteGallery({
             forwardScrollLocked={forwardScrollLocked}
             backwardScrollLocked={backwardScrollLocked}
             onUserScroll={onUserScroll}
+            onTimelineScroll={onTimelineScroll}
             onTimelineYear={onTimelineYear}
             onTimelineComplete={onTimelineComplete}
             passThreshold={passThreshold}
@@ -884,6 +1107,7 @@ export default function InfiniteGallery({
             sessionKey={sessionKey}
             fadeSettings={resolvedFadeSettings}
             blurSettings={resolvedBlurSettings}
+            hallwayVisibility={hallwayVisibility}
           />
         </Suspense>
       </Canvas>

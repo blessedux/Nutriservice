@@ -50,6 +50,9 @@ export const PUBLIC_ASSETS = {
   },
   shared: {
     workersHero: "/assets/shared/workers-hero.webp",
+    pellet2: "/assets/shared/pellet2.webp",
+    powder3: "/assets/shared/powder3.webp",
+    macrogard: "/assets/shared/macrogardbioorigin.webp",
   },
   maquilaSection: {
     tabFormulacionHero: "/assets/maquila-section/tab-formulacion-hero.png",
@@ -79,6 +82,33 @@ export const PUBLIC_ASSETS = {
   },
   homeBlueBand: {
     oceanFloor: "/assets/home-blue-band/ocean-floor.webm",
+  },
+  nosotros: {
+    fernandoGirones: "/assets/nosotros/FernandoGirones.webp",
+    gonzaloMarambio: "/assets/nosotros/GonzaloMarambio.webp",
+    rubenCerda: "/assets/nosotros/RubenCerda.webp",
+    manuelAbalo: "/assets/nosotros/ManuelAbalo.webp",
+  },
+  timeline: {
+    background: "/assets/timeline/Timeline_bg.webp",
+    y1993A: "/assets/timeline/1993ImgA.webp",
+    y1993B: "/assets/timeline/1993imgB.webp",
+    y1995A: "/assets/timeline/1995ImgA.webp",
+    y1995B: "/assets/timeline/1995imgB.webp",
+    y1999A: "/assets/timeline/1999ImgA.webp",
+    y1999B: "/assets/timeline/1999ImgB.webp",
+    y2003A: "/assets/timeline/2003ImgA.webp",
+    y2003B: "/assets/timeline/2003imgB.webp",
+    y2005A: "/assets/timeline/2005imgA.webp",
+    y2005B: "/assets/timeline/2005imgB.webp",
+    y2009A: "/assets/timeline/2009imgA.webp",
+    y2009B: "/assets/timeline/2009imgB.webp",
+    y2015A: "/assets/timeline/2015imgA.webp",
+    y2015B: "/assets/timeline/2015imgB.webp",
+    y2019A: "/assets/timeline/2019imgA.webp",
+    y2019B: "/assets/timeline/2019imgB.webp",
+    y2024A: "/assets/timeline/2024imgA.webp",
+    y2026B: "/assets/timeline/2026imgB.webp",
   },
 } as const;
 
