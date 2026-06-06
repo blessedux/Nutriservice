@@ -72,6 +72,17 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     },
   },
   {
+    slug: "palaup-ch",
+    name: "PalaUp CH",
+    altName: "PALAUP CH",
+    summary: "Palatante natural para alimento de perros y gatos.",
+    description:
+      "Extracto de levadura que intensifica el sabor Umami y aporta notas específicas como carne y pollo asado, mejorando la palatabilidad y aceptación del alimento para mascotas.",
+    tags: ["Palatabilidad", "Mascotas"],
+    filterSlugs: [],
+    divisionSlugs: ["mascotas"],
+  },
+  {
     slug: "nucleoforce-salmonids",
     name: "Nucleoforce Salmonids",
     altName: "NUCLEOFORCE SALMONIDS",
