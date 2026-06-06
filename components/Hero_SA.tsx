@@ -1825,17 +1825,6 @@ export default function HeroSA() {
         </div>
       </div>
 
-      <HeroCtaBar
-        variant="inline"
-        tone="on-dark"
-        heroRevealReady={heroRevealReady}
-        heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-        primaryHref="/productos"
-        primaryLabel="Ver catálogo"
-        showSecondary={false}
-        className="absolute bottom-[calc(32dvh+1.5rem)] left-1/2 z-30 mb-2 w-[min(100%-3rem,20rem)] -translate-x-1/2 sm:w-[min(100%-5rem,28rem)] lg:bottom-[18dvh] lg:left-12 lg:w-auto lg:max-w-xl lg:translate-x-0"
-      />
-
       <a
         href="#certificaciones"
         aria-label="Desplazarse hacia abajo"
@@ -1859,9 +1848,35 @@ export default function HeroSA() {
 }
 
 function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
+  const isMobile = useMobileExperience();
+  const reduceMotion = useReducedMotion() ?? false;
+  const [mobileCardExpanded, setMobileCardExpanded] = useState(false);
+  const headlineCollapseRef = useRef<HTMLDivElement>(null);
+  const [headlineCollapsePx, setHeadlineCollapsePx] = useState(0);
+
+  useEffect(() => {
+    const node = headlineCollapseRef.current;
+    if (!node) return;
+
+    const measure = () => {
+      if (node.offsetHeight > 0) {
+        setHeadlineCollapsePx(node.offsetHeight);
+      }
+    };
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile) setMobileCardExpanded(false);
+  }, [isMobile]);
+
   return (
-    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col justify-start overflow-visible pb-2 pt-1 sm:pb-8 lg:justify-center">
-      <div className="max-w-xl shrink-0 overflow-visible lg:max-w-2xl xl:max-w-3xl">
+    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col gap-2 overflow-visible pb-2 pt-1 sm:gap-6 sm:pb-8 lg:grid lg:flex-none lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,352px)] lg:grid-rows-[auto_auto] lg:items-start lg:gap-x-14 lg:gap-y-5 lg:justify-center xl:gap-x-16">
+      <div className="order-1 max-w-xl shrink-0 overflow-visible lg:col-start-1 lg:row-start-1 lg:max-w-lg xl:max-w-xl">
         <div className="hero-tag-lr relative z-30 mb-3.5 flex items-center gap-4 sm:mb-6">
           <span className="h-px w-10 shrink-0 bg-blue-600" aria-hidden />
           <p className="max-w-xl text-[10px] font-bold uppercase leading-snug tracking-[0.22em] text-white sm:max-w-2xl sm:tracking-[0.28em]">
@@ -1869,29 +1884,74 @@ function HeroPrimaryContent({ heroRevealReady }: { heroRevealReady: boolean }) {
           </p>
         </div>
 
-        <h1 className="max-w-xl text-balance text-[2rem] font-light leading-[0.98] tracking-[-0.05em] text-white sm:text-5xl sm:leading-[0.96] lg:text-6xl xl:text-7xl">
-          <HeroHeadLine delayMs={140}>Inteligencia Nutricional</HeroHeadLine>
-          <HeroHeadLine delayMs={240}>Industrial</HeroHeadLine>
-        </h1>
+        <motion.div
+          ref={headlineCollapseRef}
+          className={cn(
+            "relative z-0 overflow-visible",
+            isMobile && mobileCardExpanded && "pointer-events-none",
+          )}
+          initial={false}
+          animate={
+            isMobile && mobileCardExpanded
+              ? {
+                  filter: reduceMotion ? "blur(0px)" : "blur(11px)",
+                  opacity: 0.68,
+                }
+              : {
+                  filter: "blur(0px)",
+                  opacity: 1,
+                }
+          }
+          transition={
+            reduceMotion ? { duration: 0 } : AQUA_HERO_HOVER_LAYOUT_TRANSITION
+          }
+        >
+          <h1 className="max-w-xl text-balance text-[2rem] font-light leading-[0.98] tracking-[-0.05em] text-white sm:text-5xl sm:leading-[0.96] lg:text-6xl xl:text-7xl">
+            <HeroHeadLine delayMs={140}>Inteligencia Nutricional</HeroHeadLine>
+            <HeroHeadLine delayMs={240}>Industrial</HeroHeadLine>
+          </h1>
 
-        <div className="mt-4 max-w-lg text-sm leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
-          <span className="lg:hidden">
-            <HeroHeadLine delayMs={340}>
-              Soluciones funcionales para una
-            </HeroHeadLine>
-            <HeroHeadLine delayMs={440}>
-              alimentación y producción responsables
-            </HeroHeadLine>
-          </span>
-          <span className="hidden lg:inline">
-            <HeroHeadLine delayMs={340}>
-              Soluciones funcionales para una alimentación y
-            </HeroHeadLine>
-            <HeroHeadLine delayMs={440}>
-              producción responsables
-            </HeroHeadLine>
-          </span>
-        </div>
+          <div className="mt-4 max-w-lg text-sm leading-relaxed text-white/82 sm:mt-7 sm:text-lg sm:leading-8 lg:leading-9">
+            <span className="lg:hidden">
+              <HeroHeadLine delayMs={340}>
+                Soluciones funcionales para una
+              </HeroHeadLine>
+              <HeroHeadLine delayMs={440}>
+                alimentación y producción responsables
+              </HeroHeadLine>
+            </span>
+            <span className="hidden lg:inline">
+              <HeroHeadLine delayMs={340}>
+                Soluciones funcionales para una alimentación y
+              </HeroHeadLine>
+              <HeroHeadLine delayMs={440}>
+                producción responsables
+              </HeroHeadLine>
+            </span>
+          </div>
+        </motion.div>
+      </div>
+
+      <div className="relative z-20 order-2 flex w-full shrink-0 justify-start overflow-visible lg:col-start-2 lg:row-start-1 lg:justify-end lg:pt-[calc(1.5rem+0.625rem)]">
+        <AquaHeroSideCard
+          heroRevealReady={heroRevealReady}
+          mobileExpanded={mobileCardExpanded}
+          onMobileExpandedChange={setMobileCardExpanded}
+          headlineCollapsePx={headlineCollapsePx}
+        />
+      </div>
+
+      <div className="relative z-40 order-3 flex w-full max-w-[300px] shrink-0 justify-start lg:col-start-2 lg:row-start-2 lg:ml-auto lg:max-w-[336px] lg:justify-end">
+        <HeroCtaBar
+          variant="inline"
+          tone="on-dark"
+          heroRevealReady={heroRevealReady}
+          heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
+          primaryHref="/productos"
+          primaryLabel="Ver catálogo"
+          showSecondary={false}
+          className="relative z-40 w-full !mt-0 max-lg:[&>div]:pointer-events-auto"
+        />
       </div>
     </div>
   );

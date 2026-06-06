@@ -125,7 +125,7 @@ export default function HeroCtaBar({
           !isStackedInline && "sm:flex-row sm:items-center sm:gap-4",
           variant === "strip"
             ? "ml-auto mr-0 mb-6 max-w-4xl items-end justify-end sm:mb-8"
-            : "w-full items-center justify-center lg:max-w-xl lg:items-stretch lg:justify-start",
+            : "w-full items-stretch justify-start",
           reducedMotion && "!transition-none",
           ctaVisible
             ? "translate-y-0 opacity-100"
