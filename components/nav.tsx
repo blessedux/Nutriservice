@@ -204,11 +204,16 @@ function NavInner() {
     pathname === "/contacto" || pathname.startsWith("/contacto/");
   const onNosotros =
     pathname === "/nosotros" || pathname.startsWith("/nosotros/");
+  const onMaquila =
+    pathname === "/soluciones/maquila" ||
+    pathname.startsWith("/soluciones/maquila/");
   const onDarkNav =
-    onHome || onVideoIndustryNav || onProductDarkNav || onNosotros;
+    onHome || onVideoIndustryNav || onProductDarkNav || onNosotros || onMaquila;
   const onLightBlueNav = onContacto;
   const onWhiteNavText = onDarkNav || onLightBlueNav;
   const onTransparentDarkNav = onVideoIndustryNav || onProductDarkNav;
+  const onAlwaysTransparentNav =
+    onTransparentDarkNav || onNosotros || onMaquila;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -254,7 +259,7 @@ function NavInner() {
           ? "border-b border-white/15 bg-[#A8C8D6]"
           : "border-b border-white/10 bg-slate-950"
         : "border-b border-[rgba(10,25,47,0.08)] bg-white"
-      : onTransparentDarkNav
+      : onAlwaysTransparentNav
         ? "border-b border-white/10 bg-transparent"
         : onLightBlueNav
           ? "border-b border-[rgba(10,25,47,0.08)] bg-transparent"

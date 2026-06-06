@@ -19,7 +19,7 @@ const COMPANIA_LINKS = [
 const LEGAL_LINKS = [
   { href: "/legal/terminos", label: "Protocolos" },
   { href: "/legal/privacidad", label: "Privacidad" },
-  { href: "/productos", label: "Certificaciones" },
+  { href: "/#estadisticas", label: "Certificaciones" },
 ];
 
 function SocialIconLinkedIn({ className }: { className?: string }) {
@@ -91,7 +91,7 @@ export default function Footer() {
         }}
       />
 
-      <div className="relative mx-auto flex min-h-full max-w-[1280px] flex-col px-6 py-16 md:px-12 md:py-24 lg:min-h-150 lg:py-32">
+      <div className="relative mx-auto flex min-h-full max-w-[1280px] flex-col px-6 pt-16 pb-10 md:px-12 md:pt-24 md:pb-12 lg:min-h-150 lg:pt-32 lg:pb-14">
         <div className="grid flex-1 grid-cols-1 gap-8 border-b border-white/[0.05] pb-12 lg:grid-cols-12 lg:items-start lg:gap-x-10 lg:gap-y-16 lg:pb-24">
           {/* Brand */}
           <div className="flex flex-col gap-6 lg:col-span-4">
@@ -182,7 +182,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-8 lg:pt-12">
+        <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3 pt-8 lg:pt-12">
           <nav
             className="flex flex-wrap gap-x-6 gap-y-2 sm:gap-x-10 md:gap-x-12"
             aria-label="Legal"
@@ -197,9 +197,19 @@ export default function Footer() {
               </Link>
             ))}
           </nav>
-          <p className="shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-white sm:tracking-[0.28em]">
-            © {year} Nutriservice SPA • V 1.1
-          </p>
+          <div className="flex flex-col items-end gap-1.5">
+            <p className="shrink-0 text-[9px] font-bold uppercase tracking-[0.2em] text-white sm:tracking-[0.28em]">
+              © {year} Nutriservice SPA • V 1.1
+            </p>
+            <a
+              href="https://mentemaestra.studio"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-white/75 sm:tracking-[0.28em]"
+            >
+              MenteMaestra Studio
+            </a>
+          </div>
         </div>
       </div>
     </footer>
