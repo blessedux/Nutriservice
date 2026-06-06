@@ -10,8 +10,10 @@ import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
 type TimelineCssFallbackProps = {
-  /** Whether the user has clicked "Ver nuestra historia" */
+  /** Internal timeline scroll is active (section centered + user started). */
   active: boolean;
+  /** User clicked begin but section may still be snapping to center. */
+  engaged?: boolean;
   onBegin: () => void;
   className?: string;
 };
@@ -22,6 +24,7 @@ type TimelineCssFallbackProps = {
  */
 export default function TimelineCssFallback({
   active,
+  engaged = false,
   onBegin,
   className,
 }: TimelineCssFallbackProps) {
@@ -148,7 +151,7 @@ export default function TimelineCssFallback({
 
       {/* CTA / hint */}
       <div className="absolute inset-x-0 bottom-0 z-30 flex flex-col items-center gap-3 px-4 pb-8 pt-6 text-center">
-        {!active ? (
+        {!active && !engaged ? (
           <button
             type="button"
             onClick={onBegin}
@@ -156,6 +159,10 @@ export default function TimelineCssFallback({
           >
             Ver nuestra historia
           </button>
+        ) : engaged && !active ? (
+          <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">
+            Desplázate para centrar la línea de tiempo
+          </p>
         ) : (
           currentSlideIndex === 0 && (
             <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80">
@@ -166,7 +173,7 @@ export default function TimelineCssFallback({
       </div>
 
       {/* Intro overlay text (visible before CTA) */}
-      {!active && (
+      {!active && !engaged && (
         <div className="pointer-events-none absolute inset-0 z-10 flex flex-col items-center max-sm:pb-[7.75rem] sm:justify-center">
           <div className="flex flex-col items-center max-sm:flex-1 max-sm:justify-center">
             <p className="text-xs font-semibold uppercase tracking-[0.35em] text-ns-emerald">

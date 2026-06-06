@@ -61,15 +61,6 @@ const CARD_META: Record<string, CardMeta> = {
 
 const DEFAULT_CARD_ACCENT = "rgba(6, 182, 212, 0.14)";
 
-/** Landscape acuícola art — height-fill + translate pans inside the clipped card. */
-const ACUICOLA_CARD_IMAGE = {
-  width: 1535,
-  height: 1024,
-  /** Positive translateX shifts the visible crop left inside the portrait frame. */
-  panX: "34%",
-  focalY: "-6%",
-} as const;
-
 const UNIQUE_INDUSTRIES = industryList.filter((ind) => CARD_META[ind.slug]);
 
 /** One slot per industry — no repeats, always cycles the four options */
@@ -179,7 +170,6 @@ function IndustryCard({
   const meta = CARD_META[ind.slug]!;
   const title = meta.title ?? ind.name;
   const isDog = ind.slug === "mascotas";
-  const isAcuicola = ind.slug === "acuicola";
 
   return (
     <Link
@@ -204,22 +194,6 @@ function IndustryCard({
             sizes="(max-width: 768px) 58vw, 295px"
             priority={priority}
           />
-        ) : isAcuicola ? (
-          <Image
-            key={meta.image}
-            src={meta.image}
-            alt=""
-            width={ACUICOLA_CARD_IMAGE.width}
-            height={ACUICOLA_CARD_IMAGE.height}
-            unoptimized
-            className="absolute left-0 h-full w-auto max-w-none"
-            style={{
-              top: ACUICOLA_CARD_IMAGE.focalY,
-              transform: `translateX(${ACUICOLA_CARD_IMAGE.panX})`,
-            }}
-            sizes="(max-width: 768px) 58vw, 295px"
-            priority={priority}
-          />
         ) : (
           <Image
             key={meta.image}
@@ -227,7 +201,10 @@ function IndustryCard({
             alt=""
             fill
             unoptimized
-            className="object-cover object-[center_25%]"
+            className={cn(
+              "object-cover",
+              ind.slug === "acuicola" ? "object-[60%_center]" : "object-[center_25%]",
+            )}
             sizes="(max-width: 768px) 58vw, 295px"
             priority={priority}
           />

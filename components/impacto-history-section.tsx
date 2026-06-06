@@ -24,6 +24,12 @@ import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 import { cn } from "@/lib/utils";
 import TimelineCssFallback from "@/components/timeline-css-fallback";
+import {
+  measureSectionCentered,
+  useNosotrosTimelineScrollSnap,
+  useSectionViewportCenter,
+  waitForSectionCentered,
+} from "@/hooks/use-section-viewport-center";
 
 const TIMELINE_VISIBLE_COUNT = 8;
 const titleIntroFadeScrollDistance = getTitleIntroFadeScrollDistance(
@@ -62,6 +68,11 @@ export default function ImpactoHistorySection({
   const titleOverlayOpacity = useMotionValue(1);
   const lastTitleOpacityRef = useRef(1);
   const scrollOffsetRef = useRef(0);
+  const { isCentered, snapToCenter } = useSectionViewportCenter(sectionRef);
+
+  useNosotrosTimelineScrollSnap(true);
+
+  const timelineScrollReady = isActive && isCentered;
 
   // Detect device tier once after hydration.
   useEffect(() => {
@@ -154,8 +165,15 @@ export default function ImpactoHistorySection({
     [],
   );
 
-  const beginTimeline = useCallback(() => {
+  const beginTimeline = useCallback(async () => {
     setGalleryMounted(true);
+
+    const section = sectionRef.current;
+    if (section && !measureSectionCentered(section)) {
+      snapToCenter("smooth");
+      await waitForSectionCentered(section);
+    }
+
     setIsActive(true);
     setTimelineYear(null);
     setAtTimelineStart(true);
@@ -163,7 +181,7 @@ export default function ImpactoHistorySection({
     scrollOffsetRef.current = 0;
     lastTitleOpacityRef.current = 0;
     titleOverlayOpacity.set(0);
-  }, [titleOverlayOpacity]);
+  }, [snapToCenter, titleOverlayOpacity]);
 
   const handleTimelineComplete = useCallback(() => {
     setAtTimelineEnd(true);
@@ -190,7 +208,10 @@ export default function ImpactoHistorySection({
   const showTitleOverlay = !isActive || atTimelineEnd;
   const showYear = isActive && timelineYear !== null;
   const showScrollHint =
-    isActive && (atTimelineStart || atTimelineEnd);
+    isActive &&
+    (timelineScrollReady
+      ? atTimelineStart || atTimelineEnd
+      : !isCentered || atTimelineStart || atTimelineEnd);
   const activeMilestone =
     timelineYear !== null ? getTimelineMilestone(timelineYear) : undefined;
   const finaleMilestone = getTimelineMilestone(TIMELINE_FINALE_YEAR);
@@ -206,7 +227,7 @@ export default function ImpactoHistorySection({
     <section
       ref={sectionRef}
       className={cn(
-        "px-4 py-4 sm:px-6 sm:py-6 lg:px-8",
+        "scroll-mt-28 scroll-snap-align-center scroll-snap-stop-always px-4 py-4 sm:px-6 sm:py-6 lg:px-8",
         className,
       )}
       aria-labelledby="nosotros-historia-heading"
@@ -216,7 +237,8 @@ export default function ImpactoHistorySection({
         {/* ── CSS fallback path ─────────────────────────────────────────────── */}
         {useCssFallback && (
           <TimelineCssFallback
-            active={isActive}
+            active={timelineScrollReady}
+            engaged={isActive}
             onBegin={beginTimeline}
             className="absolute inset-0 z-[1]"
           />
@@ -241,7 +263,7 @@ export default function ImpactoHistorySection({
                 images={NOSOTROS_TIMELINE_IMAGES}
                 speed={1.2}
                 visibleCount={TIMELINE_VISIBLE_COUNT}
-                interactive={isActive}
+                interactive={timelineScrollReady}
                 sessionKey={gallerySessionKey}
                 forwardScrollLocked={atTimelineEnd}
                 onTimelineScroll={handleTimelineScroll}
@@ -407,9 +429,11 @@ export default function ImpactoHistorySection({
                       transition={{ duration: 0.35 }}
                       className="relative text-[11px] font-semibold uppercase tracking-[0.14em] text-white/80"
                     >
-                      {atTimelineStart
-                        ? "Desplázate para comenzar la línea de tiempo"
-                        : "Desplázate para explorar historia"}
+                      {!isCentered
+                        ? "Desplázate para centrar la línea de tiempo"
+                        : atTimelineStart
+                          ? "Desplázate para comenzar la línea de tiempo"
+                          : "Desplázate para explorar historia"}
                     </motion.p>
                   )
                 )}
