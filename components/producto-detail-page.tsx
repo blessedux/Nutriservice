@@ -19,6 +19,7 @@ import {
   type DivisionMedia,
 } from "@/lib/productos-division-media";
 import {
+  getProductoImageObjectPosition,
   getProductoImagePath,
   getProductoManufacturer,
   getProductoSummary,
@@ -175,6 +176,7 @@ export default function ProductoDetailPageView({
                   alt={`${producto.name} — ${producto.altName}`}
                   productName={producto.name}
                   tone={media.tone}
+                  objectPosition={getProductoImageObjectPosition(manufacturer)}
                 />
               </div>
 

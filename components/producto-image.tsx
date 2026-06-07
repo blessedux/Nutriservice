@@ -11,6 +11,7 @@ type ProductoImageProps = {
   productName: string;
   tone?: "on-dark" | "on-light";
   className?: string;
+  objectPosition?: string;
 };
 
 export function ProductoImage({
@@ -19,6 +20,7 @@ export function ProductoImage({
   productName,
   tone = "on-dark",
   className,
+  objectPosition = "center center",
 }: ProductoImageProps) {
   const [failed, setFailed] = useState(false);
   const onDark = tone === "on-dark";
@@ -69,7 +71,8 @@ export function ProductoImage({
         alt={alt}
         fill
         sizes="(max-width: 1024px) 100vw, 280px"
-        className="object-cover object-center"
+        className="object-cover"
+        style={{ objectPosition }}
         onError={() => setFailed(true)}
       />
     </div>

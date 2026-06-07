@@ -2,9 +2,9 @@ import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 import { divisionHasVideo } from "@/lib/productos-division-media";
 import { getProductoManufacturer } from "@/lib/productos-manufacturers";
 import { getProductoStockImagePath } from "@/lib/productos-images";
-import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 export { getProductoManufacturer } from "@/lib/productos-manufacturers";
+export { getProductoImageObjectPosition } from "@/lib/productos-images";
 
 export type Producto = {
   slug: string;
@@ -54,7 +54,6 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
       mascotas:
         "Extracto de levaduras rico en betaglucanos. Inmunomodulador que ayuda a combatir enfermedades en etapas de estrés.",
     },
-    imageSrc: PUBLIC_ASSETS.shared.macrogard,
   },
   {
     slug: "silimarina",

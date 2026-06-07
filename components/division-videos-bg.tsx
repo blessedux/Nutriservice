@@ -123,6 +123,7 @@ export default function DivisionVideosBg({
             }}
             className={cn(
               "absolute inset-0 h-full w-full object-cover motion-reduce:opacity-0",
+              slug === "mascotas" && "max-lg:object-[30%_center]",
               reduceMotion
                 ? isActive
                   ? "opacity-100"
@@ -154,6 +155,13 @@ export default function DivisionVideosBg({
         className={cn(
           "absolute inset-0 bg-slate-950/50 transition-opacity ease-out",
           showVideos ? "opacity-100" : "opacity-0",
+        )}
+        style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
+      />
+      <div
+        className={cn(
+          "absolute inset-0 bg-slate-950/25 transition-opacity ease-out",
+          showVideos && activeSlug === "aves" ? "opacity-100" : "opacity-0",
         )}
         style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
       />

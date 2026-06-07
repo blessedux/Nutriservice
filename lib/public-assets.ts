@@ -53,6 +53,9 @@ export const PUBLIC_ASSETS = {
     pellet2: "/assets/shared/pellet2.webp",
     powder3: "/assets/shared/powder3.webp",
     macrogard: "/assets/shared/macrogardbioorigin.webp",
+    bioOriginPowder: "/assets/shared/bio_origin_powder.webp",
+    bioibericaPowder: "/assets/shared/bioiberica_poweder.webp",
+    nusciencePellet: "/assets/shared/nuscience_pellet.webp",
   },
   maquilaSection: {
     tabFormulacionHero: "/assets/maquila-section/tab-formulacion-hero.png",
