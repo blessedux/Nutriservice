@@ -162,6 +162,16 @@ export function SoundWaveToggle({
     setIsMuted(next);
   }, []);
 
+  const pausePlayback = useCallback(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    killFade(fadeRefs);
+    isFadingRef.current = false;
+    audio.volume = 0;
+    paramsRef.current.amplitude = 0;
+    void audio.pause();
+  }, [fadeRefs]);
+
   const fadeToMute = useCallback(() => {
     const audio = audioRef.current;
     const params = paramsRef.current;
@@ -181,6 +191,7 @@ export function SoundWaveToggle({
       easeOutQuad,
       () => {
         isFadingRef.current = false;
+        void audioRef.current?.pause();
       },
     );
   }, [fadeRefs, setMuted]);
@@ -223,13 +234,17 @@ export function SoundWaveToggle({
   }, [fadeRefs, setMuted]);
 
   const toggleMute = useCallback(() => {
-    if (!audioRef.current || isFadingRef.current) return;
+    if (!audioRef.current) return;
+    if (isFadingRef.current) {
+      killFade(fadeRefs);
+      isFadingRef.current = false;
+    }
     if (isMutedRef.current) {
       fadeToUnmute();
     } else {
       fadeToMute();
     }
-  }, [fadeToMute, fadeToUnmute]);
+  }, [fadeRefs, fadeToMute, fadeToUnmute]);
 
   useEffect(() => {
     aliveRef.current = true;
@@ -370,25 +385,9 @@ export function SoundWaveToggle({
     window.addEventListener("hyperia:start-sound", onStartSound);
 
     const duckForHiddenTab = () => {
-      const a = audioRef.current;
-      if (!a) return;
-      killFade(fadeRefs);
-      isFadingRef.current = false;
-      fadeVolumeAmplitude(
-        fadeRefs,
-        a,
-        paramsRef.current,
-        a.volume,
-        0,
-        paramsRef.current.amplitude,
-        0,
-        FADE_MS,
-        easeOutQuad,
-        () => {
-          if (!aliveRef.current || !audioRef.current) return;
-          audioRef.current.pause();
-        },
-      );
+      if (!audioRef.current) return;
+      // Must pause synchronously — iOS suspends the page on lock before rAF fades finish.
+      pausePlayback();
     };
 
     const restoreAfterVisibleTab = () => {
@@ -451,7 +450,7 @@ export function SoundWaveToggle({
       isFadingRef.current = false;
       audioSessionReadyRef.current = false;
     };
-  }, [audioSrc, fadeRefs, setMuted]);
+  }, [audioSrc, fadeRefs, pausePlayback, setMuted]);
 
   useEffect(() => {
     setAmbientMasterMuted(isMuted);

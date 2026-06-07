@@ -11,6 +11,7 @@ import type { ReactNode } from "react";
 import { useRef } from "react";
 
 import HeroCtaBar from "@/components/hero-cta-bar";
+import PartnerBrandLogos from "@/components/partner-brand-logos";
 import { HeroVideoSequenceBg } from "@/components/hero-video-sequence-bg";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { cn } from "@/lib/utils";
@@ -75,16 +76,19 @@ export default function HeroSA() {
         </div>
       </div>
 
-      <HeroCtaBar
-        variant="inline"
-        tone="on-dark"
-        heroRevealReady={heroRevealReady}
-        heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
-        primaryHref="/productos"
-        primaryLabel="Ver catálogo"
-        showSecondary={false}
-        className="absolute bottom-[calc(32dvh+1.5rem)] left-6 z-30 mb-2 w-auto max-w-[min(100%-3rem,20rem)] translate-x-0 sm:left-10 sm:max-w-[min(100%-5rem,28rem)] lg:bottom-[18dvh] lg:left-[calc(3rem+max(0px,(100%-86rem)/2))] lg:max-w-xl"
-      />
+      <div className="absolute inset-x-6 bottom-[calc(18.6dvh+1.5rem)] z-30 mb-2 flex flex-col gap-4 sm:inset-x-10 lg:inset-x-auto lg:bottom-[18dvh] lg:left-[calc(3rem+max(0px,(100%-86rem)/2))] lg:w-full lg:max-w-[33.6rem] xl:max-w-[38.4rem]">
+        <HeroCtaBar
+          variant="inline"
+          tone="on-dark"
+          heroRevealReady={heroRevealReady}
+          heroLastLineDelayMs={HERO_LAST_LINE_DELAY_MS}
+          primaryHref="/productos"
+          primaryLabel="Ver catálogo"
+          showSecondary={false}
+          className="w-full max-w-xl translate-x-0"
+        />
+        <PartnerBrandLogos layout="center" className="w-full lg:hidden" />
+      </div>
 
       <a
         href="#certificaciones"
@@ -110,7 +114,7 @@ export default function HeroSA() {
 
 function HeroPrimaryContent() {
   return (
-    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col justify-start overflow-visible pb-2 pt-1 sm:pb-8 lg:justify-center">
+    <div className="mx-auto flex w-full max-w-7xl min-h-0 flex-1 flex-col justify-start overflow-visible pb-2 pt-1 max-lg:mt-[10dvh] sm:pb-8 lg:mt-0 lg:justify-center">
       <div className="max-w-xl shrink-0 overflow-visible lg:max-w-2xl xl:max-w-3xl">
         <div className="hero-tag-lr relative z-30 mb-3.5 flex items-center gap-4 sm:mb-6">
           <span className="h-px w-10 shrink-0 bg-blue-600" aria-hidden />

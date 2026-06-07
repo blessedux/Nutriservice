@@ -461,7 +461,7 @@ export default function MaquilaSection() {
                 aria-hidden
               />
 
-              <div ref={partnerFooterRef}>
+              <div ref={partnerFooterRef} className="hidden lg:block">
                 <MaquilaPartnerFooter
                   inView={inView}
                   reduceMotion={reduceMotion}
