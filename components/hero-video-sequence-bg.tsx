@@ -261,7 +261,7 @@ export function HeroVideoSequenceBg({
     );
 
   return (
-    <>
+    <div className="absolute inset-0 overflow-hidden">
       <div className="absolute inset-0 z-0 bg-slate-950" aria-hidden />
       <video
         ref={videoARef}
@@ -283,6 +283,6 @@ export function HeroVideoSequenceBg({
         className="absolute inset-y-0 left-0 z-[3] w-1/2 backdrop-blur-[2px]"
         aria-hidden
       />
-    </>
+    </div>
   );
 }

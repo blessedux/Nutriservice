@@ -57,10 +57,10 @@ export default function HeroSA() {
     <section
       ref={sectionRef}
       id="inicio"
-      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white max-lg:overflow-visible lg:min-h-screen"
+      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white lg:min-h-screen"
     >
       <motion.div
-        className="pointer-events-none absolute inset-0 z-0 scale-[1.14] will-change-transform"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden will-change-transform max-lg:scale-100 lg:scale-[1.14]"
         style={{ y: bgParallaxY }}
         aria-hidden
       >
