@@ -310,9 +310,9 @@ export default function MaquilaPageLayout() {
                 <h1 className="text-3xl font-bold leading-snug sm:text-4xl lg:text-[2.65rem]">
                   Producción a terceros{" "}
                   <span className="text-ns-emerald">
-                    con confidencialidad, calidad
+                  con  respaldo técnico, confidencialidad y calidad.
                   </span>{" "}
-                  <span className="text-white/70">y respaldo técnico.</span>
+                  
                 </h1>
               </div>
 

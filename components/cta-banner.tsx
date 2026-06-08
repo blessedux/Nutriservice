@@ -1,5 +1,11 @@
 import Link from "next/link";
 
+import {
+  SITE_FOOTER_CTA_HEADING,
+  SITE_FOOTER_CTA_PRIMARY_LABEL,
+  SITE_FOOTER_CTA_SUBTEXT,
+} from "@/lib/site-cta-copy";
+
 interface CTABannerProps {
   heading?: string;
   subtext?: string;
@@ -7,16 +13,17 @@ interface CTABannerProps {
   primaryHref?: string;
   secondaryLabel?: string;
   secondaryHref?: string;
+  showSecondary?: boolean;
 }
 
 export default function CTABanner({
-  heading = "¿Tu operación está rindiendo a su potencial?",
-  subtext =
-    "Agenda una evaluación técnica con nuestros especialistas y descubre dónde está el margen de mejora.",
-  primaryLabel = "Agendar evaluación técnica",
+  heading = SITE_FOOTER_CTA_HEADING,
+  subtext = SITE_FOOTER_CTA_SUBTEXT,
+  primaryLabel = SITE_FOOTER_CTA_PRIMARY_LABEL,
   primaryHref = "/contacto",
   secondaryLabel = "Hablar con un especialista",
   secondaryHref = "/contacto",
+  showSecondary = false,
 }: CTABannerProps) {
   return (
     <section id="contacto" className="scroll-mt-24 bg-ns-green px-6 py-20">
@@ -30,12 +37,14 @@ export default function CTABanner({
           >
             {primaryLabel}
           </Link>
-          <Link
-            href={secondaryHref}
-            className="inline-flex justify-center items-center rounded-lg border-2 border-white/60 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
-          >
-            {secondaryLabel}
-          </Link>
+          {showSecondary ? (
+            <Link
+              href={secondaryHref}
+              className="inline-flex justify-center items-center rounded-lg border-2 border-white/60 px-6 py-3 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+            >
+              {secondaryLabel}
+            </Link>
+          ) : null}
         </div>
       </div>
     </section>

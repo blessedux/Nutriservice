@@ -4,6 +4,11 @@ import Link from "next/link";
 
 import { cn } from "@/lib/utils";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
+import {
+  SITE_FOOTER_CTA_HEADING,
+  SITE_FOOTER_CTA_PRIMARY_LABEL,
+  SITE_FOOTER_CTA_SUBTEXT,
+} from "@/lib/site-cta-copy";
 
 const PAGE_NAVY = "#0a192f";
 const PAGE_CYAN = "#06b6d4";
@@ -21,16 +26,10 @@ type IndustriasCtaBannerProps = {
 export default function IndustriasCtaBanner({
   id,
   className,
-  heading = (
-    <>
-      Hable con un especialista
-      <br />
-      de su sector productivo.
-    </>
-  ),
-  subtext = "Agende una sesión técnica para analizar sus brechas de rendimiento y proyectar el impacto de nuestras soluciones en su operación.",
-  primaryLabel = "Agendar Sesión Técnica",
-  showSecondary = true,
+  heading = SITE_FOOTER_CTA_HEADING,
+  subtext = SITE_FOOTER_CTA_SUBTEXT,
+  primaryLabel = SITE_FOOTER_CTA_PRIMARY_LABEL,
+  showSecondary = false,
   secondaryLabel = "Descargar Brochures",
 }: IndustriasCtaBannerProps = {}) {
   return (

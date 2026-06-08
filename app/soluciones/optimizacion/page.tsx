@@ -140,10 +140,7 @@ export default function OptimizacionPage() {
         </div>
       </section>
 
-      <CTABanner
-        heading="La optimización es donde está el mayor retorno"
-        subtext="Hablemos de cómo estructurar un programa de mejora continua para tu operación."
-      />
+      <CTABanner />
     </>
   );
 }

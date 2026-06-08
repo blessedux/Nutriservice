@@ -29,6 +29,8 @@ const ISOTIPO_BG_STYLE = {
 
 type PreloaderStageProps = {
   counterDurationMs?: number;
+  enterReady?: boolean;
+  onEnter?: (soundEnabled: boolean) => void;
   /** Defaults to production fullscreen overlay shell */
   className?: string;
 } & Omit<ComponentPropsWithoutRef<"div">, "children" | "className">;
@@ -37,13 +39,10 @@ type PreloaderStageProps = {
  * Shared fullscreen shell: underwater plate, marca isotipo suave y PreloaderLab.
  * Used by `SiteExperience` y `/preloader-test` para que la prueba coincida con producción.
  */
-function requestAmbientSoundStart() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new CustomEvent("hyperia:start-sound"));
-}
-
 export function PreloaderStage({
   counterDurationMs = PRELOADER_COUNTER_MS,
+  enterReady,
+  onEnter,
   className,
   ...rest
 }: PreloaderStageProps) {
@@ -55,10 +54,6 @@ export function PreloaderStage({
       )}
       style={FOREGROUND_STYLE}
       {...rest}
-      onPointerDownCapture={(e) => {
-        requestAmbientSoundStart();
-        rest.onPointerDownCapture?.(e);
-      }}
     >
       <div
         className="pointer-events-none absolute inset-0 z-0 bg-[#030A1C]"
@@ -76,7 +71,11 @@ export function PreloaderStage({
         aria-hidden
       />
       <div className="relative z-10 mx-auto w-full max-w-2xl">
-        <PreloaderLab counterDurationMs={counterDurationMs} />
+        <PreloaderLab
+          counterDurationMs={counterDurationMs}
+          enterReady={enterReady}
+          onEnter={onEnter}
+        />
       </div>
     </div>
   );

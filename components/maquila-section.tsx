@@ -349,7 +349,7 @@ export default function MaquilaSection() {
 
             <div ref={titleRef} className="flex flex-col gap-6">
               <h2 className="text-balance text-3xl font-light leading-tight tracking-tight text-white sm:text-4xl sm:leading-[1.2] lg:text-[48px] lg:leading-[60px]">
-                Premixes y Núcleos Diseñados para su Operación
+                Servicio de Maquila
               </h2>
               <p className="hidden max-w-xl text-pretty text-base leading-relaxed text-white/65 sm:text-lg sm:leading-[29.25px] lg:block">
                 Fabricamos tus productos a medida, garantizando la confidencialidad

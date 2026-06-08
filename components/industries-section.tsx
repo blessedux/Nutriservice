@@ -229,15 +229,6 @@ function IndustryCard({
             isFront ? "opacity-100" : "opacity-90",
           )}
         >
-          <p
-            className={cn(
-              "text-[10px] font-bold uppercase leading-[15px] text-white",
-              isFront ? "opacity-100" : "opacity-80",
-            )}
-          >
-            Sector estratégico
-          </p>
-
           <h3
             className={cn(
               "text-[26px] font-light leading-8 text-white md:text-[30px] md:leading-9",
@@ -804,20 +795,6 @@ export default function IndustriesSection() {
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
-          <div className="mb-6 flex items-center gap-4 md:mb-8">
-            <span
-              className="h-px w-10 shrink-0"
-              style={{ backgroundColor: HOME_BLUE_BG }}
-              aria-hidden
-            />
-            <p
-              className="text-[10px] font-bold uppercase leading-[15px] tracking-[0.35em]"
-              style={{ color: HOME_BLUE_BG }}
-            >
-              Verticales de industria
-            </p>
-          </div>
-
           <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between lg:gap-12 xl:gap-16">
             <IndustriesCarousel />
 

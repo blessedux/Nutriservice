@@ -47,6 +47,12 @@ export const PUBLIC_ASSETS = {
   },
   ctaBanner: {
     background: "/assets/cta-banner/background.webp",
+    brochures: {
+      acuicola: "/assets/cta-banner/nutriservice-productos-acuicola.pdf",
+      aves: "/assets/cta-banner/nutriservice-productos-aves.pdf",
+      cerdos: "/assets/cta-banner/nutriservice-productos-cerdos.pdf",
+      mascotas: "/assets/cta-banner/nutriservice-productos-mascotas.pdf",
+    },
   },
   shared: {
     workersHero: "/assets/shared/workers-hero.webp",

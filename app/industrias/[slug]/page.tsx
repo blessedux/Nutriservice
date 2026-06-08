@@ -167,11 +167,7 @@ export default async function IndustryPage({ params }: Props) {
         </div>
       </section>
 
-      <CTABanner
-        heading={ind.ctaText}
-        subtext="Agenda una evaluación técnica y revisamos juntos el potencial de mejora en tu operación."
-        primaryLabel="Agendar evaluación técnica"
-      />
+      <CTABanner />
     </>
   );
 }

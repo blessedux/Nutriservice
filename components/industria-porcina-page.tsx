@@ -10,6 +10,13 @@ import PageBackHeader from "@/components/page-back-header";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { FinTechHeroGrid } from "@/components/ui/fin-tech-landing-page";
 import type { Industry } from "@/lib/industries";
+import {
+  SITE_FOOTER_CTA_BROCHURE_LABEL,
+  SITE_FOOTER_CTA_HEADING,
+  SITE_FOOTER_CTA_PRIMARY_LABEL,
+  SITE_FOOTER_CTA_SUBTEXT,
+} from "@/lib/site-cta-copy";
+import { getIndustryBrochureHref } from "@/lib/industry-brochures";
 import { PORCINA_VIDEO_WEBM } from "@/lib/productos-division-media";
 import { cn } from "@/lib/utils";
 
@@ -84,26 +91,6 @@ export default function IndustriaPorcinaPage({
         />
 
         <section className="px-6 py-20 sm:px-10 lg:px-12">
-          <div className="mx-auto max-w-5xl">
-            <SectionEyebrow>Los desafíos específicos</SectionEyebrow>
-            <h2 className="mt-4 text-2xl font-bold text-white sm:text-3xl">
-              Qué enfrenta la producción {industry.name.toLowerCase()}
-            </h2>
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
-              {industry.problemCards.map((card) => (
-                <GlassCard key={card.title}>
-                  <div className="mb-4 h-0.5 w-6 bg-cyan-400" />
-                  <h3 className="font-semibold text-white">{card.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-white/70">
-                    {card.detail}
-                  </p>
-                </GlassCard>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="px-6 py-20 sm:px-10 lg:px-12">
           <div className="mx-auto max-w-4xl">
             <GlassCard>
               <SectionEyebrow>Nuestro enfoque</SectionEyebrow>
@@ -130,25 +117,25 @@ export default function IndustriaPorcinaPage({
         >
           <GlassCard className="mx-auto max-w-3xl text-center">
             <h2 className="text-balance text-3xl font-bold text-white">
-              {industry.ctaText}
+              {SITE_FOOTER_CTA_HEADING}
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg leading-relaxed text-white/70">
-              Agenda una evaluación técnica y revisamos juntos el potencial de
-              mejora en tu operación.
+              {SITE_FOOTER_CTA_SUBTEXT}
             </p>
             <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
               <Link
                 href="/contacto"
                 className="inline-flex items-center justify-center rounded-full bg-cyan-500 px-8 py-3.5 text-sm font-semibold text-slate-950 transition-opacity hover:opacity-90"
               >
-                Agendar evaluación técnica
+                {SITE_FOOTER_CTA_PRIMARY_LABEL}
               </Link>
-              <Link
-                href="/industrias"
+              <a
+                href={getIndustryBrochureHref(industry.slug)}
+                download
                 className="inline-flex items-center justify-center rounded-full border border-white/30 px-8 py-3.5 text-sm font-semibold text-white transition-colors hover:border-white/50 hover:bg-white/10"
               >
-                Ver otras industrias
-              </Link>
+                {SITE_FOOTER_CTA_BROCHURE_LABEL}
+              </a>
             </div>
           </GlassCard>
         </section>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PreloaderStage } from "@/components/preloader-stage";
+import { PreloaderStageTest } from "@/components/preloader-stage-test";
 
 export const metadata: Metadata = {
   title: "DNA preloader (test)",
@@ -9,10 +9,5 @@ export const metadata: Metadata = {
 
 /** Misma UI que el overlay inicial en `SiteExperience`: fixed inset-0, isotipo, PreloaderLab. */
 export default function PreloaderTestPage() {
-  return (
-    <PreloaderStage
-      aria-busy="true"
-      aria-label="Vista de prueba del preloader"
-    />
-  );
+  return <PreloaderStageTest />;
 }

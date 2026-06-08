@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
-import ImpactSection from "@/components/impact-section";
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
 import PageBackHeader from "@/components/page-back-header";
 import { ProductosCarousel } from "@/components/productos-carousel";
@@ -93,22 +92,7 @@ export default function SolucionesPage() {
         </div>
       </section>
 
-      <ImpactSection withCover={false} />
-
-      <IndustriasCtaBanner
-        id="contacto"
-        heading="Hable con nuestro equipo técnico-comercial"
-        subtext={
-          <>
-            Lo acompañamos en la búsqueda de soluciones nutricionales
-            funcionales
-            <br />
-            adaptadas a los desafíos de cada especie y sistema productivo.
-          </>
-        }
-        primaryLabel="Agendar reunión"
-        showSecondary={false}
-      />
+      <IndustriasCtaBanner id="contacto" />
     </>
   );
 }

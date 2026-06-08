@@ -54,7 +54,7 @@ export default function CertificationsSection() {
               Calidad verificada
             </p>
             <h2 className="mt-3 text-balance text-xl font-light tracking-tight text-white sm:text-2xl">
-              Certificaciones que respaldan cada lote
+              Certificaciones que nos respaldan
             </h2>
           </header>
 

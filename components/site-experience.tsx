@@ -1,7 +1,7 @@
 "use client";
 
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { PreloaderStage, PRELOADER_COUNTER_MS } from "@/components/preloader-stage";
 import { HeroRevealProvider } from "@/components/site-reveal-context";
 import { preloadDivisionVideos } from "@/lib/division-video-preload";
@@ -10,6 +10,11 @@ import {
   preloadScrollFrames,
 } from "@/lib/scroll-frame-preload";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
+import {
+  hasEnteredSession,
+  getSessionSoundEnabled,
+  markSessionEntered,
+} from "@/lib/preloader-session";
 import { cn } from "@/lib/utils";
 
 /** Al menos la subida del contador — igual que el antiguo SitePreloader */
@@ -29,6 +34,10 @@ function usePrefersReducedMotion(): boolean {
     return () => mq.removeEventListener("change", sync);
   }, []);
   return reduced;
+}
+
+function dispatchStartSound() {
+  window.dispatchEvent(new CustomEvent("hyperia:start-sound"));
 }
 
 /**
@@ -51,13 +60,22 @@ export function SiteExperience({
 
   const [overlay, setOverlay] = useState<SiteOverlay>("on");
   const [showContent, setShowContent] = useState(false);
+  /** True once the page is fully loaded and MIN_VISIBLE_MS has elapsed. */
+  const [enterReady, setEnterReady] = useState(false);
+  const soundEnabledRef = useRef(false);
 
-  useEffect(() => {
-    if (overlay === "on") return;
-    queueMicrotask(() => {
-      window.dispatchEvent(new CustomEvent("hyperia:start-sound"));
-    });
-  }, [overlay]);
+  /** Called by PreloaderLab when the user clicks Enter. */
+  const handleEnter = useCallback((soundEnabled: boolean) => {
+    soundEnabledRef.current = soundEnabled;
+    markSessionEntered(soundEnabled);
+    if (soundEnabled) {
+      // Synchronous dispatch — still within the click gesture context so
+      // audio.play() will be granted by the browser.
+      dispatchStartSound();
+    }
+    setOverlay("fade");
+    setShowContent(true);
+  }, []);
 
   useEffect(() => {
     if (!showContent) return;
@@ -70,6 +88,17 @@ export function SiteExperience({
     if (reducedMotion) {
       setOverlay("off");
       setShowContent(true);
+      return;
+    }
+
+    // Session skip: user already entered this session — bypass the gate.
+    if (hasEnteredSession()) {
+      setOverlay("off");
+      setShowContent(true);
+      const savedSound = getSessionSoundEnabled();
+      if (savedSound === true) {
+        queueMicrotask(dispatchStartSound);
+      }
       return;
     }
 
@@ -90,23 +119,22 @@ export function SiteExperience({
     const started = performance.now();
     let timeoutId: number | undefined;
 
-    const reveal = () => {
+    const onReady = () => {
       const elapsed = performance.now() - started;
       const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
       timeoutId = window.setTimeout(() => {
-        setOverlay("fade");
-        setShowContent(true);
+        setEnterReady(true);
       }, wait);
     };
 
     if (document.readyState === "complete") {
-      reveal();
+      onReady();
     } else {
-      window.addEventListener("load", reveal, { once: true });
+      window.addEventListener("load", onReady, { once: true });
     }
 
     return () => {
-      window.removeEventListener("load", reveal);
+      window.removeEventListener("load", onReady);
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
     };
   }, [reducedMotion]);
@@ -170,6 +198,8 @@ export function SiteExperience({
       {overlay !== "off" ? (
         <PreloaderStage
           counterDurationMs={PRELOADER_COUNTER_MS}
+          enterReady={enterReady}
+          onEnter={handleEnter}
           aria-busy={overlay !== "fade"}
           aria-label="Cargando"
           className={cn(overlay === "fade" && "pointer-events-none opacity-0")}

@@ -149,11 +149,7 @@ export default function DiagnosticoPage() {
         </div>
       </section>
 
-      <CTABanner
-        heading="El diagnóstico es el primer paso"
-        subtext="Hablemos de tu situación productiva actual. Sin compromiso, con datos."
-        primaryLabel="Agendar evaluación técnica"
-      />
+      <CTABanner />
     </>
   );
 }

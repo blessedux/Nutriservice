@@ -139,10 +139,7 @@ export default function ImplementacionPage() {
         </div>
       </section>
 
-      <CTABanner
-        heading="La implementación define el resultado"
-        subtext="Agenda una conversación técnica y evaluamos cómo estructurar el acompañamiento para tu operación."
-      />
+      <CTABanner />
     </>
   );
 }
