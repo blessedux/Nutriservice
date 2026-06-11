@@ -19,6 +19,7 @@ import {
   type DivisionMedia,
 } from "@/lib/productos-division-media";
 import {
+  getProductoFilterSlugs,
   getProductoImageObjectPosition,
   getProductoImagePath,
   getProductoManufacturer,
@@ -108,6 +109,7 @@ export default function ProductoDetailPageView({
   const inquiryRef = useRef<HTMLDivElement>(null);
   const inquiryMessage = buildProductInquiryMessage(producto, division);
   const inquiryRubro = DIVISION_RUBRO[division];
+  const categorySlugs = getProductoFilterSlugs(producto, division);
 
   useEffect(() => {
     if (!showInquiryForm || !inquiryRef.current) return;
@@ -191,7 +193,7 @@ export default function ProductoDetailPageView({
                 </p>
 
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {producto.filterSlugs.map((slug) => {
+                  {categorySlugs.map((slug) => {
                     const label = PRODUCTOS_CATEGORIAS.find(
                       (c) => c.slug === slug,
                     )?.label;

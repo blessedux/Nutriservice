@@ -1,4 +1,6 @@
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
+import type { ProductoCategoriaSlug } from "@/lib/productos-categories";
+import { getDivisionProductCategory } from "@/lib/productos-division-categories";
 import { divisionHasVideo } from "@/lib/productos-division-media";
 import { getProductoManufacturer } from "@/lib/productos-manufacturers";
 import { getProductoStockImagePath } from "@/lib/productos-images";
@@ -31,8 +33,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     summary: "Prebiótico, modulador de la flora gastrointestinal.",
     description:
       "Prebiótico funcional formulado para modular la flora gastrointestinal y apoyar la integridad del tracto digestivo en operaciones a escala productiva.",
-    tags: ["Prebiótico", "Salud intestinal"],
-    filterSlugs: ["salud-intestinal"],
+    tags: ["Prebiótico", "Salud animal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["acuicola", "aves", "cerdos", "mascotas"],
     divisionSummaries: {
       mascotas:
@@ -78,7 +80,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Extracto de levadura que intensifica el sabor Umami y aporta notas específicas como carne y pollo asado, mejorando la palatabilidad y aceptación del alimento para mascotas.",
     tags: ["Palatabilidad", "Mascotas"],
-    filterSlugs: [],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["mascotas"],
   },
   {
@@ -90,7 +92,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución nucleótida orientada a salmónidos que potencia el desarrollo inmunitario y digestivo, mejorando resistencia a enfermedades y la respuesta vacunal.",
     tags: ["Inmunidad", "Digestión"],
-    filterSlugs: ["inmunidad", "salud-intestinal"],
+    filterSlugs: ["inmunidad", "salud-animal"],
     divisionSlugs: ["acuicola"],
   },
   {
@@ -102,7 +104,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Premezclas de suplementación funcional diseñadas según el programa nutricional del cliente para mejorar rendimiento, salud y bienestar general.",
     tags: ["Premezcla", "Rendimiento"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["acuicola"],
   },
   {
@@ -113,7 +115,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Premixes especiales formulados a medida según los requerimientos técnicos y productivos de cada operación.",
     tags: ["Premix", "A medida"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["acuicola"],
   },
   {
@@ -122,9 +124,9 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     altName: "HALOR TID",
     summary: "Control de las enterobacterias Gram-.",
     description:
-      "Aditivo orientado al control de enterobacterias Gram- en programas de salud intestinal y bioseguridad alimentaria.",
-    tags: ["Salud intestinal", "Gram-"],
-    filterSlugs: ["salud-intestinal"],
+      "Aditivo orientado al control de enterobacterias Gram- en programas de salud animal y bioseguridad alimentaria.",
+    tags: ["Salud animal", "Gram-"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves", "cerdos"],
   },
   {
@@ -136,7 +138,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución nutricional que mejora el metabolismo digestivo y permite reemplazar fósforo inorgánico, reduciendo costo de dietas.",
     tags: ["Digestión", "Fósforo"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["aves"],
   },
   {
@@ -148,7 +150,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Aditivo con efecto antimicrobiano y reductor del efecto tampón de los alimentos, apoyando la estabilidad digestiva.",
     tags: ["Antimicrobiano", "Digestión"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves", "cerdos"],
   },
   {
@@ -160,7 +162,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Versión potenciada con aceites esenciales que refuerza el efecto antimicrobiano y reduce el efecto tampón de las dietas.",
     tags: ["Antimicrobiano", "Aceites esenciales"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves", "cerdos"],
   },
   {
@@ -172,7 +174,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Programa nutricional funcional orientado a mejorar conversión alimenticia, ganancia diaria y eficiencia alimenticia en broilers y gallinas de postura.",
     tags: ["Rendimiento", "Avicultura"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves"],
   },
   {
@@ -183,8 +185,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
       "Control enfermedades respiratorias. Efecto antiséptico, antioxidante, expectorante y mucolítico.",
     description:
       "Apoyo respiratorio con efecto antiséptico, antioxidante, expectorante y mucolítico para el control de enfermedades respiratorias.",
-    tags: ["Respiratorio", "Inmunidad"],
-    filterSlugs: ["inmunidad"],
+    tags: ["Respiratorio", "Salud animal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves", "cerdos"],
   },
   {
@@ -195,7 +197,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución orientada a reducir el riesgo de contaminación con Salmonella en programas avícolas.",
     tags: ["Salmonella", "Bioseguridad"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["aves"],
   },
   {
@@ -207,8 +209,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Aditivo enzimático que mejora la digestibilidad de la proteína y contribuye a reducir el costo de las dietas.",
     tags: ["Enzimas", "Proteína"],
-    filterSlugs: ["salud-intestinal"],
-    divisionSlugs: ["aves", "cerdos"],
+    filterSlugs: ["nutricion"],
+    divisionSlugs: ["aves", "cerdos", "mascotas"],
   },
   {
     slug: "turbozyme-ft-exp",
@@ -219,8 +221,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Complejo enzimático que mejora la digestibilidad de proteína y fósforo de granos, optimizando costos de formulación.",
     tags: ["Enzimas", "Granos"],
-    filterSlugs: ["salud-intestinal"],
-    divisionSlugs: ["aves", "cerdos"],
+    filterSlugs: ["nutricion"],
+    divisionSlugs: ["aves", "cerdos", "mascotas"],
   },
   {
     slug: "turbozyme-ft-sd-exp",
@@ -231,8 +233,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Variante del complejo Turbozyme orientada a mejorar digestibilidad de proteína y fósforo en granos con enfoque en estabilidad y desempeño en campo.",
     tags: ["Enzimas", "Granos"],
-    filterSlugs: ["salud-intestinal"],
-    divisionSlugs: ["aves", "cerdos"],
+    filterSlugs: ["nutricion"],
+    divisionSlugs: ["aves", "cerdos", "mascotas"],
   },
   {
     slug: "vitanox",
@@ -255,7 +257,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución proteica funcional para reemplazar harina de pescado en la alimentación de lechones sin comprometer desempeño productivo.",
     tags: ["Proteína", "Lechones"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["aves", "cerdos"],
   },
   {
@@ -267,7 +269,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Aditivo funcional que ayuda a mitigar los efectos negativos del estrés en la fase final de engorda porcina.",
     tags: ["Estrés", "Engorda"],
-    filterSlugs: ["inmunidad"],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -279,7 +281,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Controlador de flora intestinal patógena Gram+ y Gram- basado en principios activos naturales, sin uso de antibióticos.",
     tags: ["Flora intestinal", "Natural"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -291,7 +293,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Fuente combinada de fibra soluble e insoluble con ácido benzoico para apoyar la salud digestiva en cerdos.",
     tags: ["Fibra", "Digestión"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -303,7 +305,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Aditivo específico para el control de flora intestinal Gram+, incluyendo Streptococcus y Clostridium.",
     tags: ["Gram+", "Flora intestinal"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -314,7 +316,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución para el control de flora intestinal administrada vía agua de bebida en programas porcinos.",
     tags: ["Agua de bebida", "Flora intestinal"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -325,7 +327,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Aditivo orientado al control de contaminación viral del alimento en operaciones porcinas.",
     tags: ["Bioseguridad", "Alimento"],
-    filterSlugs: ["inmunidad"],
+    filterSlugs: ["salud-animal"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -337,7 +339,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución funcional que mejora consumo en lactancia, índices reproductivos y producción de leche en cerdas.",
     tags: ["Lactancia", "Reproducción"],
-    filterSlugs: ["salud-intestinal"],
+    filterSlugs: ["nutricion"],
     divisionSlugs: ["cerdos"],
   },
   {
@@ -349,8 +351,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Programa nucleótido que mejora el rendimiento productivo apoyando el desarrollo de los sistemas inmunitario y digestivo.",
     tags: ["Inmunidad", "Rendimiento"],
-    filterSlugs: ["inmunidad", "salud-intestinal"],
-    divisionSlugs: ["cerdos"],
+    filterSlugs: ["inmunidad"],
+    divisionSlugs: ["cerdos", "mascotas"],
   },
 ] as const;
 
@@ -445,20 +447,74 @@ export function getProductosSearchOptions(): string[] {
   return options.sort((a, b) => a.localeCompare(b, "es"));
 }
 
+function productMatchesCategoria(
+  producto: Producto,
+  categoria: string,
+  division?: string,
+): boolean {
+  if (!categoria) return true;
+
+  if (division && producto.divisionSlugs.includes(division as ProductoDivisionSlug)) {
+    return getProductoFilterSlugs(
+      producto,
+      division as ProductoDivisionSlug,
+    ).includes(categoria as ProductoCategoriaSlug);
+  }
+
+  return getProductoAllFilterSlugs(producto).includes(
+    categoria as ProductoCategoriaSlug,
+  );
+}
+
+/** Category slugs for a product within a specific division (spreadsheet-backed when available). */
+export function getProductoFilterSlugs(
+  producto: Producto,
+  division?: ProductoDivisionSlug,
+): readonly ProductoCategoriaSlug[] {
+  if (division) {
+    const divisionCategory = getDivisionProductCategory(division, producto.slug);
+    if (divisionCategory) return [divisionCategory];
+  }
+
+  return producto.filterSlugs as readonly ProductoCategoriaSlug[];
+}
+
+/** Union of default and per-division categories (for cards without an active division). */
+export function getProductoAllFilterSlugs(
+  producto: Producto,
+): readonly ProductoCategoriaSlug[] {
+  const slugs = new Set<ProductoCategoriaSlug>(
+    producto.filterSlugs as ProductoCategoriaSlug[],
+  );
+
+  for (const division of producto.divisionSlugs) {
+    const divisionCategory = getDivisionProductCategory(
+      division,
+      producto.slug,
+    );
+    if (divisionCategory) slugs.add(divisionCategory);
+  }
+
+  return [...slugs];
+}
+
 export function getProductosFiltered({
   categoria = "",
   division = "",
   q = "",
 }: ProductosFilterParams = {}): Producto[] {
   return PRODUCTOS_INVENTORY.filter((producto) => {
-    const matchesCategoria =
-      !categoria || producto.filterSlugs.includes(categoria);
+    const matchesCategoria = productMatchesCategoria(
+      producto,
+      categoria,
+      division,
+    );
     const matchesDivision =
       !division ||
       producto.divisionSlugs.includes(division as ProductoDivisionSlug);
     const matchesQuery = productMatchesQuery(producto, q);
     return matchesCategoria && matchesDivision && matchesQuery;
-  });
+  }).sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
 /** @deprecated Use `getProductosFiltered`. */

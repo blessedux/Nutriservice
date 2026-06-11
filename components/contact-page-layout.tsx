@@ -255,7 +255,7 @@ export default function ContactPageLayout() {
                         <p>8:30 – 13:00 / 14:00 – 18:30 hrs</p>
                       </ContactInfoBlock>
                       <ContactInfoBlock title="Viernes">
-                        <p>8:30 – 13:00 / 14:00 – 17:00 hrs</p>
+                        <p>8:30 – 15:00 hrs</p>
                       </ContactInfoBlock>
                       <ContactInfoBlock title="Atención al cliente">
                         <p>

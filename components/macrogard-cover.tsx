@@ -469,7 +469,7 @@ export default function MacroGardCover() {
                       product.tagline,
                       product.slideLabel,
                       "prod_immunity → /productos?categoria=inmunidad",
-                      "salud_intestinal → /productos?categoria=salud-intestinal",
+                      "salud_animal → /productos?categoria=salud-animal",
                     ].join("\n")
                   }
                   className="shrink-0 p-4 sm:p-5"
@@ -485,11 +485,11 @@ export default function MacroGardCover() {
                           prod_immunity
                         </Link>
                         <Link
-                          href="/productos?categoria=salud-intestinal"
+                          href="/productos?categoria=salud-animal"
                           className={`${mono} ${tagChip} cursor-default border-blue-500/35 bg-blue-950/40 text-blue-300 hover:border-blue-400/80 hover:bg-blue-500/20 hover:text-blue-100 hover:shadow-[0_0_24px_rgba(96,165,250,0.45)] focus-visible:ring-blue-400/55`}
                           onClick={stop}
                         >
-                          salud_intestinal
+                          salud_animal
                         </Link>
                         <span className={`${mono} text-slate-400`}>
                           {product.slideLabel}

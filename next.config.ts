@@ -32,6 +32,18 @@ const nextConfig: NextConfig = {
         destination: "/soluciones/maquila",
         permanent: true,
       },
+      {
+        source: "/productos",
+        destination: "/productos?categoria=salud-animal",
+        has: [
+          {
+            type: "query",
+            key: "categoria",
+            value: "salud-intestinal",
+          },
+        ],
+        permanent: true,
+      },
     ];
   },
 };

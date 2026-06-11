@@ -28,7 +28,7 @@ export const INDUSTRIAS_VERTICALS: IndustriaVertical[] = [
     vertical: "VERTICAL 02",
     displayName: "Avícola",
     image: PUBLIC_ASSETS.industriesSection.cardAvicola,
-    challengeLines: ["Optimización del FCR y", "Salud Intestinal"],
+    challengeLines: ["Optimización del FCR y", "Salud Animal"],
     solutionLines: [
       "Ecosistema de acidificantes",
       "Microacid Plus para control",

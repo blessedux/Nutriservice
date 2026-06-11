@@ -19,6 +19,7 @@ import {
 import { getIndustryBrochureHref } from "@/lib/industry-brochures";
 import { MASCOTAS_VIDEO_WEBM } from "@/lib/productos-division-media";
 import { cn } from "@/lib/utils";
+import { DivisionContactBlock } from "@/components/division-contact-block";
 
 const GLASS_CARD = cn(
   "rounded-xl border border-white/20 bg-white/[0.07] p-6 backdrop-blur-xl",
@@ -108,6 +109,12 @@ export default function IndustriaMascotasPage({
               </p>
               <PartnerBrandLogos layout="center" />
             </div>
+          </div>
+        </section>
+
+        <section className="px-6 py-12 sm:px-10 lg:px-12">
+          <div className="mx-auto max-w-3xl">
+            <DivisionContactBlock division="mascotas" />
           </div>
         </section>
 

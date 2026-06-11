@@ -824,7 +824,7 @@ export default function IndustriesSection() {
                   color: "#F5F5F5",
                 }}
               >
-                Ver soluciones nutricionales
+                Ver soluciones funcionales
               </Link>
             </header>
           </div>

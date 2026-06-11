@@ -6,6 +6,8 @@ import {
   type ProductoDivisionSlug,
 } from "@/lib/productos-divisions";
 import {
+  getProductoFilterSlugs,
+  getProductoAllFilterSlugs,
   getProductoManufacturer,
   getProductoSummary,
   productoDetailHref,
@@ -29,6 +31,9 @@ export function ProductoCard({
   const divisionsToShow = activeDivision
     ? [activeDivision]
     : producto.divisionSlugs;
+  const categorySlugs = activeDivision
+    ? getProductoFilterSlugs(producto, activeDivision)
+    : getProductoAllFilterSlugs(producto);
   const onDark = variant === "on-dark";
 
   return (
@@ -59,7 +64,7 @@ export function ProductoCard({
             {getDivisionLabel(division)}
           </span>
         ))}
-        {producto.filterSlugs.map((slug) => {
+        {categorySlugs.map((slug) => {
           const categoria = PRODUCTOS_CATEGORIAS.find((c) => c.slug === slug);
           if (!categoria) return null;
           return (

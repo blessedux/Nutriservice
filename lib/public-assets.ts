@@ -23,8 +23,8 @@ export const PUBLIC_ASSETS = {
     pigletsWebm: "/assets/hero/piglets_combined.webm",
   },
   divisionVideo: {
-    mascotas: "/assets/division-video/mascotas.webm",
-    aves: "/assets/division-video/aves-chickens.webm",
+    mascotas: "/assets/division-video/mascotas3_hero.webm",
+    aves: "/assets/division-video/hen_final_compressed.webm",
     porcina: "/assets/hero/piglets_combined.webm",
   },
   industriesSection: {

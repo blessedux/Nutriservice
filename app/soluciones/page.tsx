@@ -69,7 +69,7 @@ export default function SolucionesPage() {
           <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl">
               <h2 className="text-3xl font-bold text-ns-text">
-                Soluciones nutricionales por especie y objetivo
+                Soluciones funcionales por especie y objetivo
               </h2>
               <p className="mt-3 text-ns-muted">
                 Explore el catálogo de productos e ingredientes funcionales que

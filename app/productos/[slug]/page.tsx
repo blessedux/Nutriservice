@@ -6,6 +6,7 @@ import { PRODUCTOS_CATEGORIAS } from "@/lib/productos-categories";
 import {
   PRODUCTOS_INVENTORY,
   getProductoBySlug,
+  getProductoFilterSlugs,
   resolveProductoDivision,
 } from "@/lib/productos-inventory";
 
@@ -40,7 +41,7 @@ export default async function ProductoDetailPage({ params, searchParams }: Props
     rawDivision?.toLowerCase().trim(),
   );
 
-  const categoriaLabels = producto.filterSlugs
+  const categoriaLabels = getProductoFilterSlugs(producto, division)
     .map((filterSlug) =>
       PRODUCTOS_CATEGORIAS.find((c) => c.slug === filterSlug)?.label,
     )

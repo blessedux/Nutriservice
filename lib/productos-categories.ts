@@ -5,9 +5,14 @@ import { PRODUCTOS_DIVISIONES } from "@/lib/productos-divisions";
 export const PRODUCTOS_CATEGORIAS = [
   { slug: "inmunidad", label: "Inmunidad", detail: "Soporte inmunológico" },
   {
-    slug: "salud-intestinal",
-    label: "Salud intestinal",
-    detail: "Microbiota y tracto digestivo",
+    slug: "salud-animal",
+    label: "Salud animal",
+    detail: "Salud digestiva, respiratoria y bienestar general",
+  },
+  {
+    slug: "nutricion",
+    label: "Nutrición",
+    detail: "Rendimiento, digestibilidad y eficiencia alimenticia",
   },
   {
     slug: "antioxidante",
@@ -15,6 +20,9 @@ export const PRODUCTOS_CATEGORIAS = [
     detail: "Protección celular y estrés oxidativo",
   },
 ] as const;
+
+export type ProductoCategoriaSlug =
+  (typeof PRODUCTOS_CATEGORIAS)[number]["slug"];
 
 export const PRODUCTOS_SEARCH_ITEMS = [
   ...PRODUCTOS_DIVISIONES.flatMap((d) => [d.label]),
