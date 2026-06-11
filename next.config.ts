@@ -28,6 +28,11 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/soluciones",
+        destination: "/industrias",
+        permanent: true,
+      },
+      {
         source: "/soluciones/formulacion",
         destination: "/soluciones/maquila",
         permanent: true,

@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 
 export default function NosotrosPage() {
   return (
-    <div className="min-h-screen -mt-24 bg-ns-navy">
-      <section className="px-6 pb-12 pt-28 text-white sm:px-10 sm:pb-16 sm:pt-32 lg:px-12 lg:pt-36">
+    <div className="site-hero-pull min-h-screen bg-ns-navy">
+      <section className="site-content-below-nav px-6 pb-12 text-white sm:px-10 sm:pb-16 lg:px-12">
         <div className="mx-auto max-w-4xl">
           <PageBackHeader backHref="/" tone="on-dark" simple />
           <p className="text-xs font-semibold uppercase tracking-[0.35em] text-ns-emerald">

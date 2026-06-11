@@ -57,7 +57,7 @@ export default function HeroSA() {
     <section
       ref={sectionRef}
       id="inicio"
-      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-slate-950 text-white lg:min-h-screen"
+      className="relative isolate site-hero-pull min-h-[100dvh] site-scroll-mt overflow-hidden bg-slate-950 text-white lg:min-h-screen"
     >
       <motion.div
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden will-change-transform max-lg:scale-100 lg:scale-[1.14]"
@@ -67,7 +67,7 @@ export default function HeroSA() {
         <HeroVideoSequenceBg playbackReady={heroRevealReady} />
       </motion.div>
 
-      <div className="relative z-20 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-6 pt-[calc(5.125rem+10px)] max-lg:pb-8 sm:px-10 sm:pb-20 sm:pt-[calc(6rem+10px)] lg:z-10 lg:overflow-visible lg:px-12 lg:pb-24">
+      <div className="relative z-20 flex min-h-[100dvh] w-full flex-col overflow-visible px-6 pb-6 pt-[calc(var(--site-nav-height)+0.625rem)] max-lg:pb-8 sm:px-10 sm:pb-20 sm:pt-[calc(var(--site-nav-height)+1rem)] lg:z-10 lg:overflow-visible lg:px-12 lg:pb-24">
         <div
           className="flex min-h-0 flex-1 flex-col justify-start overflow-visible"
           data-hero-animate={heroRevealReady ? "true" : "false"}

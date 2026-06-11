@@ -258,7 +258,7 @@ export default function MaquilaPageLayout() {
 
   return (
     <div
-      className="min-h-screen -mt-24 px-4 pb-10 pt-28 text-white sm:px-6 sm:pb-12 sm:pt-32 lg:px-8 lg:pb-14 lg:pt-36"
+      className="site-hero-pull site-content-below-nav min-h-screen px-4 pb-10 text-white sm:px-6 sm:pb-12 lg:px-8 lg:pb-14"
       style={{ backgroundColor: HOME_INDUSTRIES_BG }}
     >
       <div
@@ -295,7 +295,7 @@ export default function MaquilaPageLayout() {
           className={`relative z-10 flex flex-col p-6 sm:p-10 lg:p-12 ${HERO_CARD_MIN_H}`}
         >
           <PageBackHeader
-            backHref="/soluciones"
+            backHref="/industrias"
             tone="on-dark"
             simple
             className="absolute left-6 top-10 z-20 mb-0 sm:left-10 sm:top-12 lg:left-12"

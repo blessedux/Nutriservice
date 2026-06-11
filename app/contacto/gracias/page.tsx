@@ -43,7 +43,7 @@ export default function GraciasPage() {
           <ul className="space-y-2">
             <li>
               <Link
-                href="/soluciones"
+                href="/industrias"
                 className="text-sm text-ns-green hover:underline"
               >
                 Conoce el sistema de 4 pasos →

@@ -816,7 +816,7 @@ export default function IndustriesSection() {
                 eficiencia nutricional y productividad.
               </p>
               <Link
-                href="/soluciones"
+                href="/industrias"
                 className="mt-6 inline-flex w-1/2 min-w-[9.5rem] items-center justify-center self-end rounded-full border px-5 py-2.5 text-center text-[11px] font-bold uppercase leading-[16.5px] tracking-[0.12em] shadow-sm transition-colors active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a192f]/40 sm:mt-7"
                 style={{
                   borderColor: HOME_BLUE_BG,

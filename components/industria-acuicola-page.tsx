@@ -57,8 +57,8 @@ export default function IndustriaAcuicolaPage({
       <IndustriaFixedVideoBg />
 
       <div className="relative z-10">
-        <section className="relative -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden">
-          <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col justify-center px-6 pb-14 pt-28 sm:px-10 sm:pt-32 lg:px-12">
+        <section className="relative site-hero-pull min-h-[100dvh] site-scroll-mt overflow-hidden">
+          <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col justify-center px-6 pb-14 pt-[calc(var(--site-nav-height)+1.5rem)] sm:px-10 lg:px-12">
             <PageBackHeader
               backHref="/industrias"
               crumbs={[
@@ -107,7 +107,7 @@ export default function IndustriaAcuicolaPage({
               <p className="text-[10px] font-medium uppercase leading-relaxed tracking-[0.22em] text-white/55">
                 Representantes oficiales de marcas internacionales de referencia
               </p>
-              <PartnerBrandLogos layout="center" />
+              <PartnerBrandLogos layout="center" size="lg" />
             </div>
           </div>
         </section>

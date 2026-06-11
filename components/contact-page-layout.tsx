@@ -116,7 +116,7 @@ export default function ContactPageLayout() {
     const snapTarget = snapRef.current;
     if (!snapTarget) return;
 
-    snapTarget.scrollIntoView({ block: "center", behavior: "instant" });
+    snapTarget.scrollIntoView({ block: "start", behavior: "instant" });
 
     const frame = requestAnimationFrame(() => {
       setSnapReady(true);
@@ -129,14 +129,12 @@ export default function ContactPageLayout() {
 
   return (
     <div
-      className="-mt-24 px-4 pb-6 sm:px-6 lg:px-8 lg:pb-8"
+      className="site-hero-pull px-4 pb-6 sm:px-6 lg:px-8 lg:pb-8"
       style={{ backgroundColor: HOME_INDUSTRIES_BG }}
     >
-      <div className="h-[5.5rem] shrink-0 sm:h-[6.5rem] lg:h-[7.5rem]" aria-hidden />
-
       <div
         ref={snapRef}
-        className="mx-auto flex w-full max-w-7xl snap-center snap-always items-center py-4 sm:py-6"
+        className="site-content-below-nav site-scroll-mt mx-auto flex w-full max-w-7xl snap-center snap-always items-center py-4 sm:py-6"
       >
         <div
           ref={cardRef}
@@ -255,7 +253,7 @@ export default function ContactPageLayout() {
                         <p>8:30 – 13:00 / 14:00 – 18:30 hrs</p>
                       </ContactInfoBlock>
                       <ContactInfoBlock title="Viernes">
-                        <p>8:30 – 15:00 hrs</p>
+                        <p>8:30 – 15:30 hrs</p>
                       </ContactInfoBlock>
                       <ContactInfoBlock title="Atención al cliente">
                         <p>

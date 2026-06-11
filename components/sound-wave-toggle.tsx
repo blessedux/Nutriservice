@@ -109,7 +109,8 @@ export type SoundWaveToggleProps = {
 
 /**
  * Canvas waveform + looping audio. Volume-only mute (playback keeps running).
- * Autoplay on mount when allowed; optional `window` event `hyperia:start-sound` retries.
+ * With `autoBootstrap`, tries autoplay on mount; otherwise waits for
+ * `hyperia:start-sound` (preloader Enter with sound enabled).
  */
 export function SoundWaveToggle({
   audioSrc,
@@ -380,7 +381,7 @@ export function SoundWaveToggle({
     }
 
     const onStartSound = () => {
-      if (autoBootstrapRef.current) void bootstrapAudible();
+      void bootstrapAudible();
     };
     window.addEventListener("hyperia:start-sound", onStartSound);
 

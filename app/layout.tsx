@@ -54,7 +54,7 @@ export default function RootLayout({
         <CtaFooterParallaxProvider>
           <SiteExperience className="flex-1">
             <Nav />
-            <main className="flex-1 pt-24">{children}</main>
+            <main className="site-main-offset flex-1">{children}</main>
             <SiteFooter />
           </SiteExperience>
         </CtaFooterParallaxProvider>

@@ -95,6 +95,7 @@ export const PUBLIC_ASSETS = {
   nosotros: {
     fernandoGirones: "/assets/nosotros/FernandoGirones.webp",
     gonzaloMarambio: "/assets/nosotros/GonzaloMarambio.webp",
+    sebastianMeneses: "/assets/nosotros/SebastianMeneses.webp",
     rubenCerda: "/assets/nosotros/RubenCerda.webp",
     manuelAbalo: "/assets/nosotros/ManuelAbalo.webp",
   },

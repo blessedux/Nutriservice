@@ -16,7 +16,7 @@ export default function HeroC() {
   return (
     <section
       id="inicio"
-      className="relative isolate -mt-24 min-h-[100dvh] scroll-mt-24 overflow-hidden bg-ns-surface text-ns-text"
+      className="relative isolate site-hero-pull min-h-[100dvh] site-scroll-mt overflow-hidden bg-ns-surface text-ns-text"
     >
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.35]"
@@ -28,7 +28,7 @@ export default function HeroC() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col px-6 pt-28 sm:px-10 sm:pt-32 lg:px-12">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1280px] flex-col px-6 pt-[calc(var(--site-nav-height)+1rem)] sm:px-10 lg:px-12">
         <div className="flex min-h-0 flex-1 items-center pb-10 sm:pb-12">
           <FinTechHeroGrid heroRevealReady={heroRevealReady} />
         </div>

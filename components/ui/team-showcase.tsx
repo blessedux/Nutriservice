@@ -23,9 +23,8 @@ export default function TeamShowcase({
   const onDark = tone === "on-dark";
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  const col1 = members.filter((_, i) => i % 3 === 0);
-  const col2 = members.filter((_, i) => i % 3 === 1);
-  const col3 = members.filter((_, i) => i % 3 === 2);
+  const photoCardClassName =
+    "aspect-[10/11] w-full max-w-[172px] justify-self-center sm:max-w-[180px] md:max-w-[190px]";
 
   return (
     <div
@@ -34,45 +33,17 @@ export default function TeamShowcase({
         className,
       )}
     >
-      <div className="flex flex-shrink-0 gap-2 overflow-x-auto pb-1 md:gap-3 md:pb-0">
-        <div className="flex flex-col gap-2 md:gap-3">
-          {col1.map((member) => (
-            <PhotoCard
-              key={member.id}
-              member={member}
-              className="h-[120px] w-[110px] sm:h-[140px] sm:w-[130px] md:h-[165px] md:w-[155px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onDark={onDark}
-            />
-          ))}
-        </div>
-
-        <div className="mt-[48px] flex flex-col gap-2 sm:mt-[56px] md:mt-[68px] md:gap-3">
-          {col2.map((member) => (
-            <PhotoCard
-              key={member.id}
-              member={member}
-              className="h-[132px] w-[122px] sm:h-[155px] sm:w-[145px] md:h-[182px] md:w-[172px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onDark={onDark}
-            />
-          ))}
-        </div>
-
-        <div className="mt-[22px] flex flex-col gap-2 sm:mt-[26px] md:mt-[32px] md:gap-3">
-          {col3.map((member) => (
-            <PhotoCard
-              key={member.id}
-              member={member}
-              className="h-[125px] w-[115px] sm:h-[146px] sm:w-[136px] md:h-[172px] md:w-[162px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-              onDark={onDark}
-            />
-          ))}
-        </div>
+      <div className="grid w-full max-w-[380px] shrink-0 grid-cols-2 gap-2 sm:max-w-[400px] sm:gap-3 md:max-w-[420px]">
+        {members.map((member) => (
+          <PhotoCard
+            key={member.id}
+            member={member}
+            className={photoCardClassName}
+            hoveredId={hoveredId}
+            onHover={setHoveredId}
+            onDark={onDark}
+          />
+        ))}
       </div>
 
       <div className="flex w-full flex-1 flex-col gap-4 pt-0 sm:grid sm:grid-cols-2 md:flex md:flex-col md:gap-5 md:pt-2">
@@ -106,9 +77,10 @@ function PhotoCard({
   const isActive = hoveredId === member.id;
   const isDimmed = hoveredId !== null && !isActive;
   const isPlaceholder = member.placeholder === true;
+  const showPhotoPlaceholder = isPlaceholder || member.noPhoto === true || !member.image;
   const linkedinUrl = member.social?.linkedin;
 
-  const cardInner = isPlaceholder ? (
+  const cardInner = showPhotoPlaceholder ? (
     <div
       className={cn(
         "h-full w-full border border-dashed",
@@ -136,14 +108,14 @@ function PhotoCard({
     <div
       className={cn(
         "duration-400 flex-shrink-0 overflow-hidden rounded-xl transition-opacity",
-        !isPlaceholder && linkedinUrl && "cursor-pointer",
+        !showPhotoPlaceholder && linkedinUrl && "cursor-pointer",
         className,
         isDimmed ? "opacity-60" : "opacity-100",
       )}
-      onMouseEnter={() => !isPlaceholder && onHover(member.id)}
-      onMouseLeave={() => !isPlaceholder && onHover(null)}
+      onMouseEnter={() => !showPhotoPlaceholder && onHover(member.id)}
+      onMouseLeave={() => !showPhotoPlaceholder && onHover(null)}
     >
-      {linkedinUrl && !isPlaceholder ? (
+      {linkedinUrl && !showPhotoPlaceholder ? (
         <a
           href={linkedinUrl}
           target="_blank"
@@ -174,6 +146,8 @@ function MemberRow({
   const isActive = hoveredId === member.id;
   const isDimmed = hoveredId !== null && !isActive;
   const isPlaceholder = member.placeholder === true;
+  const isNamedWithoutPhoto = member.noPhoto === true;
+  const showAsPlaceholderRow = isPlaceholder && !isNamedWithoutPhoto;
   const linkedinUrl = member.social?.linkedin;
 
   const rowContent = (
@@ -182,7 +156,7 @@ function MemberRow({
         <span
           className={cn(
             "h-3 w-4 flex-shrink-0 rounded-[5px] transition-all duration-300",
-            isPlaceholder
+            showAsPlaceholderRow
               ? onDark
                 ? "bg-white/10"
                 : "bg-ns-text/10"
@@ -196,7 +170,7 @@ function MemberRow({
         <span
           className={cn(
             "text-base font-semibold leading-none tracking-tight transition-colors duration-300 md:text-[18px]",
-            isPlaceholder
+            showAsPlaceholderRow
               ? onDark
                 ? "text-white/35"
                 : "text-ns-muted/70"
@@ -233,7 +207,7 @@ function MemberRow({
       <p
         className={cn(
           "mt-1.5 pl-[27px] text-[7px] font-medium uppercase tracking-[0.2em] md:text-[10px]",
-          isPlaceholder
+          showAsPlaceholderRow
             ? onDark
               ? "text-white/25"
               : "text-ns-muted/50"
@@ -249,12 +223,12 @@ function MemberRow({
 
   const rowClassName = cn(
     "block transition-opacity duration-300",
-    !isPlaceholder && linkedinUrl && "cursor-pointer",
+    linkedinUrl && !showAsPlaceholderRow && "cursor-pointer",
     isDimmed ? "opacity-50" : "opacity-100",
-    isPlaceholder && "opacity-70",
+    showAsPlaceholderRow && "opacity-70",
   );
 
-  if (linkedinUrl && !isPlaceholder) {
+  if (linkedinUrl && !showAsPlaceholderRow) {
     return (
       <a
         href={linkedinUrl}
@@ -278,8 +252,8 @@ function MemberRow({
   return (
     <div
       className={rowClassName}
-      onMouseEnter={() => !isPlaceholder && onHover(member.id)}
-      onMouseLeave={() => !isPlaceholder && onHover(null)}
+      onMouseEnter={() => member.image && onHover(member.id)}
+      onMouseLeave={() => member.image && onHover(null)}
     >
       {rowContent}
     </div>

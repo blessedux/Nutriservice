@@ -1,66 +1,59 @@
 export type TimelineMilestone = {
+  year: number;
   title: string;
   summary: string;
 };
 
-export const NOSOTROS_TIMELINE_MILESTONES: Record<
-  number,
-  TimelineMilestone
-> = {
-  1993: {
-    title: "Los primeros pasos",
+export const NOSOTROS_TIMELINE_ENTRIES: TimelineMilestone[] = [
+  {
+    year: 1993,
+    title: "Fundación Empresa",
     summary:
-      "Nutriservice inicia sus operaciones elaborando mezclas nutricionales en pequeñas cantidades, construyendo desde el primer día una cultura basada en cercanía, servicio y conocimiento técnico.",
+      "Nutriservice inicia sus operaciones con el objetivo de ofrecer soluciones nutricionales confiables y de alta calidad para la industria pecuaria.",
   },
-  1995: {
-    title: "Los primeros clientes",
+  {
+    year: 2000,
+    title: "Apertura sucursal Puerto Varas",
     summary:
-      "La confianza de productores y empresas impulsa el crecimiento del equipo y consolida las primeras relaciones comerciales de largo plazo.",
+      "La empresa expande su presencia al sur de Chile, fortaleciendo la cobertura comercial y logística para sus clientes.",
   },
-  1999: {
-    title: "Escalando la producción",
+  {
+    year: 2006,
+    title: "Construcción de planta propia. Autorizada y certificada por SAG",
     summary:
-      "La incorporación de nuevos equipos y una mayor capacidad operativa marcan el inicio de una etapa de expansión industrial sostenida.",
+      "Se inaugura la planta de producción, equipada con tecnología moderna y autorizada por SAG, garantizando procesos seguros y trazables.",
   },
-  2003: {
-    title: "Conocimiento que genera valor",
+  {
+    year: 2007,
+    title: "Obtención de certificación GMP",
     summary:
-      "Nutriservice fortalece sus capacidades técnicas y comienza a posicionarse como un aliado estratégico para mejorar el desempeño productivo de sus clientes.",
+      "Nutriservice obtiene la certificación GMP, asegurando estándares internacionales en buenas prácticas de manufactura. Planta de elaboración y envasado de premezclas para aves, cerdos y salmones.",
   },
-  2005: {
-    title: "Conectando con la innovación global",
+  {
+    year: 2009,
+    title:
+      "Ingreso de Nutriservice a REP, convirtiéndose en la 5ª empresa en obtenerla",
     summary:
-      "La compañía establece alianzas con proveedores internacionales, incorporando nuevas tecnologías y soluciones nutricionales de clase mundial.",
+      "Nutriservice se convierte en la 5.ª empresa en obtener el Registro de Empresas Pecuarias (REP), validando su compromiso con la calidad.",
   },
-  2009: {
-    title: "Calidad como estándar",
+  {
+    year: 2010,
+    title: "Creación de línea food autorizada por SEREMI",
     summary:
-      "Se fortalecen los procesos de control y gestión operacional, consolidando una cultura enfocada en la consistencia, trazabilidad y mejora continua.",
+      "Se incorpora una nueva línea de productos food, autorizada por SEREMI, ampliando la oferta hacia alimentos de alto estándar.",
   },
-  2015: {
-    title: "Soluciones a medida",
-    summary:
-      "La experiencia acumulada permite desarrollar programas nutricionales personalizados y mezclas diseñadas según los desafíos específicos de cada operación.",
+  {
+    year: 2010,
+    title: "Implementación de servicio de maquila con alto estándar de calidad",
+    summary: "",
   },
-  2019: {
-    title: "Liderazgo técnico e industrial",
-    summary:
-      "Con una operación madura y una amplia red de socios estratégicos, Nutriservice se consolida como un referente nacional en nutrición animal.",
-  },
-  2024: {
-    title: "Impulso hacia el futuro",
-    summary:
-      "Nutriservice fortalece su capacidad productiva y comercial, integrando nuevas soluciones para acompañar el crecimiento de sus clientes en un mercado cada vez más exigente.",
-  },
-  2026: {
-    title: "Más de tres décadas impulsando resultados",
-    summary:
-      "Hoy combinamos experiencia, infraestructura, tecnología y formulación especializada para entregar soluciones nutricionales que mejoran el desempeño productivo de nuestros clientes.",
-  },
-};
+];
 
+/** @deprecated Use `NOSOTROS_TIMELINE_ENTRIES`. */
 export function getTimelineMilestone(
   year: number,
-): TimelineMilestone | undefined {
-  return NOSOTROS_TIMELINE_MILESTONES[year];
+): { title: string; summary: string } | undefined {
+  const entry = NOSOTROS_TIMELINE_ENTRIES.find((item) => item.year === year);
+  if (!entry) return undefined;
+  return { title: entry.title, summary: entry.summary };
 }

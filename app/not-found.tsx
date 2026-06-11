@@ -30,7 +30,7 @@ export default function NotFound() {
         </div>
         <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2">
           {[
-            { href: "/soluciones", label: "Soluciones" },
+            { href: "/industrias", label: "Soluciones" },
             { href: "/industrias/acuicola", label: "Acuícola" },
             { href: "/nosotros", label: "Nosotros" },
           ].map((l) => (

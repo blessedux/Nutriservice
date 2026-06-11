@@ -125,7 +125,7 @@ export default function ProductoDetailPageView({
     >
       <DivisionBackdrop media={media} division={division} />
 
-      <div className="relative z-10 -mt-24 px-4 pb-12 pt-24 sm:px-6 lg:px-8">
+      <div className="relative z-10 site-hero-pull px-4 pb-12 pt-[calc(var(--site-nav-height)+0.75rem)] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <Link
             href={productosFilterHref({ division })}

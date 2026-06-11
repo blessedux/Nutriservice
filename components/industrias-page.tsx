@@ -4,10 +4,15 @@ import { ChevronRight } from "lucide-react";
 
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
 import PageBackHeader from "@/components/page-back-header";
+import { ProductosCarousel } from "@/components/productos-carousel";
 import {
   INDUSTRIAS_VERTICALS,
   type IndustriaVertical,
 } from "@/lib/industrias-page-data";
+import {
+  PRODUCTOS_INVENTORY,
+  productosFilterHref,
+} from "@/lib/productos-inventory";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import { cn } from "@/lib/utils";
 
@@ -34,7 +39,7 @@ function Eyebrow({ children }: { children: React.ReactNode }) {
 
 function IndustriasHero() {
   return (
-    <section className="relative -mt-24 w-full min-h-[100dvh] overflow-hidden text-white">
+    <section className="relative site-hero-pull w-full min-h-[100dvh] overflow-hidden text-white">
       <div className="absolute inset-0 size-full overflow-hidden" aria-hidden>
         <Image
           src={PUBLIC_ASSETS.industriasPage.heroLab}
@@ -50,7 +55,7 @@ function IndustriasHero() {
         className="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-r from-[#0a192f] via-[#0a192f]/60 to-transparent"
         aria-hidden
       />
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col justify-center px-6 py-28 sm:px-10 sm:py-32 lg:px-16 xl:px-32">
+      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-[1440px] flex-col justify-center px-6 py-[calc(var(--site-nav-height)+1.5rem)] sm:px-10 lg:px-16 xl:px-32">
         <PageBackHeader
           backHref="/"
           crumbs={[{ label: "Industrias" }]}
@@ -181,11 +186,52 @@ function IndustriasGrid() {
   );
 }
 
+function IndustriasProductosPreview() {
+  return (
+    <section className="border-t border-[#1e3a8a]/10 bg-white px-6 py-16 sm:px-10 sm:py-20 lg:px-16 xl:px-32">
+      <div className="mx-auto max-w-[1440px]">
+        <p
+          className="text-[10px] font-bold uppercase tracking-[0.2em]"
+          style={{ color: `${PAGE_CYAN}99` }}
+        >
+          Productos
+        </p>
+
+        <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-2xl">
+            <h2 className="text-3xl font-semibold text-[#0a192f]">
+              Soluciones funcionales por especie y objetivo
+            </h2>
+            <p className="mt-3 text-[#0a192f]/60">
+              Explore el catálogo de productos e ingredientes funcionales que
+              respaldan cada etapa del sistema Nutriservice.
+            </p>
+          </div>
+          <Link
+            href={productosFilterHref({})}
+            className="inline-flex shrink-0 items-center justify-center rounded-full px-10 py-4 text-center text-xs font-black uppercase tracking-[0.15em] transition-opacity hover:opacity-90"
+            style={{ backgroundColor: PAGE_CYAN, color: PAGE_NAVY }}
+          >
+            Ver catálogo completo
+          </Link>
+        </div>
+
+        <ProductosCarousel
+          productos={PRODUCTOS_INVENTORY}
+          className="mt-10 -mx-6 sm:mx-0"
+          ariaLabel="Galería de productos Nutriservice"
+        />
+      </div>
+    </section>
+  );
+}
+
 export default function IndustriasPageContent() {
   return (
     <>
       <IndustriasHero />
       <IndustriasGrid />
+      <IndustriasProductosPreview />
       <IndustriasCtaBanner />
     </>
   );

@@ -61,7 +61,7 @@ export default function ImpactoPageContent() {
               partner que está presente cuando el resultado se juega en campo.
             </p>
             <Link
-              href="/soluciones"
+              href="/industrias"
               className="mt-6 inline-flex text-sm font-semibold text-ns-green hover:underline"
             >
               Conocer el sistema Nutriservice →

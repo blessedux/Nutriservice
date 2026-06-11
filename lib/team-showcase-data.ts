@@ -5,8 +5,10 @@ export type TeamMember = {
   name: string;
   role: string;
   image?: string;
-  /** Empty slot — no photo; keeps the original 6-card mosaic layout. */
+  /** Empty slot — no photo. */
   placeholder?: boolean;
+  /** Named member without a photo yet — shows name/role normally, dashed photo card. */
+  noPhoto?: boolean;
   social?: {
     twitter?: string;
     linkedin?: string;
@@ -37,34 +39,15 @@ export const TEAM_SHOWCASE_MEMBERS: TeamMember[] = [
     },
   },
   {
-    id: "ruben-cerda",
-    name: "Rubén Cerda",
-    role: "Jefe de Planta",
-    image: PUBLIC_ASSETS.nosotros.rubenCerda,
-    social: {
-      linkedin:
-        "https://www.linkedin.com/in/ruben-cerda-b25ab356/?skipRedirect=true",
-    },
+    id: "rodrigo-martinez",
+    name: "Rodrigo Martinez",
+    role: "Gerente División",
+    noPhoto: true,
   },
   {
-    id: "manuel-abalo",
-    name: "Manuel Abalo",
-    role: "Gerente Comercial",
-    image: PUBLIC_ASSETS.nosotros.manuelAbalo,
-    social: {
-      linkedin: "https://www.linkedin.com/in/manuel-abalo-9b06bab8/",
-    },
-  },
-  {
-    id: "placeholder-5",
-    name: "Por confirmar",
-    role: "Próximamente",
-    placeholder: true,
-  },
-  {
-    id: "placeholder-6",
-    name: "Por confirmar",
-    role: "Próximamente",
-    placeholder: true,
-  },
+    id: "sebastian-meneses",
+    name: "Sebastian Meneses",
+    role: "Gerente de operaciones",
+    image: PUBLIC_ASSETS.nosotros.sebastianMeneses,
+  }
 ];

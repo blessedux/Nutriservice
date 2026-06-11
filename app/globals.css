@@ -19,6 +19,15 @@
   --input: #d4d6d9;
   --ring: #1e3a8a;
   --radius: 0.5rem;
+
+  /* Fixed nav clearance — keep in sync with components/nav.tsx logo sizing */
+  --site-nav-height: 7.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --site-nav-height: 8rem;
+  }
 }
 
 @theme inline {
@@ -72,6 +81,30 @@
 
   /* BlueprintLoader (DNA helix) — matches shadcn-style token       */
   --color-foreground:      var(--color-ns-text);
+}
+
+@layer utilities {
+  .site-main-offset {
+    padding-top: var(--site-nav-height);
+  }
+
+  .site-hero-pull {
+    margin-top: calc(-1 * var(--site-nav-height));
+  }
+
+  .site-scroll-mt {
+    scroll-margin-top: var(--site-nav-height);
+  }
+
+  .site-content-below-nav {
+    padding-top: calc(var(--site-nav-height) + 1.25rem);
+  }
+
+  @media (min-width: 768px) {
+    .site-content-below-nav {
+      padding-top: calc(var(--site-nav-height) + 2rem);
+    }
+  }
 }
 
 html {

@@ -42,7 +42,7 @@ export default function OptimizacionPage() {
             </span>
             <span className="text-white/25">·</span>
             <Link
-              href="/soluciones"
+              href="/industrias"
               className="text-xs text-white/40 hover:text-white/70 transition-colors"
             >
               Volver al sistema

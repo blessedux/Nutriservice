@@ -53,7 +53,7 @@ function SolucionesNavDropdown({
 }) {
   const [open, setOpen] = useState(false);
   const solucionesActive =
-    isLinkActive("/soluciones") ||
+    isLinkActive("/industrias") ||
     SOLUCIONES_DROPDOWN_LINKS.some((item) => isLinkActive(item.href));
 
   const panelSurface = onWhiteNavText
@@ -75,7 +75,7 @@ function SolucionesNavDropdown({
       onMouseLeave={() => setOpen(false)}
     >
       <Link
-        href="/soluciones"
+        href="/industrias"
         aria-expanded={open}
         aria-haspopup="true"
         className={cx(
@@ -273,18 +273,18 @@ function NavInner() {
 
   return (
     <header className={`fixed inset-x-0 top-0 z-50 transition-[background-color,backdrop-filter,border-color] duration-300 ${headerSurface}`}>
-      <div className="relative z-50 mx-auto flex h-auto min-h-16 max-w-[1280px] items-center justify-between px-6 py-5 sm:px-10 lg:px-12">
+      <div className="relative z-50 mx-auto flex h-auto min-h-[var(--site-nav-height)] max-w-[1280px] items-center justify-between px-6 py-4 sm:px-10 lg:px-12">
         <Link
           href="/"
-          className="relative flex h-[43px] w-[182px] shrink-0 items-center md:h-12 md:w-[202px]"
+          className="relative flex h-[86px] shrink-0 items-center md:h-24"
           onClick={() => setOpen(false)}
         >
           <Image
             src={logoSrc}
             alt="Nutriservice"
-            width={202}
-            height={48}
-            className="h-[43px] w-auto object-contain object-left md:h-12"
+            width={404}
+            height={96}
+            className="h-[86px] w-auto object-contain object-left md:h-24"
             priority
           />
         </Link>
@@ -327,6 +327,7 @@ function NavInner() {
             showLabel={false}
             tone={onWhiteNavText ? "on-dark" : "on-light"}
             buttonClassName="p-1"
+            autoBootstrap={false}
           />
         </div>
 
@@ -375,11 +376,11 @@ function NavInner() {
             <div className="mx-auto flex w-full max-w-md flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <Link
-                  href="/soluciones"
+                  href="/industrias"
                   className={cx(
                     linkBase,
                     "text-sm tracking-[0.35em]",
-                    isLinkActive("/soluciones") ||
+                    isLinkActive("/industrias") ||
                       SOLUCIONES_DROPDOWN_LINKS.some((item) =>
                         isLinkActive(item.href),
                       )
