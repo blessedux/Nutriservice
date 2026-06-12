@@ -7,32 +7,31 @@ export type DivisionContact = {
 };
 
 /**
- * Division-specific contact data.
- * Placeholder values use general SAC until client provides real names/emails.
+ * Division-specific contact data for industry page contact cards.
  */
 export const DIVISION_CONTACTS: Record<
   ProductoDivisionSlug,
   DivisionContact
 > = {
   acuicola: {
-    name: "Contacto comercial",
-    email: "sac@nutriservice.cl",
-    phone: "+56 652232500",
+    name: "Gonzalo Marambio",
+    email: "gmarambio@nutriservice.cl",
+    phone: "+56 9 89005220",
   },
   aves: {
-    name: "Contacto comercial",
-    email: "sac@nutriservice.cl",
-    phone: "+56 652232500",
+    name: "Rodrigo Mártinez – Product Manager",
+    email: "rmartinez@nutriservice.cl",
+    phone: "+56 954031992",
   },
   cerdos: {
-    name: "Contacto comercial",
-    email: "sac@nutriservice.cl",
-    phone: "+56 652232500",
+    name: "Rodrigo Mártinez – Product Manager",
+    email: "rmartinez@nutriservice.cl",
+    phone: "+56 954031992",
   },
   mascotas: {
-    name: "Contacto comercial",
-    email: "sac@nutriservice.cl",
-    phone: "+56 652232500",
+    name: "Rodrigo Mártinez – Product Manager",
+    email: "rmartinez@nutriservice.cl",
+    phone: "+56 954031992",
   },
 };
 

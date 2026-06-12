@@ -34,11 +34,14 @@ export default function TeamShowcase({
       )}
     >
       <div className="grid w-full max-w-[380px] shrink-0 grid-cols-2 gap-2 sm:max-w-[400px] sm:gap-3 md:max-w-[420px]">
-        {members.map((member) => (
+        {members.map((member, index) => (
           <PhotoCard
             key={member.id}
             member={member}
-            className={photoCardClassName}
+            className={cn(
+              photoCardClassName,
+              index % 2 === 1 && "translate-y-[15%]",
+            )}
             hoveredId={hoveredId}
             onHover={setHoveredId}
             onDark={onDark}
@@ -47,10 +50,11 @@ export default function TeamShowcase({
       </div>
 
       <div className="flex w-full flex-1 flex-col gap-4 pt-0 sm:grid sm:grid-cols-2 md:flex md:flex-col md:gap-5 md:pt-2">
-        {members.map((member) => (
+        {members.map((member, index) => (
           <MemberRow
             key={member.id}
             member={member}
+            className={index % 2 === 1 ? "translate-y-[15%]" : undefined}
             hoveredId={hoveredId}
             onHover={setHoveredId}
             onDark={onDark}
@@ -95,8 +99,10 @@ function PhotoCard({
     <img
       src={member.image}
       alt={member.name}
-      className="h-full w-full object-cover transition-[filter] duration-500"
+      className="h-full w-full origin-center object-cover transition-[filter,transform] duration-500"
       style={{
+        transform: member.imageScale ? `scale(${member.imageScale})` : undefined,
+        marginTop: member.imageMarginTop,
         filter: isActive
           ? "grayscale(0) brightness(1)"
           : "grayscale(1) brightness(0.77)",
@@ -134,11 +140,13 @@ function PhotoCard({
 
 function MemberRow({
   member,
+  className,
   hoveredId,
   onHover,
   onDark = false,
 }: {
   member: TeamMember;
+  className?: string;
   hoveredId: string | null;
   onHover: (id: string | null) => void;
   onDark?: boolean;
@@ -223,6 +231,7 @@ function MemberRow({
 
   const rowClassName = cn(
     "block transition-opacity duration-300",
+    className,
     linkedinUrl && !showAsPlaceholderRow && "cursor-pointer",
     isDimmed ? "opacity-50" : "opacity-100",
     showAsPlaceholderRow && "opacity-70",

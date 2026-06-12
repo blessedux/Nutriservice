@@ -21,7 +21,7 @@ export type Producto = {
   divisionSlugs: readonly ProductoDivisionSlug[];
   /** Optional copy when a division needs a distinct one-liner on cards. */
   divisionSummaries?: Partial<Record<ProductoDivisionSlug, string>>;
-  /** Override stock image (`pellet2` / `powder3` by default). */
+  /** Override default stock image (`powder3` white dust bag). */
   imageSrc?: string;
 };
 

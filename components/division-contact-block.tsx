@@ -2,6 +2,10 @@ import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
 import { getDivisionContact } from "@/lib/division-contacts";
 import { cn } from "@/lib/utils";
 
+function whatsappHref(phone: string): string {
+  return `https://wa.me/${phone.replace(/\D/g, "")}`;
+}
+
 type DivisionContactBlockProps = {
   division: ProductoDivisionSlug;
   className?: string;
@@ -38,7 +42,9 @@ export function DivisionContactBlock({
         {contact.phone && (
           <div>
             <a
-              href={`tel:${contact.phone.replace(/\s/g, "")}`}
+              href={whatsappHref(contact.phone)}
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-sm text-white/70 transition-colors hover:text-cyan-300"
             >
               {contact.phone}

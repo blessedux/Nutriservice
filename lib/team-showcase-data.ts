@@ -5,6 +5,10 @@ export type TeamMember = {
   name: string;
   role: string;
   image?: string;
+  /** Zoom factor inside the photo card (container clips overflow). */
+  imageScale?: number;
+  /** Vertical offset inside the photo card (e.g. "10%"). */
+  imageMarginTop?: string;
   /** Empty slot — no photo. */
   placeholder?: boolean;
   /** Named member without a photo yet — shows name/role normally, dashed photo card. */
@@ -22,7 +26,9 @@ export const TEAM_SHOWCASE_MEMBERS: TeamMember[] = [
     id: "fernando-girones",
     name: "Fernando Gironés",
     role: "Gerente General",
-    image: PUBLIC_ASSETS.nosotros.fernandoGirones,
+    image: PUBLIC_ASSETS.nosotros.fernandoPfp,
+    imageScale: 1.5,
+    imageMarginTop: "10%",
     social: {
       linkedin:
         "https://www.linkedin.com/in/fernando-giron%C3%A9s-barrondo-78308899/",

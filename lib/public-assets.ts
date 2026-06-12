@@ -56,12 +56,16 @@ export const PUBLIC_ASSETS = {
   },
   shared: {
     workersHero: "/assets/shared/workers-hero.webp",
-    pellet2: "/assets/shared/pellet2.webp",
+    /** White dust bag — default product stock (replaces legacy pellet imagery). */
+    whiteDustBag: "/assets/shared/powder3.webp",
     powder3: "/assets/shared/powder3.webp",
     macrogard: "/assets/shared/macrogardbioorigin.webp",
     bioOriginPowder: "/assets/shared/bio_origin_powder.webp",
     bioibericaPowder: "/assets/shared/bioiberica_poweder.webp",
-    nusciencePellet: "/assets/shared/nuscience_pellet.webp",
+  },
+  productos: {
+    silimarina: "/assets/productos/silimarina.webp",
+    nucleoforceSalmonids: "/assets/productos/nucleoforce.webp",
   },
   maquilaSection: {
     tabFormulacionHero: "/assets/maquila-section/tab-formulacion-hero.png",
@@ -70,7 +74,7 @@ export const PUBLIC_ASSETS = {
       biorigin: "/assets/maquila-section/logos/biorigin.svg",
       agrifirm: "/assets/maquila-section/logos/agrifirm.svg",
       nucienci: "/assets/maquila-section/logos/nucienci.svg",
-      bioiberica: "/assets/maquila-section/logos/bioiberica.svg",
+      bioiberica: "/assets/maquila-section/logos/bioiberica-white.png",
     },
   },
   certifications: {
@@ -93,6 +97,7 @@ export const PUBLIC_ASSETS = {
     oceanFloor: "/assets/home-blue-band/ocean-floor.webm",
   },
   nosotros: {
+    fernandoPfp: "/assets/nosotros/fernando_pfp.webp",
     fernandoGirones: "/assets/nosotros/FernandoGirones.webp",
     gonzaloMarambio: "/assets/nosotros/GonzaloMarambio.webp",
     sebastianMeneses: "/assets/nosotros/SebastianMeneses.webp",

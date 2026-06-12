@@ -9,24 +9,28 @@ export const PARTNER_BRAND_LOGOS = [
     alt: "Biorigin",
     width: 132,
     height: 36,
+    invert: true,
   },
   {
     src: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
     alt: "Agrifirm",
     width: 132,
     height: 36,
+    invert: true,
   },
   {
     src: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
     alt: "Nucienci",
     width: 132,
     height: 36,
+    invert: true,
   },
   {
     src: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
     alt: "Bioibérica",
-    width: 230,
-    height: 129,
+    width: 320,
+    height: 125,
+    invert: false,
   },
 ] as const;
 
@@ -64,13 +68,14 @@ export default function PartnerBrandLogos({
             width={isLarge ? logo.width * 2 : logo.width}
             height={isLarge ? logo.height * 2 : logo.height}
             className={cn(
-              "w-auto object-contain opacity-80 brightness-0 invert",
+              "w-auto object-contain",
+              logo.invert ? "opacity-80 brightness-0 invert" : "opacity-90",
               isLarge
                 ? logo.alt === "Bioibérica"
-                  ? "h-14 max-w-[15rem] sm:h-16 sm:max-w-[17rem]"
+                  ? "h-12 max-w-[14rem] sm:h-14 sm:max-w-[16rem]"
                   : "h-14 max-w-[11rem] sm:h-16 sm:max-w-[13rem]"
                 : logo.alt === "Bioibérica"
-                  ? "h-7 max-w-[6.5rem] sm:h-8 sm:max-w-[7.5rem]"
+                  ? "h-6 max-w-[7.5rem] sm:h-7 sm:max-w-[8.5rem]"
                   : "h-7 max-w-[5.5rem] sm:h-8 sm:max-w-[6.5rem]",
             )}
           />
