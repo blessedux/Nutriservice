@@ -48,7 +48,7 @@ export const TEAM_SHOWCASE_MEMBERS: TeamMember[] = [
     id: "rodrigo-martinez",
     name: "Rodrigo Martinez",
     role: "Gerente División",
-    noPhoto: true,
+    image: PUBLIC_ASSETS.nosotros.rodrigoMartinez,
   },
   {
     id: "sebastian-meneses",

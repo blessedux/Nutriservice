@@ -276,7 +276,7 @@ function NavInner() {
       <div className="relative z-50 mx-auto flex h-auto min-h-[var(--site-nav-height)] max-w-[1280px] items-center justify-between px-6 py-4 sm:px-10 lg:px-12">
         <Link
           href="/"
-          className="relative flex h-[86px] shrink-0 items-center md:h-24"
+          className="relative flex h-10 shrink-0 items-center md:h-24"
           onClick={() => setOpen(false)}
         >
           <Image
@@ -284,7 +284,7 @@ function NavInner() {
             alt="Nutriservice"
             width={404}
             height={96}
-            className="h-[86px] w-auto object-contain object-left md:h-24"
+            className="h-10 w-auto object-contain object-left md:h-24"
             priority
           />
         </Link>

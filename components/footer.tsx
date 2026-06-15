@@ -12,14 +12,13 @@ const SOLUCIONES_LINKS = [
 
 const COMPANIA_LINKS = [
   { href: "/nosotros", label: "Nosotros" },
-  { href: "/productos", label: "Calidad" },
+  { href: "/industrias", label: "Industrias" },
   { href: "/contacto", label: "Contacto" },
 ];
 
 const LEGAL_LINKS = [
   { href: "/legal/terminos", label: "Protocolos" },
   { href: "/legal/privacidad", label: "Privacidad" },
-  { href: "/#estadisticas", label: "Certificaciones" },
 ];
 
 function SocialIconLinkedIn({ className }: { className?: string }) {

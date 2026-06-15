@@ -103,6 +103,7 @@ export const PUBLIC_ASSETS = {
     sebastianMeneses: "/assets/nosotros/SebastianMeneses.webp",
     rubenCerda: "/assets/nosotros/RubenCerda.webp",
     manuelAbalo: "/assets/nosotros/ManuelAbalo.webp",
+    rodrigoMartinez: "/assets/nosotros/RodrigoMartinez.webp",
   },
   timeline: {
     background: "/assets/timeline/Timeline_bg.webp",
