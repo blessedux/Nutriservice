@@ -1,10 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import Nav from "@/components/nav";
-import { CtaFooterParallaxProvider } from "@/components/cta-footer-parallax-provider";
-import SiteFooter from "@/components/site-footer";
-import { SiteExperience } from "@/components/site-experience";
+import { MaintenanceScreen } from "@/components/maintenance-screen";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
 const ibmPlexSans = IBM_Plex_Sans({
@@ -51,13 +48,7 @@ export default function RootLayout({
       className={`${ibmPlexSans.variable} ${ibmPlexMono.variable} h-full`}
     >
       <body className="flex min-h-full flex-col overflow-x-hidden">
-        <CtaFooterParallaxProvider>
-          <SiteExperience className="flex-1">
-            <Nav />
-            <main className="site-main-offset flex-1">{children}</main>
-            <SiteFooter />
-          </SiteExperience>
-        </CtaFooterParallaxProvider>
+        <MaintenanceScreen />
       </body>
     </html>
   );
