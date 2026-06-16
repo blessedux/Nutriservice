@@ -75,6 +75,7 @@ export const PUBLIC_ASSETS = {
       agrifirm: "/assets/maquila-section/logos/agrifirm.svg",
       nucienci: "/assets/maquila-section/logos/nucienci.svg",
       bioiberica: "/assets/maquila-section/logos/bioiberica-white.png",
+      tinveun: "/assets/shared/Tinveun_logo_white.svg",
     },
   },
   certifications: {

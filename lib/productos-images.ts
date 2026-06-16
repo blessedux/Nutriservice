@@ -7,16 +7,14 @@ export const PRODUCTO_STOCK_IMAGE = PUBLIC_ASSETS.shared.whiteDustBag;
 export type ProductoStockImageVariant = "powder";
 
 /** Catalogue product shots (override manufacturer / stock defaults). */
-const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
-  silimarina: PUBLIC_ASSETS.productos.silimarina,
-  "nucleoforce-salmonids": PUBLIC_ASSETS.productos.nucleoforceSalmonids,
-};
+const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {};
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */
 const MANUFACTURER_STOCK_IMAGE: Partial<Record<string, string>> = {
   Biorigin: PUBLIC_ASSETS.shared.bioOriginPowder,
   Bioiberica: PUBLIC_ASSETS.shared.bioibericaPowder,
   Nuscience: PUBLIC_ASSETS.shared.whiteDustBag,
+  Tinveun: PUBLIC_ASSETS.shared.bioOriginPowder,
 };
 
 const MANUFACTURER_IMAGE_OBJECT_POSITION = "center 80%";

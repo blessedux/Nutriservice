@@ -10,7 +10,7 @@ export const PRODUCTO_MANUFACTURERS: Partial<
   activemos: "Biorigin",
   macrogard: "Biorigin",
   "palaup-ch": "Biorigin",
-  silimarina: "Bioiberica",
+  silimarina: "Tinveun",
   "nucleoforce-salmonids": "Bioiberica",
   nucleoforce: "Bioiberica",
   aromabiotic: "Agrimprove",

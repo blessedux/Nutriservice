@@ -32,6 +32,13 @@ export const PARTNER_BRAND_LOGOS = [
     height: 125,
     invert: false,
   },
+  {
+    src: PUBLIC_ASSETS.maquilaSection.logos.tinveun,
+    alt: "Tinveun",
+    width: 228,
+    height: 36,
+    invert: true,
+  },
 ] as const;
 
 type PartnerBrandLogosProps = {
@@ -73,10 +80,14 @@ export default function PartnerBrandLogos({
               isLarge
                 ? logo.alt === "Bioibérica"
                   ? "h-12 max-w-[14rem] sm:h-14 sm:max-w-[16rem]"
-                  : "h-14 max-w-[11rem] sm:h-16 sm:max-w-[13rem]"
+                  : logo.alt === "Tinveun"
+                    ? "h-8 max-w-[14rem] sm:h-9 sm:max-w-[16rem]"
+                    : "h-14 max-w-[11rem] sm:h-16 sm:max-w-[13rem]"
                 : logo.alt === "Bioibérica"
                   ? "h-6 max-w-[7.5rem] sm:h-7 sm:max-w-[8.5rem]"
-                  : "h-7 max-w-[5.5rem] sm:h-8 sm:max-w-[6.5rem]",
+                  : logo.alt === "Tinveun"
+                    ? "h-4 max-w-[7.5rem] sm:h-5 sm:max-w-[8.5rem]"
+                    : "h-7 max-w-[5.5rem] sm:h-8 sm:max-w-[6.5rem]",
             )}
           />
         </li>
