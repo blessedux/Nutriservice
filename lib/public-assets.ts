@@ -61,7 +61,7 @@ export const PUBLIC_ASSETS = {
     whiteDustBag: "/assets/shared/nutrisermix.webp",
     nutrisermix: "/assets/shared/nutrisermix.webp",
     silimarinaBarril: "/assets/shared/silimarina_barril.webp",
-    macrogard: "/assets/shared/macrogard.webp",
+    macrogard: "/assets/shared/macrogard_bag.webp",
     bioOriginPowder: "/assets/shared/bio_origin_powder.webp",
     bioibericaPowder: "/assets/shared/bioiberica_poweder.webp",
     plusbreathe: "/assets/shared/plusbreathe+.webp",
