@@ -62,6 +62,8 @@ export const PUBLIC_ASSETS = {
     macrogard: "/assets/shared/macrogardbioorigin.webp",
     bioOriginPowder: "/assets/shared/bio_origin_powder.webp",
     bioibericaPowder: "/assets/shared/bioiberica_poweder.webp",
+    plusbreathe: "/assets/shared/plusbreathe+.webp",
+    activemos: "/assets/shared/activemos.webp",
   },
   productos: {
     silimarina: "/assets/productos/silimarina.webp",

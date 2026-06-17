@@ -10,6 +10,8 @@ export type ProductoStockImageVariant = "powder";
 const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
   silimarina: PUBLIC_ASSETS.productos.silimarina,
   "nucleoforce-salmonids": PUBLIC_ASSETS.productos.nucleoforceSalmonids,
+  activemos: PUBLIC_ASSETS.shared.activemos,
+  "plusbreathe-plus": PUBLIC_ASSETS.shared.plusbreathe,
 };
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */
