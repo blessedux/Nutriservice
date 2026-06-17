@@ -54,7 +54,7 @@ const HIGHLIGHT_CARDS = [
     id: MAQUILA_WHY_CHOOSE[2].id,
     title: MAQUILA_WHY_CHOOSE[2].title,
     description: MAQUILA_WHY_CHOOSE[2].description,
-    image: PUBLIC_ASSETS.shared.workersBag,
+    image: PUBLIC_ASSETS.shared.nutribagWorkers,
     variant: "overlay" as const,
   },
 ];

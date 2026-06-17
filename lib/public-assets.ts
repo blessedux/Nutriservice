@@ -57,6 +57,7 @@ export const PUBLIC_ASSETS = {
   shared: {
     workersHero: "/assets/shared/workers_hero2.webp",
     workersBag: "/assets/shared/workers_bag.webp",
+    nutribagWorkers: "/assets/shared/nutribag_workers.webp",
     /** default product stock (replaces legacy white dust bag) */
     whiteDustBag: "/assets/shared/nutrisermix.webp",
     nutrisermix: "/assets/shared/nutrisermix.webp",
