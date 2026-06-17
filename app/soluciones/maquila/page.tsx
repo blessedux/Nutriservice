@@ -17,7 +17,7 @@ export default function MaquilaPage() {
       <MaquilaPageLayout />
 
       <div className="mx-auto w-full max-w-6xl px-6 pb-12 sm:px-10 lg:px-12 xl:px-20">
-        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-md">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-[#0a192f] p-8 backdrop-blur-md">
           <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="space-y-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-400">
@@ -27,16 +27,7 @@ export default function MaquilaPage() {
               <p className="text-sm text-white/50">Gerente de Operaciones</p>
             </div>
             
-            <div className="grid gap-4 sm:grid-cols-3 md:gap-8 text-sm">
-              <div className="space-y-1">
-                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">Fijo:</span>
-                <a
-                  href="tel:+56227860554"
-                  className="text-base text-white/80 transition-colors hover:text-cyan-300"
-                >
-                  +56 2 2786 0554
-                </a>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2 md:gap-8 text-sm">
               <div className="space-y-1">
                 <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">Móvil:</span>
                 <a
