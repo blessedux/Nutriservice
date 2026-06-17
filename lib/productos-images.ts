@@ -23,6 +23,15 @@ const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
   aromabiotic: PUBLIC_ASSETS.shared.aromabiotic,
   "c-vita": PUBLIC_ASSETS.shared.cVita,
   eubisol: PUBLIC_ASSETS.shared.eubisol,
+  "ambitine-cl": PUBLIC_ASSETS.shared.ambitine,
+  "citroflake-b": PUBLIC_ASSETS.shared.citroflakeB,
+  feedlock: PUBLIC_ASSETS.shared.feedlock,
+  "microacid-plus": PUBLIC_ASSETS.shared.microacid,
+  "microacid-eoils": PUBLIC_ASSETS.shared.microacid,
+  milkey: PUBLIC_ASSETS.shared.milkey,
+  "turbozyme-ft-exp": PUBLIC_ASSETS.shared.turbozyme,
+  "turbozyme-ft-sd-exp": PUBLIC_ASSETS.shared.turbozyme,
+  "vitaprotein-50-plus": PUBLIC_ASSETS.shared.vitaprotein,
 };
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */

@@ -74,6 +74,13 @@ export const PUBLIC_ASSETS = {
     sProve: "/assets/shared/s-prove.webp",
     tecmaxPro: "/assets/shared/texmaxpro_tectron.webp",
     vitanox: "/assets/shared/vitanox.webp",
+    ambitine: "/assets/shared/ambitine.webp",
+    citroflakeB: "/assets/shared/citroflake_b.webp",
+    feedlock: "/assets/shared/feedlock.webp",
+    microacid: "/assets/shared/microacid.webp",
+    milkey: "/assets/shared/milkey.webp",
+    turbozyme: "/assets/shared/turbozyme.webp",
+    vitaprotein: "/assets/shared/vitaprotein.webp",
   },
   productos: {
     silimarina: "/assets/productos/silimarina.webp",
