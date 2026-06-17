@@ -56,9 +56,11 @@ export const PUBLIC_ASSETS = {
   },
   shared: {
     workersHero: "/assets/shared/workers_hero2.webp",
-    /** White dust bag — default product stock (replaces legacy pellet imagery). */
-    whiteDustBag: "/assets/shared/powder3.webp",
-    powder3: "/assets/shared/powder3.webp",
+    workersBag: "/assets/shared/workers_bag.webp",
+    /** default product stock (replaces legacy white dust bag) */
+    whiteDustBag: "/assets/shared/nutrisermix.webp",
+    nutrisermix: "/assets/shared/nutrisermix.webp",
+    silimarinaBarril: "/assets/shared/silimarina_barril.webp",
     macrogard: "/assets/shared/macrogard.webp",
     bioOriginPowder: "/assets/shared/bio_origin_powder.webp",
     bioibericaPowder: "/assets/shared/bioiberica_poweder.webp",
