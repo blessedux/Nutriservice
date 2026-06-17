@@ -72,7 +72,8 @@ export function ProductoCard({
             producto.slug.startsWith("nucleoforce") ||
             producto.slug === "milkey" ||
             producto.slug.startsWith("microacid") ||
-            producto.slug === "vitaprotein-50-plus"
+            producto.slug === "vitaprotein-50-plus" ||
+            producto.slug === "macrogard"
           }
           objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
         />
