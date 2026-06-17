@@ -73,7 +73,9 @@ export function ProductoCard({
             producto.slug === "milkey" ||
             producto.slug.startsWith("microacid") ||
             producto.slug === "vitaprotein-50-plus" ||
-            producto.slug === "macrogard"
+            producto.slug === "macrogard" ||
+            producto.slug === "premix-especiales" ||
+            producto.slug === "premezcla-suplemento-funcional"
           }
           objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
         />
