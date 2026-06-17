@@ -15,51 +15,55 @@ export default function MaquilaPage() {
   return (
     <div style={{ backgroundColor: HOME_INDUSTRIES_BG }}>
       <MaquilaPageLayout />
-      <CtaFooterParallax>
-        <IndustriasCtaBanner id="contacto">
-          <div className="w-full max-w-sm rounded-[1.5rem] border border-white/10 bg-white/5 p-6 text-left backdrop-blur-md">
-            <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-400">
-              Contacto Directo
-            </h3>
-            <div className="mt-4 space-y-4">
-              <div>
-                <p className="text-base font-black text-white">Sebastián Meneses</p>
-                <p className="text-xs text-white/50">Gerente de Operaciones</p>
+
+      <div className="mx-auto w-full max-w-6xl px-6 pb-12 sm:px-10 lg:px-12 xl:px-20">
+        <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.03] p-8 backdrop-blur-md">
+          <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-400">
+                Contacto Directo División Maquila
+              </span>
+              <h3 className="text-2xl font-black text-white">Sebastián Meneses</h3>
+              <p className="text-sm text-white/50">Gerente de Operaciones</p>
+            </div>
+            
+            <div className="grid gap-4 sm:grid-cols-3 md:gap-8 text-sm">
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">Fijo:</span>
+                <a
+                  href="tel:+56227860554"
+                  className="text-base text-white/80 transition-colors hover:text-cyan-300"
+                >
+                  +56 2 2786 0554
+                </a>
               </div>
-              <div className="space-y-2.5 pt-3 border-t border-white/10 text-sm">
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 min-w-[50px]">Fijo:</span>
-                  <a
-                    href="tel:+56227860554"
-                    className="text-white/80 transition-colors hover:text-cyan-300"
-                  >
-                    +56 2 2786 0554
-                  </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 min-w-[50px]">Móvil:</span>
-                  <a
-                    href="https://wa.me/56995397839"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-white/80 transition-colors hover:text-cyan-300"
-                  >
-                    +56 9 9539 7839
-                  </a>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-white/40 min-w-[50px]">Email:</span>
-                  <a
-                    href="mailto:smeneses@nutriservice.cl"
-                    className="text-white/80 transition-colors hover:text-cyan-300"
-                  >
-                    smeneses@nutriservice.cl
-                  </a>
-                </div>
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">Móvil:</span>
+                <a
+                  href="https://wa.me/56995397839"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-base text-white/80 transition-colors hover:text-cyan-300"
+                >
+                  +56 9 9539 7839
+                </a>
+              </div>
+              <div className="space-y-1">
+                <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">Email:</span>
+                <a
+                  href="mailto:smeneses@nutriservice.cl"
+                  className="text-base text-white/80 transition-colors hover:text-cyan-300"
+                >
+                  smeneses@nutriservice.cl
+                </a>
               </div>
             </div>
           </div>
-        </IndustriasCtaBanner>
+        </div>
+      </div>
+
+      <CtaFooterParallax>
+        <IndustriasCtaBanner id="contacto" />
       </CtaFooterParallax>
     </div>
   );
