@@ -1,6 +1,9 @@
 import Link from "next/link";
+import Image from "next/image";
 
+import { ProductoImage } from "@/components/producto-image";
 import { PRODUCTOS_CATEGORIAS } from "@/lib/productos-categories";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import {
   getDivisionLabel,
   type ProductoDivisionSlug,
@@ -10,10 +13,28 @@ import {
   getProductoAllFilterSlugs,
   getProductoManufacturer,
   getProductoSummary,
+  getProductoImagePath,
+  getProductoImageObjectPosition,
   productoDetailHref,
   type Producto,
 } from "@/lib/productos-inventory";
 import { cn } from "@/lib/utils";
+
+const MANUFACTURER_LOGOS: Record<string, string> = {
+  biorigin: PUBLIC_ASSETS.maquilaSection.logos.biorigin,
+  bioiberica: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
+  "bioibérica": PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
+  tinveun: PUBLIC_ASSETS.maquilaSection.logos.tinveun,
+  nuscience: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
+  nucienci: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
+  agrimprove: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
+  agrifirm: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
+};
+
+function getManufacturerLogo(manufacturer: string | undefined): string | undefined {
+  if (!manufacturer) return undefined;
+  return MANUFACTURER_LOGOS[manufacturer.toLowerCase().trim()];
+}
 
 type ProductoCardProps = {
   producto: Producto;
@@ -35,6 +56,8 @@ export function ProductoCard({
     ? getProductoFilterSlugs(producto, activeDivision)
     : getProductoAllFilterSlugs(producto);
   const onDark = variant === "on-dark";
+  const imagePath = getProductoImagePath(producto);
+  const logoUrl = getManufacturerLogo(manufacturer);
 
   return (
     <Link
@@ -50,6 +73,38 @@ export function ProductoCard({
           : "border border-ns-border bg-white hover:border-ns-green",
       )}
     >
+      {/* Product Image Container */}
+      <div
+        className={cn(
+          "w-full overflow-hidden rounded-xl border relative aspect-square mb-4 shrink-0",
+          onDark
+            ? "border-white/10 bg-white/[0.03]"
+            : "border-ns-border bg-ns-surface-alt",
+        )}
+      >
+        <ProductoImage
+          src={imagePath}
+          alt={producto.name}
+          productName={producto.name}
+          tone={onDark ? "on-dark" : "on-light"}
+          contain={producto.slug.startsWith("nucleoforce")}
+          objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
+        />
+      </div>
+
+      {/* Manufacturer Logo below the image */}
+      {logoUrl && (
+        <div className="mb-4 flex justify-center shrink-0">
+          <Image
+            src={logoUrl}
+            alt={manufacturer || "Logo fabricante"}
+            width={70}
+            height={20}
+            className="h-4 w-auto object-contain opacity-85 brightness-0 invert"
+          />
+        </div>
+      )}
+
       <div className="flex flex-wrap gap-2">
         {divisionsToShow.map((division) => (
           <span
@@ -98,7 +153,7 @@ export function ProductoCard({
           ({producto.altName})
         </span>
       </h2>
-      {manufacturer ? (
+      {manufacturer && !logoUrl ? (
         <p
           className={cn(
             "mt-2 text-sm font-medium",

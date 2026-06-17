@@ -12,6 +12,7 @@ const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
   "nucleoforce-salmonids": PUBLIC_ASSETS.productos.nucleoforceSalmonids,
   activemos: PUBLIC_ASSETS.shared.activemos,
   "plusbreathe-plus": PUBLIC_ASSETS.shared.plusbreathe,
+  macrogard: PUBLIC_ASSETS.shared.macrogard,
 };
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */
