@@ -81,7 +81,7 @@ export const PUBLIC_ASSETS = {
     citroflakeB: "/assets/shared/citroflake_b.webp",
     feedlock: "/assets/shared/feedlock.webp",
     microacid: "/assets/shared/microacid.webp",
-    milkey: "/assets/shared/milkey.webp",
+    milkey: "/assets/shared/milkey2.webp",
     turbozyme: "/assets/shared/turbozyme.webp",
     vitaprotein: "/assets/shared/vitaprotein.webp",
     meatfree: "/assets/shared/meatfree.webp",
