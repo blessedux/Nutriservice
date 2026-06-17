@@ -9,6 +9,7 @@ import DivisionVideosBg from "@/components/division-videos-bg";
 import { ProductoImage } from "@/components/producto-image";
 import { HOME_INDUSTRIES_BG } from "@/components/home-blue-band";
 import { PRODUCTOS_CATEGORIAS } from "@/lib/productos-categories";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import {
   getDivisionLabel,
   PRODUCTOS_DIVISIONES,
@@ -29,6 +30,59 @@ import {
   type Producto,
 } from "@/lib/productos-inventory";
 import { cn } from "@/lib/utils";
+
+const MANUFACTURER_LOGOS: Record<
+  string,
+  { src: string; width: number; height: number }
+> = {
+  biorigin: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.biorigin,
+    width: 110,
+    height: 30,
+  },
+  bioiberica: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
+    width: 128,
+    height: 50,
+  },
+  "bioibérica": {
+    src: PUBLIC_ASSETS.maquilaSection.logos.bioiberica,
+    width: 128,
+    height: 50,
+  },
+  tinveun: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.tinveun,
+    width: 101,
+    height: 16,
+  },
+  nuscience: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
+    width: 110,
+    height: 30,
+  },
+  nucienci: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.nucienci,
+    width: 110,
+    height: 30,
+  },
+  agrimprove: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
+    width: 110,
+    height: 30,
+  },
+  agrifirm: {
+    src: PUBLIC_ASSETS.maquilaSection.logos.agrifirm,
+    width: 110,
+    height: 30,
+  },
+};
+
+function getManufacturerLogo(
+  manufacturer: string | undefined,
+): { src: string; width: number; height: number } | undefined {
+  if (!manufacturer) return undefined;
+  return MANUFACTURER_LOGOS[manufacturer.toLowerCase().trim()];
+}
 
 const GLASS_CARD_DARK = cn(
   "rounded-[2rem] border border-white/20 bg-white/[0.08] p-6 shadow-[0_24px_48px_-24px_rgba(0,0,0,0.55)] backdrop-blur-md sm:rounded-[2.5rem] sm:p-8 lg:p-10",
@@ -105,6 +159,7 @@ export default function ProductoDetailPageView({
   const summary = getProductoSummary(producto, division);
   const manufacturer = getProductoManufacturer(producto);
   const imagePath = getProductoImagePath(producto);
+  const logoConfig = getManufacturerLogo(manufacturer);
   const [showInquiryForm, setShowInquiryForm] = useState(false);
   const inquiryRef = useRef<HTMLDivElement>(null);
   const inquiryMessage = buildProductInquiryMessage(producto, division);
@@ -167,20 +222,39 @@ export default function ProductoDetailPageView({
             <div className="grid gap-8 lg:grid-cols-[minmax(0,280px)_minmax(0,1fr)] lg:items-start">
               <div
                 className={cn(
-                  "w-full overflow-hidden rounded-[1.5rem] border",
+                  "w-full overflow-hidden rounded-[1.5rem] border flex flex-col items-center",
                   onDark
                     ? "border-white/15 bg-white/[0.04]"
                     : "border-ns-border bg-ns-surface-alt",
                 )}
               >
-                <ProductoImage
-                  src={imagePath}
-                  alt={`${producto.name} — ${producto.altName}`}
-                  productName={producto.name}
-                  tone={media.tone}
-                  contain={producto.slug.startsWith("nucleoforce")}
-                  objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
-                />
+                <div className="relative w-full aspect-square">
+                  <ProductoImage
+                    src={imagePath}
+                    alt={`${producto.name} — ${producto.altName}`}
+                    productName={producto.name}
+                    tone={media.tone}
+                    contain={producto.slug.startsWith("nucleoforce")}
+                    objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
+                  />
+                </div>
+                {logoConfig && (
+                  <div
+                    className={cn(
+                      "py-5 flex justify-center w-full border-t shrink-0 select-none",
+                      onDark ? "border-white/10" : "border-ns-border"
+                    )}
+                  >
+                    <Image
+                      src={logoConfig.src}
+                      alt={manufacturer || "Logo fabricante"}
+                      width={logoConfig.width}
+                      height={logoConfig.height}
+                      className="object-contain opacity-85 brightness-0 invert"
+                      style={{ height: `${logoConfig.height}px` }}
+                    />
+                  </div>
+                )}
               </div>
 
               <div>
@@ -231,7 +305,7 @@ export default function ProductoDetailPageView({
                   </span>
                 </h1>
 
-                {manufacturer ? (
+                {manufacturer && !logoConfig ? (
                   <p
                     className={cn(
                       "mt-3 text-sm font-medium",
