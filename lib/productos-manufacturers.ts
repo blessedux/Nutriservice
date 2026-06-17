@@ -31,7 +31,6 @@ export const PRODUCTO_MANUFACTURERS: Partial<
   "vitaprotein-50-plus": "Nuscience",
   "halor-tid": "Enhalor",
   "plusbreathe-plus": "PlusVet",
-  milkey: "Nutrimas",
 };
 
 export function getProductoManufacturer(

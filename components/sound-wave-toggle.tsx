@@ -14,6 +14,10 @@ import { AUDIO_FADE_MS } from "@/lib/audio-constants";
 import { setAmbientMasterMuted } from "@/lib/audio-master-state";
 import { easeInQuad, easeOutQuad } from "@/lib/audio-fade";
 import { subscribeTabAudioHidden } from "@/lib/tab-audio-visibility";
+import {
+  hasEnteredSession,
+  getSessionSoundEnabled,
+} from "@/lib/preloader-session";
 
 const BASE_AMPLITUDE = 5;
 const CANVAS_LOGICAL_PX = 56;
@@ -136,7 +140,7 @@ export function SoundWaveToggle({
   const rafRef = useRef<number | null>(null);
   const aliveRef = useRef(false);
   const isFadingRef = useRef(false);
-  const isMutedRef = useRef(false);
+  const isMutedRef = useRef(!autoBootstrap);
   const audioSessionReadyRef = useRef(false);
   const toneRef = useRef<WaveTone>(tone);
   const fadeGenRef = useRef(0);
@@ -200,6 +204,7 @@ export function SoundWaveToggle({
   const fadeToUnmute = useCallback(() => {
     const audio = audioRef.current;
     if (!audio || isFadingRef.current) return;
+    if (!isMutedRef.current && audioSessionReadyRef.current) return;
     isFadingRef.current = true;
     void audio
       .play()
@@ -378,10 +383,14 @@ export function SoundWaveToggle({
 
     if (autoBootstrapRef.current) {
       void bootstrapAudible();
+    } else {
+      if (hasEnteredSession() && getSessionSoundEnabled() === true) {
+        fadeToUnmute();
+      }
     }
 
     const onStartSound = () => {
-      void bootstrapAudible();
+      fadeToUnmute();
     };
     window.addEventListener("hyperia:start-sound", onStartSound);
 
