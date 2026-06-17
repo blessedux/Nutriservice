@@ -82,7 +82,7 @@ export default function Footer() {
       className="relative overflow-x-hidden bg-[#0a192f] text-white lg:min-h-150"
     >
       <div
-        className="pointer-events-none absolute inset-0 bg-no-repeat max-lg:bg-[length:auto_200%] max-lg:bg-[position:78%_66%] max-[440px]:bg-[position:8%_30%] lg:bg-cover lg:bg-[position:right_bottom]"
+        className="pointer-events-none absolute inset-0 bg-no-repeat max-lg:bg-[length:auto_200%] max-lg:bg-[position:78%_66%] max-[440px]:bg-[position:95%_15%] lg:bg-cover lg:bg-[position:right_bottom]"
         style={{ backgroundImage: `url(${PUBLIC_ASSETS.footer.background})` }}
         aria-hidden
       />
