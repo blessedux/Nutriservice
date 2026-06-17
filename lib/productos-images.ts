@@ -13,6 +13,16 @@ const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
   activemos: PUBLIC_ASSETS.shared.activemos,
   "plusbreathe-plus": PUBLIC_ASSETS.shared.plusbreathe,
   macrogard: PUBLIC_ASSETS.shared.macrogard,
+  nucleoforce: PUBLIC_ASSETS.shared.nucleoforceShared,
+  "palaup-ch": PUBLIC_ASSETS.shared.palaupCh,
+  "halor-tid": PUBLIC_ASSETS.shared.halorTid,
+  "m-prove": PUBLIC_ASSETS.shared.mProve,
+  "s-prove": PUBLIC_ASSETS.shared.sProve,
+  "tecmax-pro": PUBLIC_ASSETS.shared.tecmaxPro,
+  vitanox: PUBLIC_ASSETS.shared.vitanox,
+  aromabiotic: PUBLIC_ASSETS.shared.aromabiotic,
+  "c-vita": PUBLIC_ASSETS.shared.cVita,
+  eubisol: PUBLIC_ASSETS.shared.eubisol,
 };
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */
