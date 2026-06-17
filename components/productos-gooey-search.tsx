@@ -21,10 +21,12 @@ function ProductosGooeySearchInner() {
     (query: string) => {
       const categoria = searchParams.get("categoria") ?? undefined;
       const division = searchParams.get("division") ?? undefined;
+      const fabricante = searchParams.get("fabricante") ?? undefined;
       router.push(
         productosFilterHref({
           categoria,
           division,
+          fabricante,
           q: query.trim() || undefined,
         }),
       );

@@ -359,6 +359,7 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
 export type ProductosFilterParams = {
   categoria?: string;
   division?: string;
+  fabricante?: string;
   q?: string;
 };
 
@@ -366,6 +367,7 @@ export function productosFilterHref(params: ProductosFilterParams): string {
   const sp = new URLSearchParams();
   if (params.division) sp.set("division", params.division);
   if (params.categoria) sp.set("categoria", params.categoria);
+  if (params.fabricante) sp.set("fabricante", params.fabricante);
   if (params.q?.trim()) sp.set("q", params.q.trim());
   const query = sp.toString();
   return query ? `/productos?${query}` : "/productos";
@@ -436,7 +438,11 @@ export function getProductosSearchOptions(): string[] {
   const options: string[] = [];
 
   for (const producto of PRODUCTOS_INVENTORY) {
-    for (const label of [producto.name, producto.altName]) {
+    const manufacturer = getProductoManufacturer(producto);
+    const labels = [producto.name, producto.altName];
+    if (manufacturer) labels.push(manufacturer);
+
+    for (const label of labels) {
       const key = label.toLowerCase();
       if (seen.has(key)) continue;
       seen.add(key);
@@ -501,6 +507,7 @@ export function getProductoAllFilterSlugs(
 export function getProductosFiltered({
   categoria = "",
   division = "",
+  fabricante = "",
   q = "",
 }: ProductosFilterParams = {}): Producto[] {
   return PRODUCTOS_INVENTORY.filter((producto) => {
@@ -512,9 +519,23 @@ export function getProductosFiltered({
     const matchesDivision =
       !division ||
       producto.divisionSlugs.includes(division as ProductoDivisionSlug);
+    const matchesFabricante =
+      !fabricante ||
+      getProductoManufacturer(producto)?.toLowerCase().trim() === fabricante.toLowerCase().trim();
     const matchesQuery = productMatchesQuery(producto, q);
-    return matchesCategoria && matchesDivision && matchesQuery;
+    return matchesCategoria && matchesDivision && matchesFabricante && matchesQuery;
   }).sort((a, b) => a.name.localeCompare(b.name, "es"));
+}
+
+export function getProductosManufacturers(): string[] {
+  const manufacturers = new Set<string>();
+  for (const producto of PRODUCTOS_INVENTORY) {
+    const manufacturer = getProductoManufacturer(producto);
+    if (manufacturer) {
+      manufacturers.add(manufacturer);
+    }
+  }
+  return Array.from(manufacturers).sort((a, b) => a.localeCompare(b, "es"));
 }
 
 /** @deprecated Use `getProductosFiltered`. */

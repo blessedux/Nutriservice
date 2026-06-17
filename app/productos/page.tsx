@@ -14,6 +14,7 @@ import { getDivisionMedia } from "@/lib/productos-division-media";
 import { productosFilterChipClass } from "@/lib/productos-page-utils";
 import {
   getProductosFiltered,
+  getProductosManufacturers,
   productosFilterHref,
 } from "@/lib/productos-inventory";
 import { cn } from "@/lib/utils";
@@ -25,23 +26,25 @@ export const metadata: Metadata = {
 };
 
 type Props = {
-  searchParams: Promise<{ categoria?: string; division?: string; q?: string }>;
+  searchParams: Promise<{ categoria?: string; division?: string; fabricante?: string; q?: string }>;
 };
 
 export default async function ProductosPage({ searchParams }: Props) {
   const {
     categoria: rawCategoria,
     division: rawDivision,
+    fabricante: rawFabricante,
     q: rawQ,
   } = await searchParams;
   const categoria = rawCategoria?.toLowerCase().trim() ?? "";
   const division = rawDivision?.toLowerCase().trim() ?? "";
+  const fabricante = rawFabricante?.trim() ?? "";
   const q = rawQ?.trim() ?? "";
   const activeDivision = PRODUCTOS_DIVISIONES.find((d) => d.slug === division);
   const activeCategoria = PRODUCTOS_CATEGORIAS.find(
     (c) => c.slug === categoria,
   );
-  const productos = getProductosFiltered({ categoria, division, q });
+  const productos = getProductosFiltered({ categoria, division, fabricante, q });
   const activeDivisionSlug = activeDivision?.slug as
     | ProductoDivisionSlug
     | undefined;
@@ -52,6 +55,7 @@ export default async function ProductosPage({ searchParams }: Props) {
   const filterBase = {
     categoria: categoria || undefined,
     division: division || undefined,
+    fabricante: fabricante || undefined,
     q: q || undefined,
   };
 
@@ -59,11 +63,12 @@ export default async function ProductosPage({ searchParams }: Props) {
   if (q) headingParts.push(`“${q}”`);
   if (activeDivision) headingParts.push(activeDivision.label);
   if (activeCategoria) headingParts.push(activeCategoria.label);
+  if (fabricante) headingParts.push(fabricante);
 
   const heading =
     headingParts.length > 0 ? headingParts.join(" · ") : "Todos los productos";
 
-  const hasFilters = Boolean(division || categoria || q);
+  const hasFilters = Boolean(division || categoria || fabricante || q);
 
   return (
     <Suspense
@@ -127,6 +132,43 @@ export default async function ProductosPage({ searchParams }: Props) {
                   )}
                 >
                   {d.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p
+              className={cn(
+                "mb-3 text-[10px] font-bold uppercase tracking-[0.18em]",
+                onDark ? "text-white/55" : "text-ns-muted",
+              )}
+            >
+              Fabricante
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Link
+                href={productosFilterHref({ ...filterBase, fabricante: undefined })}
+                className={cn(
+                  "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                  productosFilterChipClass(!fabricante, onDark),
+                )}
+              >
+                Todos
+              </Link>
+              {getProductosManufacturers().map((m) => (
+                <Link
+                  key={m}
+                  href={productosFilterHref({
+                    ...filterBase,
+                    fabricante: m,
+                  })}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    productosFilterChipClass(fabricante.toLowerCase().trim() === m.toLowerCase().trim(), onDark),
+                  )}
+                >
+                  {m}
                 </Link>
               ))}
             </div>
@@ -202,6 +244,7 @@ export default async function ProductosPage({ searchParams }: Props) {
                   href={productosFilterHref({
                     categoria: filterBase.categoria,
                     division: filterBase.division,
+                    fabricante: filterBase.fabricante,
                   })}
                   className={cn(
                     "font-medium hover:underline",

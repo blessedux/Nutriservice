@@ -8,7 +8,7 @@ export type ProductoStockImageVariant = "powder";
 
 /** Catalogue product shots (override manufacturer / stock defaults). */
 const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
-  silimarina: PUBLIC_ASSETS.shared.whiteDustBag,
+  silimarina: PUBLIC_ASSETS.productos.silimarina,
   "nucleoforce-salmonids": PUBLIC_ASSETS.productos.nucleoforceSalmonids,
 };
 

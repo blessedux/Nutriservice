@@ -178,6 +178,7 @@ export default function ProductoDetailPageView({
                   alt={`${producto.name} — ${producto.altName}`}
                   productName={producto.name}
                   tone={media.tone}
+                  contain={producto.slug.startsWith("nucleoforce")}
                   objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
                 />
               </div>
