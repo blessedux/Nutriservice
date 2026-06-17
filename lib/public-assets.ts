@@ -81,6 +81,7 @@ export const PUBLIC_ASSETS = {
     milkey: "/assets/shared/milkey.webp",
     turbozyme: "/assets/shared/turbozyme.webp",
     vitaprotein: "/assets/shared/vitaprotein.webp",
+    meatfree: "/assets/shared/meatfree.webp",
   },
   productos: {
     silimarina: "/assets/productos/silimarina.webp",
@@ -95,6 +96,7 @@ export const PUBLIC_ASSETS = {
       nucienci: "/assets/maquila-section/logos/nucienci.svg",
       bioiberica: "/assets/maquila-section/logos/bioiberica-white.png",
       tinveun: "/assets/shared/Tinveun_logo_white.svg",
+      tectron: "/assets/maquila-section/logos/tectron_logo.svg",
     },
   },
   certifications: {

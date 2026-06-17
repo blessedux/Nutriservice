@@ -178,7 +178,12 @@ export default function ProductoDetailPageView({
                   alt={`${producto.name} — ${producto.altName}`}
                   productName={producto.name}
                   tone={media.tone}
-                  contain={producto.slug.startsWith("nucleoforce")}
+                  contain={
+                    producto.slug.startsWith("nucleoforce") ||
+                    producto.slug === "milkey" ||
+                    producto.slug.startsWith("microacid") ||
+                    producto.slug === "vitaprotein-50-plus"
+                  }
                   objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
                 />
               </div>

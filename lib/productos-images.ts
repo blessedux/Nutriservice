@@ -32,6 +32,7 @@ const PRODUCT_IMAGE_BY_SLUG: Partial<Record<string, string>> = {
   "turbozyme-ft-exp": PUBLIC_ASSETS.shared.turbozyme,
   "turbozyme-ft-sd-exp": PUBLIC_ASSETS.shared.turbozyme,
   "vitaprotein-50-plus": PUBLIC_ASSETS.shared.vitaprotein,
+  meatfree: PUBLIC_ASSETS.shared.meatfree,
 };
 
 /** Default stock shot per manufacturer when no slug-specific override exists. */

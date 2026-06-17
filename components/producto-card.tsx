@@ -68,7 +68,12 @@ export function ProductoCard({
           alt={producto.name}
           productName={producto.name}
           tone={onDark ? "on-dark" : "on-light"}
-          contain={producto.slug.startsWith("nucleoforce")}
+          contain={
+            producto.slug.startsWith("nucleoforce") ||
+            producto.slug === "milkey" ||
+            producto.slug.startsWith("microacid") ||
+            producto.slug === "vitaprotein-50-plus"
+          }
           objectPosition={getProductoImageObjectPosition(manufacturer, producto.slug)}
         />
       </div>

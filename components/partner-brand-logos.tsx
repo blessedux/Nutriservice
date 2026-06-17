@@ -39,6 +39,13 @@ export const PARTNER_BRAND_LOGOS = [
     height: 36,
     invert: true,
   },
+  {
+    src: PUBLIC_ASSETS.maquilaSection.logos.tectron,
+    alt: "Tectron",
+    width: 144,
+    height: 36,
+    invert: true,
+  },
 ] as const;
 
 type PartnerBrandLogosProps = {
