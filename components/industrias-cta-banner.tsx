@@ -21,6 +21,7 @@ type IndustriasCtaBannerProps = {
   primaryLabel?: string;
   showSecondary?: boolean;
   secondaryLabel?: string;
+  children?: ReactNode;
 };
 
 export default function IndustriasCtaBanner({
@@ -31,6 +32,7 @@ export default function IndustriasCtaBanner({
   primaryLabel = SITE_FOOTER_CTA_PRIMARY_LABEL,
   showSecondary = false,
   secondaryLabel = "Descargar Brochures",
+  children,
 }: IndustriasCtaBannerProps = {}) {
   return (
     <section
@@ -56,6 +58,7 @@ export default function IndustriasCtaBanner({
           <p className="text-pretty text-base leading-relaxed text-white/60 sm:text-lg">
             {subtext}
           </p>
+          {children}
           <div className="flex flex-col gap-4 pt-2 sm:flex-row sm:justify-center">
             <Link
               href="/contacto"

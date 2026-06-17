@@ -33,7 +33,7 @@ export const MAQUILA_LANDING_HIGHLIGHTS: MaquilaProcessStep[] = [
       "Procesos auditados bajo estándares GMP y REP, que respaldan la inocuidad, precisión y cumplimiento normativo requeridos por marcas que buscan excelencia.",
     detail:
       "Procesos auditados bajo estándares GMP y REP, que respaldan la inocuidad, precisión y cumplimiento normativo requeridos por marcas que buscan excelencia.",
-    image: PUBLIC_ASSETS.shared.workersHero,
+    image: PUBLIC_ASSETS.shared.nutribagWorkers,
     imageWidth: 1536,
     imageHeight: 1024,
   },
@@ -72,7 +72,7 @@ export const MAQUILA_PROCESS_STEPS: MaquilaProcessStep[] = [
       "Procesos estandarizados de mezclado, control de calidad y trazabilidad operacional.",
     detail:
       "Ejecutamos mezclas con procesos estandarizados, control de calidad en planta y trazabilidad completa de materias primas y lotes. Garantizamos consistencia en cada entrega.",
-    image: PUBLIC_ASSETS.shared.workersHero,
+    image: PUBLIC_ASSETS.shared.nutribagWorkers,
     imageWidth: 1536,
     imageHeight: 1024,
   },
