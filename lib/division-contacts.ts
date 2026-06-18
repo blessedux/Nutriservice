@@ -14,22 +14,22 @@ export const DIVISION_CONTACTS: Record<
   DivisionContact
 > = {
   acuicola: {
-    name: "Gonzalo Marambio",
+    name: "Gonzalo Marambio – Gerente División",
     email: "gmarambio@nutriservice.cl",
     phone: "+56 9 89005220",
   },
   aves: {
-    name: "Rodrigo Mártinez – Product Manager",
+    name: "Rodrigo Martinez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
   cerdos: {
-    name: "Rodrigo Mártinez – Product Manager",
+    name: "Rodrigo Martinez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
   mascotas: {
-    name: "Rodrigo Mártinez – Product Manager",
+    name: "Rodrigo Martinez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
