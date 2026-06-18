@@ -84,7 +84,7 @@ export const PUBLIC_ASSETS = {
     milkey: "/assets/shared/milkey2.webp",
     turbozyme: "/assets/shared/turbozyme.webp",
     vitaprotein: "/assets/shared/vitaprotein.webp",
-    meatfree: "/assets/shared/meatfree.webp",
+    meatfree: "/assets/shared/meatfree_bag.webp",
   },
   productos: {
     silimarina: "/assets/productos/silimarina.webp",

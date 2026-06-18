@@ -138,8 +138,8 @@ export const PRODUCTOS_INVENTORY: readonly Producto[] = [
     description:
       "Solución nutricional que mejora el metabolismo digestivo y permite reemplazar fósforo inorgánico, reduciendo costo de dietas.",
     tags: ["Digestión", "Fósforo"],
-    filterSlugs: ["nutricion"],
-    divisionSlugs: ["aves"],
+    filterSlugs: ["nutricion", "salud-animal"],
+    divisionSlugs: ["aves", "cerdos"],
   },
   {
     slug: "microacid-plus",

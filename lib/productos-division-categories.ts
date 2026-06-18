@@ -19,6 +19,7 @@ export const DIVISION_PRODUCT_CATEGORIES: Record<
     "ambitine-cl": "nutricion",
     "citroflake-b": "nutricion",
     milkey: "nutricion",
+    meatfree: "nutricion",
     "tecmax-pro": "nutricion",
     "turbozyme-ft-exp": "nutricion",
     "turbozyme-ft-sd-exp": "nutricion",
