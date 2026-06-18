@@ -14,7 +14,7 @@ export const PRODUCTO_MANUFACTURERS: Partial<
   "nucleoforce-salmonids": "Bioiberica",
   nucleoforce: "Bioiberica",
   aromabiotic: "Agrimprove",
-  meatfree: "Agrimprove",
+  meatfree: "Tectron",
   "s-prove": "Agrimprove",
   "m-prove": "Agrimprove",
   "ambitine-cl": "Agrimprove",
