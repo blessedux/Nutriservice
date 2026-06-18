@@ -19,17 +19,17 @@ export const DIVISION_CONTACTS: Record<
     phone: "+56 9 89005220",
   },
   aves: {
-    name: "Rodrigo Martinez – Gerente División",
+    name: "Rodrigo Martínez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
   cerdos: {
-    name: "Rodrigo Martinez – Gerente División",
+    name: "Rodrigo Martínez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
   mascotas: {
-    name: "Rodrigo Martinez – Gerente División",
+    name: "Rodrigo Martínez – Gerente División",
     email: "rmartinez@nutriservice.cl",
     phone: "+56 954031992",
   },
