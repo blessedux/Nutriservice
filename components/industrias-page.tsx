@@ -165,7 +165,7 @@ function IndustriaVerticalCard({ vertical }: { vertical: IndustriaVertical }) {
             href={`/industrias/${vertical.slug}`}
             className="inline-flex shrink-0 items-center gap-2 text-xs font-bold uppercase tracking-wide text-cyan-500 transition-opacity hover:opacity-80"
           >
-            Ver Protocolos
+            Ver Soluciones
             <ChevronRight className="size-3.5" aria-hidden />
           </Link>
         </div>
