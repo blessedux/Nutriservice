@@ -7,10 +7,9 @@ import MaquilaSection from "@/components/maquila-section";
 import IndustriasCtaBanner from "@/components/industrias-cta-banner";
 import { PUBLIC_ASSETS } from "@/lib/public-assets";
 
-const HOME_TITLE =
-  "Nutriservice — Soluciones funcionales para una alimentación y producción responsables";
+const HOME_TITLE = "Nutriservice — Inteligencia Nutricional Industrial";
 const HOME_DESCRIPTION =
-  "Proveedor oficial de premezclas y núcleos a medida para la industria de nutrición animal.";
+  "30+ años al servicio de la nutrición funcional animal en Chile. Soluciones funcionales para una alimentación y producción responsables.";
 
 export const metadata: Metadata = {
   title: HOME_TITLE,
@@ -23,7 +22,7 @@ export const metadata: Metadata = {
     siteName: "Nutriservice",
     images: [
       {
-        url: PUBLIC_ASSETS.brand.icon512,
+        url: "/icon.png",
         width: 512,
         height: 512,
         alt: "Nutriservice",
@@ -34,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: HOME_TITLE,
     description: HOME_DESCRIPTION,
-    images: [PUBLIC_ASSETS.brand.icon512],
+    images: ["/icon.png"],
   },
 };
 

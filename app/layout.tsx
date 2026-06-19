@@ -31,14 +31,32 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://nutriservice.cl"),
   icons: {
     icon: [
-      { url: PUBLIC_ASSETS.brand.favicon, sizes: "any" },
+      { url: "/favicon.ico", sizes: "any" },
       {
-        url: PUBLIC_ASSETS.brand.icon512,
+        url: "/icon.png",
         sizes: "512x512",
         type: "image/png",
       },
     ],
-    apple: PUBLIC_ASSETS.brand.icon512,
+    apple: "/apple-icon.png",
+  },
+  openGraph: {
+    type: "website",
+    locale: "es_CL",
+    url: "https://nutriservice.cl",
+    siteName: "Nutriservice",
+    images: [
+      {
+        url: "/icon.png",
+        width: 512,
+        height: 512,
+        alt: "Nutriservice",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: ["/icon.png"],
   },
 };
 
