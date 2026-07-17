@@ -10,6 +10,7 @@ import PageBackHeader from "@/components/page-back-header";
 import { useHeroRevealReady } from "@/components/site-reveal-context";
 import { FinTechHeroGrid } from "@/components/ui/fin-tech-landing-page";
 import type { Industry } from "@/lib/industries";
+import { PUBLIC_ASSETS } from "@/lib/public-assets";
 import {
   SITE_FOOTER_CTA_BROCHURE_LABEL,
   SITE_FOOTER_CTA_HEADING,
@@ -56,7 +57,10 @@ export default function IndustriaMascotasPage({
 
   return (
     <div className="relative text-white">
-      <IndustriaFixedVideoBg webm={MASCOTAS_VIDEO_WEBM} />
+      <IndustriaFixedVideoBg
+        webm={MASCOTAS_VIDEO_WEBM}
+        poster={PUBLIC_ASSETS.divisionVideo.mascotasPoster}
+      />
 
       <div className="relative z-10">
         <section className="relative site-hero-pull min-h-[100dvh] site-scroll-mt overflow-hidden">

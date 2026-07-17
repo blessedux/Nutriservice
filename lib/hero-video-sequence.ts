@@ -7,6 +7,7 @@ import { PUBLIC_ASSETS } from "@/lib/public-assets";
 export type HeroVideoClip = {
   webm: string;
   mp4?: string;
+  poster?: string;
   /** How many full playthroughs before crossfading to the next clip. */
   playsBeforeAdvance: number;
   /** After the first playthrough, loop this clip indefinitely. */
@@ -36,14 +37,17 @@ export const HERO_LANDING_VIDEO_SEQUENCE: HeroVideoClip[] = [
   {
     webm: PUBLIC_ASSETS.hero.salmonWebm,
     mp4: PUBLIC_ASSETS.hero.salmonMp4,
+    poster: PUBLIC_ASSETS.hero.salmonPoster,
     playsBeforeAdvance: 1,
   },
   {
     webm: MASCOTAS_VIDEO_WEBM,
+    poster: PUBLIC_ASSETS.divisionVideo.mascotasPoster,
     playsBeforeAdvance: 1,
   },
   {
     webm: AVES_VIDEO_WEBM,
+    poster: PUBLIC_ASSETS.divisionVideo.avesPoster,
     playsBeforeAdvance: 1,
   },
 ];

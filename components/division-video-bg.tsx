@@ -1,7 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
+import Image from "next/image";
+
+import { shouldAttemptBackgroundVideo } from "@/lib/video-capabilities";
 
 const PLAY_RETRY_MS = 400;
 const PLAY_MAX_ATTEMPTS = 14;
@@ -9,6 +12,7 @@ const PLAY_MAX_ATTEMPTS = 14;
 type DivisionVideoBgProps = {
   mp4?: string;
   webm: string;
+  poster?: string;
   className?: string;
 };
 
@@ -16,14 +20,20 @@ type DivisionVideoBgProps = {
 export default function DivisionVideoBg({
   mp4,
   webm,
+  poster,
   className = "pointer-events-none fixed inset-0 z-0 h-[100dvh] w-full overflow-hidden",
 }: DivisionVideoBgProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const reduceMotion = useReducedMotion();
   const playAttemptsRef = useRef(0);
+  const [canAttemptVideo, setCanAttemptVideo] = useState(true);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    setCanAttemptVideo(shouldAttemptBackgroundVideo());
+  }, []);
+
+  useEffect(() => {
+    if (reduceMotion || !canAttemptVideo) return;
     const video = videoRef.current;
     if (!video) return;
 
@@ -76,24 +86,41 @@ export default function DivisionVideoBg({
       video.removeEventListener("playing", onPlaying);
       document.removeEventListener("visibilitychange", onVisibilityChange);
     };
-  }, [reduceMotion, mp4, webm]);
+  }, [reduceMotion, canAttemptVideo, mp4, webm]);
+
+  const useVideo = canAttemptVideo && !reduceMotion;
 
   return (
     <div className={className} aria-hidden>
       <div className="absolute inset-0 bg-slate-950" />
-      <video
-        ref={videoRef}
-        className="absolute inset-0 h-full w-full object-cover motion-reduce:opacity-0"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        disablePictureInPicture
-      >
-        {mp4 ? <source src={mp4} type="video/mp4" /> : null}
-        <source src={webm} type="video/webm" />
-      </video>
+
+      {poster && !useVideo ? (
+        <Image
+          src={poster}
+          alt=""
+          fill
+          className="object-cover"
+          priority
+        />
+      ) : null}
+
+      {useVideo ? (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover motion-reduce:opacity-0"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={poster}
+          disablePictureInPicture
+        >
+          {mp4 ? <source src={mp4} type="video/mp4" /> : null}
+          <source src={webm} type="video/webm" />
+        </video>
+      ) : null}
+
       <div className="absolute inset-0 bg-slate-950/50" />
       <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/35 to-slate-950/88" />
       <div className="absolute inset-y-0 left-0 w-1/2 backdrop-blur-[2px]" />

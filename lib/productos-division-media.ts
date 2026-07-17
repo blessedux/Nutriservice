@@ -6,7 +6,7 @@ export const AVES_VIDEO_WEBM = PUBLIC_ASSETS.divisionVideo.aves;
 export const PORCINA_VIDEO_WEBM = PUBLIC_ASSETS.divisionVideo.porcina;
 
 export type DivisionMedia = {
-  video?: { mp4?: string; webm: string };
+  video?: { mp4?: string; webm: string; poster?: string };
   /** Static backdrop when no video is configured yet. */
   fallbackImage?: string;
   tone: "on-dark" | "on-light";
@@ -20,18 +20,21 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
     video: {
       mp4: PUBLIC_ASSETS.hero.salmonMp4,
       webm: PUBLIC_ASSETS.hero.salmonWebm,
+      poster: PUBLIC_ASSETS.hero.salmonPoster,
     },
     tone: "on-dark",
   },
   aves: {
     video: {
       webm: AVES_VIDEO_WEBM,
+      poster: PUBLIC_ASSETS.divisionVideo.avesPoster,
     },
     tone: "on-dark",
   },
   cerdos: {
     video: {
       webm: PORCINA_VIDEO_WEBM,
+      poster: PUBLIC_ASSETS.divisionVideo.porcinaPoster,
     },
     fallbackImage: PUBLIC_ASSETS.industryPages.fallbackPorcina,
     tone: "on-dark",
@@ -39,6 +42,7 @@ export const PRODUCTO_DIVISION_MEDIA: Record<
   mascotas: {
     video: {
       webm: MASCOTAS_VIDEO_WEBM,
+      poster: PUBLIC_ASSETS.divisionVideo.mascotasPoster,
     },
     tone: "on-dark",
   },

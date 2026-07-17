@@ -21,11 +21,16 @@ export const PUBLIC_ASSETS = {
     salmonMp4: "/assets/hero/salmon-sequence.mp4",
     salmonWebm: "/assets/hero/salmon-sequence.webm",
     pigletsWebm: "/assets/hero/piglets_combined.webm",
+    salmonPoster: "/assets/hero/posters/salmon-poster.webp",
+    pigletsPoster: "/assets/hero/posters/piglets-poster.webp",
   },
   divisionVideo: {
     mascotas: "/assets/division-video/mascotas3_hero.webm",
     aves: "/assets/division-video/hen_final_compressed.webm",
     porcina: "/assets/hero/piglets_combined.webm",
+    mascotasPoster: "/assets/division-video/posters/mascotas-poster.webp",
+    avesPoster: "/assets/division-video/posters/aves-poster.webp",
+    porcinaPoster: "/assets/hero/posters/piglets-poster.webp",
   },
   industriesSection: {
     backgroundVideo: "/assets/industries-section/background-video.webm",
@@ -120,6 +125,7 @@ export const PUBLIC_ASSETS = {
   },
   homeBlueBand: {
     oceanFloor: "/assets/home-blue-band/ocean-floor.webm",
+    oceanFloorPoster: "/assets/home-blue-band/posters/ocean-floor-poster.webp",
   },
   nosotros: {
     fernandoPfp: "/assets/nosotros/fernando_pfp.webp",

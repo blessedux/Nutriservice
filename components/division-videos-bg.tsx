@@ -1,13 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
-import {
-  getDivisionVideoSources,
-  preloadDivisionVideos,
-} from "@/lib/division-video-preload";
+import { getDivisionVideoSources } from "@/lib/division-video-preload";
 import type { ProductoDivisionSlug } from "@/lib/productos-divisions";
+import { shouldAttemptBackgroundVideo } from "@/lib/video-capabilities";
 import { cn } from "@/lib/utils";
 
 const PLAY_RETRY_MS = 400;
@@ -21,49 +19,23 @@ type DivisionVideosBgProps = {
   className?: string;
 };
 
-/** All division backdrops stay mounted; opacity crossfade on `activeSlug` change. */
+/** Only active division video is mounted and loaded */
 export default function DivisionVideosBg({
   activeSlug,
   className = "pointer-events-none fixed inset-0 z-0 h-[100dvh] w-full overflow-hidden",
 }: DivisionVideosBgProps) {
   const reduceMotion = useReducedMotion();
-  const videoRefs = useRef<Partial<Record<ProductoDivisionSlug, HTMLVideoElement>>>(
-    {},
-  );
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [canAttemptVideo, setCanAttemptVideo] = useState(true);
 
   useEffect(() => {
-    preloadDivisionVideos().catch(() => {});
+    setCanAttemptVideo(shouldAttemptBackgroundVideo());
   }, []);
 
   useEffect(() => {
-    if (reduceMotion) return;
+    if (reduceMotion || !canAttemptVideo || !activeSlug) return;
 
-    const attemptPlay = (video: HTMLVideoElement) => {
-      video.muted = true;
-      video.defaultMuted = true;
-      video.playsInline = true;
-      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
-        video.load();
-      }
-      void video.play().catch(() => {});
-    };
-
-    for (const { slug } of DIVISION_VIDEO_SOURCES) {
-      const video = videoRefs.current[slug];
-      if (!video) continue;
-
-      if (slug === activeSlug) {
-        attemptPlay(video);
-      } else {
-        video.pause();
-      }
-    }
-  }, [activeSlug, reduceMotion]);
-
-  useEffect(() => {
-    if (reduceMotion || !activeSlug) return;
-
-    const video = videoRefs.current[activeSlug];
+    const video = videoRef.current;
     if (!video) return;
 
     let cancelled = false;
@@ -73,7 +45,11 @@ export default function DivisionVideosBg({
     const attemptPlay = () => {
       if (cancelled) return;
       video.muted = true;
+      video.defaultMuted = true;
       video.playsInline = true;
+      if (video.readyState < HTMLMediaElement.HAVE_METADATA) {
+        video.load();
+      }
       void video.play().catch(() => {});
     };
 
@@ -104,80 +80,65 @@ export default function DivisionVideosBg({
       video.removeEventListener("canplay", onReady);
       video.removeEventListener("playing", onPlaying);
     };
-  }, [activeSlug, reduceMotion]);
+  }, [activeSlug, reduceMotion, canAttemptVideo]);
 
-  const showVideos = Boolean(activeSlug);
+  const showVideo = Boolean(activeSlug) && canAttemptVideo && !reduceMotion;
+  const activeSource = DIVISION_VIDEO_SOURCES.find((s) => s.slug === activeSlug);
 
   return (
     <div className={className} aria-hidden>
       <div className="absolute inset-0 bg-slate-950" />
 
-      {DIVISION_VIDEO_SOURCES.map(({ slug, mp4, webm }) => {
-        const isActive = showVideos && activeSlug === slug;
-        return (
-          <video
-            key={slug}
-            ref={(el) => {
-              if (el) videoRefs.current[slug] = el;
-              else delete videoRefs.current[slug];
-            }}
-            className={cn(
-              "absolute inset-0 h-full w-full object-cover motion-reduce:opacity-0",
-              slug === "mascotas" && "max-lg:object-[30%_center]",
-              reduceMotion
-                ? isActive
-                  ? "opacity-100"
-                  : "opacity-0"
-                : cn(
-                    "transition-opacity ease-out",
-                    isActive ? "z-[2] opacity-100" : "z-[1] opacity-0",
-                  ),
-            )}
-            style={
-              reduceMotion
-                ? undefined
-                : { transitionDuration: `${CROSSFADE_MS}ms` }
-            }
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            disablePictureInPicture
-          >
-            {mp4 ? <source src={mp4} type="video/mp4" /> : null}
-            <source src={webm} type="video/webm" />
-          </video>
-        );
-      })}
+      {showVideo && activeSource ? (
+        <video
+          key={activeSlug}
+          ref={videoRef}
+          className={cn(
+            "absolute inset-0 z-[2] h-full w-full object-cover transition-opacity ease-out",
+            activeSource.slug === "mascotas" && "max-lg:object-[30%_center]",
+          )}
+          style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          disablePictureInPicture
+        >
+          {activeSource.mp4 ? (
+            <source src={activeSource.mp4} type="video/mp4" />
+          ) : null}
+          <source src={activeSource.webm} type="video/webm" />
+        </video>
+      ) : null}
 
       <div
         className={cn(
           "absolute inset-0 bg-slate-950/50 transition-opacity ease-out",
-          showVideos ? "opacity-100" : "opacity-0",
+          showVideo ? "opacity-100" : "opacity-0",
         )}
-        style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
+        style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
       />
       <div
         className={cn(
           "absolute inset-0 bg-slate-950/25 transition-opacity ease-out",
-          showVideos && activeSlug === "aves" ? "opacity-100" : "opacity-0",
+          showVideo && activeSlug === "aves" ? "opacity-100" : "opacity-0",
         )}
-        style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
+        style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
       />
       <div
         className={cn(
           "absolute inset-0 bg-gradient-to-b from-slate-950/80 via-slate-950/35 to-slate-950/88 transition-opacity ease-out",
-          showVideos ? "opacity-100" : "opacity-0",
+          showVideo ? "opacity-100" : "opacity-0",
         )}
-        style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
+        style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
       />
       <div
         className={cn(
           "absolute inset-y-0 left-0 w-1/2 backdrop-blur-[2px] transition-opacity ease-out",
-          showVideos ? "opacity-100" : "opacity-0",
+          showVideo ? "opacity-100" : "opacity-0",
         )}
-        style={reduceMotion ? undefined : { transitionDuration: `${CROSSFADE_MS}ms` }}
+        style={{ transitionDuration: `${CROSSFADE_MS}ms` }}
       />
     </div>
   );

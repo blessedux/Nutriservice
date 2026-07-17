@@ -107,15 +107,6 @@ export function SiteExperience({
       () => {},
     );
 
-    preloadDivisionVideos().catch(() => {});
-
-    const heroVideoPreload = document.createElement("link");
-    heroVideoPreload.rel = "preload";
-    heroVideoPreload.as = "video";
-    heroVideoPreload.href = PUBLIC_ASSETS.hero.salmonMp4;
-    heroVideoPreload.type = "video/mp4";
-    document.head.appendChild(heroVideoPreload);
-
     const started = performance.now();
     let timeoutId: number | undefined;
 

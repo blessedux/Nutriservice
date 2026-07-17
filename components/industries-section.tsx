@@ -8,6 +8,7 @@ import type { PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { HOME_BLUE_BG } from "@/components/home-blue-band";
+import { ResilientBgVideo } from "@/components/resilient-bg-video";
 import { useMobileExperience } from "@/hooks/use-mobile-experience";
 import { industryList, type Industry } from "@/lib/industries";
 import { cn } from "@/lib/utils";
@@ -600,158 +601,14 @@ function IndustriesCarousel() {
 }
 
 function IndustriesSectionBackground() {
-  const reduceMotion = useReducedMotion();
-  const isMobile = useMobileExperience();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const videoReadyRef = useRef(false);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const [videoReady, setVideoReady] = useState(false);
-  const [videoFailed, setVideoFailed] = useState(false);
-
-  const markVideoReady = useCallback(() => {
-    videoReadyRef.current = true;
-    setVideoReady(true);
-  }, []);
-
-  const failVideo = useCallback(() => {
-    setVideoFailed(true);
-  }, []);
-
-  useEffect(() => {
-    if (reduceMotion) return;
-
-    const el = containerRef.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          setShouldLoadVideo(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "160px" },
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (!shouldLoadVideo || reduceMotion || videoFailed) return;
-    videoRef.current?.load();
-  }, [shouldLoadVideo, reduceMotion, videoFailed]);
-
-  useEffect(() => {
-    if (!shouldLoadVideo || reduceMotion || videoFailed) return;
-
-    const video = videoRef.current;
-    if (!video) return;
-
-    let cancelled = false;
-
-    const attemptPlay = () => {
-      if (cancelled || videoFailed || videoReadyRef.current) return;
-
-      video.muted = true;
-      video.defaultMuted = true;
-
-      void video
-        .play()
-        .then(() => {
-          if (cancelled) return;
-          if (video.paused) {
-            failVideo();
-            return;
-          }
-          markVideoReady();
-        })
-        .catch(() => {
-          if (!cancelled) failVideo();
-        });
-    };
-
-    const onPlaying = () => {
-      if (!cancelled) markVideoReady();
-    };
-
-    const onError = () => {
-      if (!cancelled) failVideo();
-    };
-
-    const onVisibilityChange = () => {
-      if (!document.hidden && !videoReadyRef.current && !videoFailed) {
-        attemptPlay();
-      }
-    };
-
-    video.addEventListener("playing", onPlaying);
-    video.addEventListener("canplay", attemptPlay);
-    video.addEventListener("loadeddata", attemptPlay);
-    video.addEventListener("error", onError);
-    document.addEventListener("visibilitychange", onVisibilityChange);
-
-    attemptPlay();
-
-    const timeoutMs = isMobile === true ? 3000 : 5000;
-    const timeout = window.setTimeout(() => {
-      if (cancelled || videoReadyRef.current) return;
-      if (video.paused || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-        failVideo();
-      }
-    }, timeoutMs);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timeout);
-      video.removeEventListener("playing", onPlaying);
-      video.removeEventListener("canplay", attemptPlay);
-      video.removeEventListener("loadeddata", attemptPlay);
-      video.removeEventListener("error", onError);
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-    };
-  }, [shouldLoadVideo, reduceMotion, videoFailed, isMobile, failVideo, markVideoReady]);
-
-  const useVideo = shouldLoadVideo && !videoFailed && !reduceMotion;
-  const showVideo = useVideo && videoReady;
-
   return (
-    <div
-      ref={containerRef}
-      className="pointer-events-none absolute inset-0 overflow-hidden rounded-t-[2.5rem] rounded-b-[2.5rem] sm:rounded-t-[3rem] sm:rounded-b-[3rem]"
-      aria-hidden
-    >
-      <Image
-        src={INDUSTRIES_BG_IMAGE_SRC}
-        alt=""
-        fill
-        className={cn(
-          `${INDUSTRIES_BG_MEDIA_SCALE} object-cover object-center transition-opacity duration-700 ease-out`,
-          showVideo ? "opacity-0" : "opacity-100",
-        )}
-        sizes="100vw"
-        priority
-      />
-
-      {useVideo ? (
-        <video
-          ref={videoRef}
-          className={cn(
-            `absolute inset-0 size-full ${INDUSTRIES_BG_MEDIA_SCALE} object-cover object-center transition-opacity duration-700 ease-out motion-reduce:hidden`,
-            showVideo ? "opacity-100" : "opacity-0",
-          )}
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="none"
-          poster={INDUSTRIES_BG_IMAGE_SRC}
-        >
-          <source src={INDUSTRIES_BG_VIDEO_SRC} type="video/webm" />
-        </video>
-      ) : null}
-    </div>
+    <ResilientBgVideo
+      videoSrc={INDUSTRIES_BG_VIDEO_SRC}
+      posterSrc={INDUSTRIES_BG_IMAGE_SRC}
+      className="overflow-hidden rounded-t-[2.5rem] rounded-b-[2.5rem] sm:rounded-t-[3rem] sm:rounded-b-[3rem]"
+      mediaScale={INDUSTRIES_BG_MEDIA_SCALE}
+      posterPriority
+    />
   );
 }
 
